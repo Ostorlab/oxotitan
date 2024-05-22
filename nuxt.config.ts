@@ -2,6 +2,11 @@
 import vuetify, { transformAssetUrls } from 'vite-plugin-vuetify'
 
 export default defineNuxtConfig({
+  app: {
+    head: {
+      title: 'OXO Titan Portal',
+    }
+  },
   devtools: { enabled: true },
   build: {
     transpile: ['vuetify'],
