@@ -18,9 +18,10 @@
     "vue-router": "^4.3.2"
   },
   "devDependencies": {
-    "@nuxt/eslint-config": "^0.3.10",
     "@nuxt/eslint": "^0.3.13",
+    "@nuxt/eslint-config": "^0.3.10",
     "eslint": "^8.57.0",
+    "sass": "^1.77.2",
     "vite-plugin-eslint2": "^4.4.0",
     "vite-plugin-vuetify": "^2.0.3",
     "vuetify": "^3.6.7"
