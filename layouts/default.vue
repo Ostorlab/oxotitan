@@ -18,9 +18,9 @@
     >
       <div class="d-flex align-center pa-3">
         <img
-          src="/logo/OstorlabCircleMini.png"
+          src="/logo/oxo.png"
           alt="Ostorlab logo"
-          style="height: 40px; object-fit: contain"
+          style="height:40px; object-fit: contain"
         >
         <v-btn
           size="small"
