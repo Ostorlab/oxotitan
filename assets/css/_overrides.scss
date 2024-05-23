@@ -1,0 +1,12 @@
+body {
+    font-family: $body-font-family;
+}
+
+.v-application {
+    a:not(.v-btn), a:visited:not(.v-btn) {
+      color: $color-primary;
+    }
+    .v-card--variant-outlined {
+      border: 1px solid #dadada;
+    }
+}
