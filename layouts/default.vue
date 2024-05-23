@@ -46,7 +46,7 @@
           :value="drawerItem.value"
           :to="drawerItem.to"
         >
-          <div>
+          <div class="d-flex align-center">
             <v-icon>
               {{ drawerItem.icon }}
             </v-icon>
@@ -79,7 +79,7 @@ export default defineComponent({
         },
         {
           title: 'Scanners',
-          to: '/scanners',
+          to: '/',
           icon: 'mdi-shield-search',
           value: 'scanners'
         },
