@@ -37,11 +37,17 @@
 
         <v-stepper-vertical-item
           :complete="step > 2"
+          title="Application"
           subtitle="required"
-          title="Target Web APIs"
           value="2"
+          :error="isStepValid === false && step > 2"
         >
-          Lorem ipsum dolor sit amet consectetur adipisicing elit.
+          <component
+            :is="applicationSource"
+            v-model:is-step-valid="isStepValid"
+            :asset-type="assetType"
+            :asset-platform-type="assetPlatformType"
+          />
           <template #next="{ next }">
             <v-btn
               color="primary"
@@ -59,7 +65,9 @@
             <v-btn
               variant="elevated"
               @click="prev"
-            />
+            >
+              Previous
+            </v-btn>
           </template>
         </v-stepper-vertical-item>
 
@@ -94,7 +102,7 @@
             <v-btn
               v-else
               variant="elevated"
-              @click="finished = false"
+              @click="finished = false; stepNumber = 1"
             >
               <v-icon start>
                 mdi-cancel
@@ -111,8 +119,10 @@
 <script lang="ts">
 import { AssetEnum, type Group } from '~/scan/types'
 import AssetTypeSelector from '~/scan/components/AssetTypeSelector.vue'
+import CreateMobileScanStoreForm from '~/scan/components/form/CreateMobileScanStoreForm.vue'
 
 interface Data {
+  isStepValid: boolean
   stepNumber: number
   finished: boolean
   assetTypeItems: Array<Group>
@@ -121,9 +131,10 @@ interface Data {
 
 export default defineComponent({
   name: 'CreateScanForm',
-  components: { AssetTypeSelector },
+  components: { AssetTypeSelector, CreateMobileScanStoreForm },
   data(): Data {
     return {
+      isStepValid: true,
       stepNumber: 1,
       finished: false,
       assetPlatformType: AssetEnum.ANDROID_PLAYSTORE,
@@ -204,6 +215,14 @@ export default defineComponent({
           ]
         }
       ]
+    }
+  },
+  computed: {
+    applicationSource(): ReturnType<typeof defineComponent> {
+      return CreateMobileScanStoreForm
+    },
+    assetType() {
+      return 'android'
     }
   }
 })
