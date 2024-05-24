@@ -43,7 +43,7 @@
           :error="isStepValid === false && step > 2"
         >
           <component
-            :is="applicationSource"
+            :is="scanTargetForm"
             v-model:is-step-valid="isStepValid"
             :asset-type="assetType"
             :asset-platform-type="assetPlatformType"
@@ -218,10 +218,16 @@ export default defineComponent({
     }
   },
   computed: {
-    applicationSource(): ReturnType<typeof defineComponent> {
+    /**
+     * The input form to show based on the asset type.
+     */
+    scanTargetForm(): ReturnType<typeof defineComponent> {
       return CreateMobileScanStoreForm
     },
-    assetType() {
+    /**
+     * The selected asset type.
+     */
+    assetType(): string {
       return 'android'
     }
   }

@@ -42,15 +42,11 @@ export default defineComponent({
   },
   props: {
     assetPlatformType: {
-      type: String as () => AssetEnum,
+      type: String as () => AssetEnum | string | null,
       default: null
     },
     assetType: {
       type: String as () => AssetEnum | string | null,
-      default: null
-    },
-    scanTitle: {
-      type: String,
       default: null
     }
   },
