@@ -57,8 +57,8 @@
         </v-list-item>
       </v-list>
     </v-navigation-drawer>
-    <v-main style="height: 250px">
-      <div class="ml-4 mt-2">
+    <v-main>
+      <div class="mx-4 mt-2">
         <slot />
       </div>
     </v-main>
