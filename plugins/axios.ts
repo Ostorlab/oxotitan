@@ -1,9 +1,7 @@
 import axios from 'axios'
 
 export default defineNuxtPlugin(() => {
-  const api = axios.create({
-    baseURL: 'https://api.ostorlab.co'
-  })
+  const api = axios.create()
   return {
     provide: {
       axios: api
