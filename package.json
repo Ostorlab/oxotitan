@@ -14,6 +14,7 @@
   },
   "dependencies": {
     "@mdi/font": "^7.4.47",
+    "axios": "^1.7.2",
     "nuxt": "^3.11.2",
     "vue": "^3.4.27",
     "vue-router": "^4.3.2"
@@ -22,9 +23,9 @@
     "@nuxt/eslint": "^0.3.13",
     "@nuxt/eslint-config": "^0.3.10",
     "eslint": "^8.57.0",
-    "sass": "^1.77.2",
     "husky": "^9.0.11",
     "lint-staged": "^15.2.4",
+    "sass": "^1.77.2",
     "vite-plugin-eslint2": "^4.4.0",
     "vite-plugin-vuetify": "^2.0.3",
     "vuetify": "^3.6.7"
