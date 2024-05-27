@@ -1,0 +1,5 @@
+schema: schema.graphql
+generates:
+  graphql/types.ts:
+    plugins:
+      - "@graphql-codegen/typescript"
