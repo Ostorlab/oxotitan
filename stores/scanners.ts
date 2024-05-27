@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 
-interface Scanner {
+export interface Scanner {
   endpoint: string
   apiKey: string
 }

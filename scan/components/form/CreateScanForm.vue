@@ -10,19 +10,16 @@
       <template #default="{ step }">
         <v-stepper-vertical-item
           :complete="step > 1"
-          title="Asset"
+          title="Scanner"
+          subtitle="Select or create a scanner to run the scan on"
           value="1"
         >
-          <AssetTypeSelector
-            id="select_asset"
-            v-model:model-value="assetPlatformType"
-            :items="assetTypeItems"
-            @click="stepNumber++"
-          />
+          <ScannerSelect v-model:model-value="selectedScanner" />
           <template #next="{ next }">
             <v-btn
               color="primary"
               variant="elevated"
+              :disabled="selectedScanner === null"
               @click="next"
             >
               <v-icon start>
@@ -37,18 +34,14 @@
 
         <v-stepper-vertical-item
           :complete="step > 2"
-          :title="scanTargetStepTitle"
-          :subtitle="scanTargetStepSubtitle"
+          title="Asset"
           value="2"
-          :error="isStepValid === false && step > 2"
         >
-          <component
-            :is="scanTargetForm"
-            v-model:scan-target-step-title="scanTargetStepTitle"
-            v-model:scan-target-step-subtitle="scanTargetStepSubtitle"
-            v-model:is-step-valid="isStepValid"
-            :asset-type="assetType"
-            :asset-platform-type="assetPlatformType"
+          <AssetTypeSelector
+            id="select_asset"
+            v-model:model-value="assetPlatformType"
+            :items="assetTypeItems"
+            @click="stepNumber++"
           />
           <template #next="{ next }">
             <v-btn
@@ -75,17 +68,26 @@
         </v-stepper-vertical-item>
 
         <v-stepper-vertical-item
-          title="Scanner"
-          subtitle="Select or create a scanner to run the scan on"
+          :title="scanTargetStepTitle || 'Scan Target'"
+          :subtitle="scanTargetStepSubtitle"
           value="3"
+          :error="isStepValid === false"
           @click:next="null"
         >
-          Lorem ipsum dolor sit amet consectetur adipisicing elit.
+          <component
+            :is="scanTargetForm"
+            v-model:scan-target-step-title="scanTargetStepTitle"
+            v-model:scan-target-step-subtitle="scanTargetStepSubtitle"
+            v-model:is-step-valid="isStepValid"
+            :asset-type="assetType"
+            :asset-platform-type="assetPlatformType"
+          />
 
           <template #next="{ next }">
             <v-btn
               color="success"
               variant="elevated"
+              :disbaled="isStepValid === false"
               @click="next"
             >
               <v-icon start>
@@ -120,6 +122,7 @@
 </template>
 
 <script lang="ts">
+import type { Scanner } from '~/stores/scanners'
 import { AssetEnum, type Group } from '~/scan/types'
 import AssetTypeSelector from '~/scan/components/AssetTypeSelector.vue'
 import CreateMobileScanStoreForm from '~/scan/components/form/CreateMobileScanStoreForm.vue'
@@ -128,6 +131,7 @@ import CreateWebApiScanForm from '~/scan/components/form/CreateWebApiScanForm.vu
 import CreateNetworkScanForm from '~/scan/components/form/CreateNetworkScanForm.vue'
 import CreateMobileScanFileForm from '~/scan/components/form/CreateMobileScanFileForm.vue'
 import CreateScanYamlForm from '~/scan/components/form/CreateScanYamlForm.vue'
+import ScannerSelect from '~/scan/components/ScannerSelect.vue'
 
 interface Data {
   isStepValid: boolean
@@ -137,6 +141,7 @@ interface Data {
   assetPlatformType: AssetEnum | undefined | null
   scanTargetStepTitle: string | null
   scanTargetStepSubtitle: string | null
+  selectedScanner: Scanner | null
 }
 
 export default defineComponent({
@@ -147,10 +152,12 @@ export default defineComponent({
     CreateWebScanForm,
     CreateWebApiScanForm,
     CreateNetworkScanForm,
-    CreateScanYamlForm
+    CreateScanYamlForm,
+    ScannerSelect
   },
   data(): Data {
     return {
+      selectedScanner: null,
       scanTargetStepTitle: null,
       scanTargetStepSubtitle: null,
       isStepValid: true,
