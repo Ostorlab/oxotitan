@@ -59,6 +59,9 @@ export default defineComponent({
     }
   },
   computed: {
+    /**
+     * The errors for the IP messages.
+     */
     ipErrorMessages(): Array<string> {
       const errors: Array<string> = []
       if (this.userIps === undefined) {
@@ -71,6 +74,9 @@ export default defineComponent({
       }
       return errors
     },
+    /**
+     * Whether the form is valid or not.
+     */
     isFormValid(): boolean | undefined {
       if (this.userIps === undefined) {
         return
@@ -88,6 +94,10 @@ export default defineComponent({
     this.$emit('update:scan-target-step-subtitle', 'required')
   },
   methods: {
+    /**
+     * Check if an IP or IP range is valid.
+     * @param lastAddedIp
+     */
     isValidIpOrIpRange(lastAddedIp: string): boolean | undefined {
       if (this.ip === null || this.ip === undefined) {
         return
@@ -97,8 +107,11 @@ export default defineComponent({
       }
       return false
     },
+    /**
+     * Add an IP to a list of IPs.
+     */
     addToTargetIps(): void {
-      this.userIps = this.ip?.split('\n').filter(Boolean)
+      this.userIps = this.ip?.split('\n').filter(Boolean) || []
       if (this.userIps === undefined) {
         this.userIps = []
         return
@@ -108,10 +121,17 @@ export default defineComponent({
         this.userIps.push(lastAddedIp)
       }
     },
+    /**
+     * Clear the user input.
+     */
     clear(): void {
-      this.userIps = null
+      this.ip = null
+      this.userIps = []
     },
-    createScan() {}
+    /**
+     * Create a scan.
+     */
+    createScan(): void {}
   }
 })
 </script>

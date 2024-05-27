@@ -57,9 +57,15 @@ export default defineComponent({
     }
   },
   computed: {
+    /**
+     * The formatted user URLs.
+     */
     userUrls(): Array<string> {
       return this.rawUrls?.split('\n').filter(Boolean) || []
     },
+    /**
+     * The error messages for the user URLs.
+     */
     rawUrlsErrorMessages(): Array<string> {
       const errors: Array<string> = []
       for (const url of this.userUrls) {
@@ -80,10 +86,16 @@ export default defineComponent({
     this.$emit('update:scan-target-step-subtitle', 'required')
   },
   methods: {
+    /**
+     * Clear the input.
+     */
     clear(): void {
       this.rawUrls = null
     },
-    createScan() {}
+    /**
+     * Create a scan.
+     */
+    createScan(): void {}
   }
 })
 </script>
