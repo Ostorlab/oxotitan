@@ -37,13 +37,15 @@
 
         <v-stepper-vertical-item
           :complete="step > 2"
-          title="Application"
-          subtitle="required"
+          :title="scanTargetStepTitle"
+          :subtitle="scanTargetStepSubtitle"
           value="2"
           :error="isStepValid === false && step > 2"
         >
           <component
             :is="scanTargetForm"
+            v-model:scan-target-step-title="scanTargetStepTitle"
+            v-model:scan-target-step-subtitle="scanTargetStepSubtitle"
             v-model:is-step-valid="isStepValid"
             :asset-type="assetType"
             :asset-platform-type="assetPlatformType"
@@ -120,6 +122,7 @@
 import { AssetEnum, type Group } from '~/scan/types'
 import AssetTypeSelector from '~/scan/components/AssetTypeSelector.vue'
 import CreateMobileScanStoreForm from '~/scan/components/form/CreateMobileScanStoreForm.vue'
+import CreateWebScanForm from '~/scan/components/form/CreateWebScanForm.vue'
 
 interface Data {
   isStepValid: boolean
@@ -127,13 +130,17 @@ interface Data {
   finished: boolean
   assetTypeItems: Array<Group>
   assetPlatformType: AssetEnum | undefined | null
+  scanTargetStepTitle: string | null
+  scanTargetStepSubtitle: string | null
 }
 
 export default defineComponent({
   name: 'CreateScanForm',
-  components: { AssetTypeSelector, CreateMobileScanStoreForm },
+  components: { AssetTypeSelector, CreateMobileScanStoreForm, CreateWebScanForm },
   data(): Data {
     return {
+      scanTargetStepTitle: null,
+      scanTargetStepSubtitle: null,
       isStepValid: true,
       stepNumber: 1,
       finished: false,
@@ -222,7 +229,15 @@ export default defineComponent({
      * The input form to show based on the asset type.
      */
     scanTargetForm(): ReturnType<typeof defineComponent> {
-      return CreateMobileScanStoreForm
+      switch (this.assetPlatformType) {
+        case AssetEnum.ANDROID_PLAYSTORE:
+        case AssetEnum.IOS_APPSTORE:
+          return CreateMobileScanStoreForm
+        case AssetEnum.WEB_APP:
+          return CreateWebScanForm
+        default:
+          return null
+      }
     },
     /**
      * The selected asset type.
