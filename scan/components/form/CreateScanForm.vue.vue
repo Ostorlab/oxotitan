@@ -127,6 +127,7 @@ import CreateWebScanForm from '~/scan/components/form/CreateWebScanForm.vue'
 import CreateWebApiScanForm from '~/scan/components/form/CreateWebApiScanForm.vue'
 import CreateNetworkScanForm from '~/scan/components/form/CreateNetworkScanForm.vue'
 import CreateMobileScanFileForm from '~/scan/components/form/CreateMobileScanFileForm.vue'
+import CreateScanYamlForm from '~/scan/components/form/CreateScanYamlForm.vue'
 
 interface Data {
   isStepValid: boolean
@@ -145,7 +146,8 @@ export default defineComponent({
     CreateMobileScanStoreForm,
     CreateWebScanForm,
     CreateWebApiScanForm,
-    CreateNetworkScanForm
+    CreateNetworkScanForm,
+    CreateScanYamlForm
   },
   data(): Data {
     return {
@@ -252,6 +254,8 @@ export default defineComponent({
           return CreateWebApiScanForm
         case AssetEnum.NETWORK:
           return CreateNetworkScanForm
+        case AssetEnum.YAML:
+          return CreateScanYamlForm
         default:
           return null
       }
