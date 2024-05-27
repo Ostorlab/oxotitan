@@ -77,7 +77,7 @@
           title="Agent Group"
           subtitle="Select or create an agent group to use"
           value="3"
-          @click:next="onClickFinish"
+          @click:next="null"
         >
           Lorem ipsum dolor sit amet consectetur adipisicing elit.
 
