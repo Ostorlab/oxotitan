@@ -124,6 +124,7 @@ import AssetTypeSelector from '~/scan/components/AssetTypeSelector.vue'
 import CreateMobileScanStoreForm from '~/scan/components/form/CreateMobileScanStoreForm.vue'
 import CreateWebScanForm from '~/scan/components/form/CreateWebScanForm.vue'
 import CreateWebApiScanForm from '~/scan/components/form/CreateWebApiScanForm.vue'
+import CreateNetworkScanForm from '~/scan/components/form/CreateNetworkScanForm.vue'
 
 interface Data {
   isStepValid: boolean
@@ -137,7 +138,13 @@ interface Data {
 
 export default defineComponent({
   name: 'CreateScanForm',
-  components: { AssetTypeSelector, CreateMobileScanStoreForm, CreateWebScanForm, CreateWebApiScanForm },
+  components: {
+    AssetTypeSelector,
+    CreateMobileScanStoreForm,
+    CreateWebScanForm,
+    CreateWebApiScanForm,
+    CreateNetworkScanForm
+  },
   data(): Data {
     return {
       scanTargetStepTitle: null,
@@ -238,6 +245,8 @@ export default defineComponent({
           return CreateWebScanForm
         case AssetEnum.WEB_API:
           return CreateWebApiScanForm
+        case AssetEnum.NETWORK:
+          return CreateNetworkScanForm
         default:
           return null
       }
@@ -245,8 +254,23 @@ export default defineComponent({
     /**
      * The selected asset type.
      */
-    assetType(): string {
-      return 'android'
+    assetType(): AssetEnum | string | null {
+      switch (this.assetPlatformType) {
+        case AssetEnum.ANDROID_APK:
+        case AssetEnum.ANDROID_PLAYSTORE:
+          return 'android'
+        case AssetEnum.IOS_IPA:
+        case AssetEnum.IOS_APPSTORE:
+          return 'ios'
+        case AssetEnum.WEB_API:
+          return AssetEnum.WEB_API
+        case AssetEnum.WEB_APP:
+          return AssetEnum.WEB_APP
+        case AssetEnum.NETWORK:
+          return AssetEnum.NETWORK
+        default:
+          return null
+      }
     }
   }
 })
