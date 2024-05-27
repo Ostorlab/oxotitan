@@ -123,6 +123,7 @@ import { AssetEnum, type Group } from '~/scan/types'
 import AssetTypeSelector from '~/scan/components/AssetTypeSelector.vue'
 import CreateMobileScanStoreForm from '~/scan/components/form/CreateMobileScanStoreForm.vue'
 import CreateWebScanForm from '~/scan/components/form/CreateWebScanForm.vue'
+import CreateWebApiScanForm from '~/scan/components/form/CreateWebApiScanForm.vue'
 
 interface Data {
   isStepValid: boolean
@@ -136,7 +137,7 @@ interface Data {
 
 export default defineComponent({
   name: 'CreateScanForm',
-  components: { AssetTypeSelector, CreateMobileScanStoreForm, CreateWebScanForm },
+  components: { AssetTypeSelector, CreateMobileScanStoreForm, CreateWebScanForm, CreateWebApiScanForm },
   data(): Data {
     return {
       scanTargetStepTitle: null,
@@ -235,6 +236,8 @@ export default defineComponent({
           return CreateMobileScanStoreForm
         case AssetEnum.WEB_APP:
           return CreateWebScanForm
+        case AssetEnum.WEB_API:
+          return CreateWebApiScanForm
         default:
           return null
       }
