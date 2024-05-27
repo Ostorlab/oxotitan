@@ -76,7 +76,7 @@ export default defineComponent({
     }
   },
   mounted() {
-    this.$emit('update:scan-target-step-title', 'Target URLs / domains')
+    this.$emit('update:scan-target-step-title', 'Target Web APIs')
     this.$emit('update:scan-target-step-subtitle', 'required')
   },
   methods: {
