@@ -75,8 +75,8 @@
         </v-stepper-vertical-item>
 
         <v-stepper-vertical-item
-          title="Agent Group"
-          subtitle="Select or create an agent group to use"
+          title="Scanner"
+          subtitle="Select or create a scanner to run the scan on"
           value="3"
           @click:next="null"
         >

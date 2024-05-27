@@ -8,15 +8,59 @@
       <p class="subtitle-1 mb-3">
         Please specify the YAML definition:
       </p>
-      <v-textarea
-        v-model="yamlInput"
-        variant="outlined"
-        density="compact"
-        clearable
-        label="YAML definition"
-        placeholder="Add your YAML definition file"
-        prepend-icon="mdi-code-json"
-      />
+
+      <v-card variant="outlined">
+        <v-tabs
+          v-model="inputTab"
+          color="primary"
+          grow
+        >
+          <v-tab
+            value="assets"
+            :ripple="false"
+          >
+            <v-icon start>
+              mdi-code-json
+            </v-icon>
+            Assets
+          </v-tab>
+          <v-tab
+            value="agentGroup"
+            :ripple="false"
+          >
+            <v-icon start>
+              mdi-hexagon-multiple-outline
+            </v-icon>
+            Agent Group
+          </v-tab>
+        </v-tabs>
+
+        <v-tabs-window v-model="inputTab">
+          <v-tabs-window-item
+            :transition="false"
+            value="assets"
+          >
+            <MonacoEditor
+              v-model="assetsInput"
+              :lang="editorLanguage"
+              :options="editorOptions"
+              style="min-height: 300px;"
+            />
+          </v-tabs-window-item>
+
+          <v-tabs-window-item
+            :transition="false"
+            value="agentGroup"
+          >
+            <MonacoEditor
+              v-model="agentGroupInput"
+              :lang="editorLanguage"
+              :options="editorOptions"
+              style="min-height: 300px;"
+            />
+          </v-tabs-window-item>
+        </v-tabs-window>
+      </v-card>
     </v-form>
   </div>
 </template>
@@ -26,9 +70,12 @@ import LoadingDialog from '~/common/components/LoadingDialog.vue'
 import type { AssetEnum } from '~/scan/types'
 
 interface Data {
-  yamlInput: string | null
+  assetsInput: string | null
+  agentGroupInput: string | null
   loadingDialog: boolean
-  isFormValid: boolean
+  inputTab: 'assets' | 'agentGroup'
+  editorLanguage: string
+  editorOptions: { [key: string]: string | boolean }
 }
 
 export default defineComponent({
@@ -49,14 +96,40 @@ export default defineComponent({
   emits: ['update:isStepValid', 'update:scan-target-step-title', 'update:scan-target-step-subtitle'],
   data(): Data {
     return {
-      isFormValid: false,
-      yamlInput: null,
-      loadingDialog: false
+      inputTab: 'assets',
+      assetsInput: `
+description: Target group definition
+kind: targetGroup
+name: master_scan
+assets:
+  androidStore:
+    - package_name: "com.example.com"
+      `,
+      agentGroupInput: `
+description: Agent group definition for web scan
+kind: AgentGroup
+name: onprem_web
+agents:
+- args:
+  - { name: token, type: string, value: abcdefg }
+  key: agent/org/nuclei
+      `,
+      loadingDialog: false,
+      editorLanguage: 'yaml',
+      editorOptions: {
+        theme: 'vs',
+        wordWrap: 'on',
+        wordWrapColumn: 'on',
+        fontFamily: 'Fira Code',
+        automaticLayout: true
+      }
     }
   },
-  watch: {
-    yamlInput(newVal) {
-      this.$emit('update:isStepValid', newVal !== null && newVal !== undefined && newVal?.trim() !== '')
+  computed: {
+    isFormValid() {
+      const isValid = this.assetsInput !== null && this.assetsInput?.trim() !== '' && this.agentGroupInput !== null && this.agentGroupInput?.trim() !== ''
+      this.$emit('update:isStepValid', isValid)
+      return isValid
     }
   },
   mounted() {
@@ -65,7 +138,8 @@ export default defineComponent({
   },
   methods: {
     clear(): void {
-      this.yamlInput = null
+      this.agentGroupInput = null
+      this.assetsInput = null
     },
     createScan() {}
   }
