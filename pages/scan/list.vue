@@ -17,6 +17,11 @@
 </template>
 
 <script lang="ts">
+import { DfScanProgress } from '~/dragonfly/components/Tags/DfScanProgress'
+import { DfRisk } from '~/dragonfly/components/Tags/DfRisk'
+import { DfPlatform } from '~/dragonfly/components/Tags/DfPlatform'
+import { DfConfirmationModal } from '~/dragonfly/components/Modals/DfConfirmationModal'
+
 const HEADERS = [
   {
     title: 'Target',
@@ -75,6 +80,12 @@ definePageMeta({
   layout: 'default'
 })
 export default defineComponent({
+  components: {
+    DfScanProgress,
+    DfRisk,
+    DfPlatform,
+    DfConfirmationModal
+  },
   data() {
     return {
       service: {
