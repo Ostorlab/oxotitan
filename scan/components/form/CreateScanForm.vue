@@ -54,6 +54,7 @@
             <v-btn
               color="primary"
               variant="elevated"
+              :disabled="isStepValid === false"
               @click="next"
             >
               <v-icon start>
@@ -125,6 +126,7 @@ import CreateMobileScanStoreForm from '~/scan/components/form/CreateMobileScanSt
 import CreateWebScanForm from '~/scan/components/form/CreateWebScanForm.vue'
 import CreateWebApiScanForm from '~/scan/components/form/CreateWebApiScanForm.vue'
 import CreateNetworkScanForm from '~/scan/components/form/CreateNetworkScanForm.vue'
+import CreateMobileScanFileForm from '~/scan/components/form/CreateMobileScanFileForm.vue'
 
 interface Data {
   isStepValid: boolean
@@ -238,6 +240,9 @@ export default defineComponent({
      */
     scanTargetForm(): ReturnType<typeof defineComponent> {
       switch (this.assetPlatformType) {
+        case AssetEnum.ANDROID_APK:
+        case AssetEnum.IOS_IPA:
+          return CreateMobileScanFileForm
         case AssetEnum.ANDROID_PLAYSTORE:
         case AssetEnum.IOS_APPSTORE:
           return CreateMobileScanStoreForm
