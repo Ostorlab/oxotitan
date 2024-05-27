@@ -12,7 +12,55 @@
       :loading="loading"
       :items-per-page-options="[15, 50, 200, -1]"
       :items-per-page="options.itemsPerPage"
-    />
+    >
+      <template #[`item.Progress`]="{ item }">
+        <DfScanProgress :progress="item.progress" />
+      </template>
+      <template #[`item.CreatedTime`]="{ item }">
+        {{ new Date(item.createdTime).toUTCString() }}
+      </template>
+      <template #[`item.Action`]="{ item }">
+        <v-menu
+          bottom
+          left
+          offset-y
+        >
+          <template #activator="{ props }">
+            <v-btn
+              icon="mdi-dots-vertical"
+              v-bind="props"
+              variant="flat"
+              size="small"
+            />
+          </template>
+
+          <v-list density="compact">
+            <template v-for="(p, i) in actions">
+              <v-divider
+                v-if="p.divider !== undefined"
+                :key="`divider-${i}`"
+                class="mb-2 mt-2"
+              />
+              <v-list-item
+                v-else
+                :key="`item-${i}`"
+                density="compact"
+                :disabled="p.disabled ? p.disabled(item) : false"
+                :prepend-icon="p.icon"
+                @click="p.action && p.action(item)"
+              >
+                <v-list-item-title>{{ p.title }}</v-list-item-title>
+              </v-list-item>
+            </template>
+          </v-list>
+        </v-menu>
+      </template>
+      <template #[`item.scanner`]="{ item }">
+        <v-chip label>
+          {{ item.scanner }}
+        </v-chip>
+      </template>
+    </v-data-table-server>
   </v-card>
 </template>
 
@@ -24,26 +72,22 @@ import { DfConfirmationModal } from '~/dragonfly/components/Modals/DfConfirmatio
 
 const HEADERS = [
   {
+    title: 'scanner',
+    align: 'left',
+    sortable: false,
+    key: 'scanner'
+  },
+  {
     title: 'Target',
     align: 'left',
-    sortable: true
+    sortable: true,
+    key: 'asset'
   },
   {
     title: 'Title',
     align: 'left',
-    sortable: true
-  },
-  {
-    title: 'Platform',
-    align: 'left',
-    sortable: false,
-    key: 'AssetType'
-  },
-  {
-    title: 'Profile',
-    align: 'left',
     sortable: true,
-    key: 'ScanProfile'
+    key: 'title'
   },
   {
     title: 'Created time (UTC)',
@@ -58,20 +102,10 @@ const HEADERS = [
     key: 'Progress'
   },
   {
-    title: 'Risk',
-    align: 'left',
-    sortable: true,
-    key: 'RiskRating'
-  },
-  {
     title: 'Actions',
     align: 'left',
-    sortable: false
-  },
-  {
-    title: 'scanner',
-    align: 'left',
-    sortable: false
+    sortable: false,
+    key: 'Action'
   }
 ]
 
@@ -104,10 +138,62 @@ export default defineComponent({
         ]
       },
       onActionScan: null,
-      archiveDialog: false,
       stopDialog: false,
       headers: HEADERS,
       currentPage: 0
+    }
+  },
+  computed: {
+    /**
+     * Action to be used with the table for the scans
+     */
+    actions(): Array<ActionsType> {
+      return [
+        {
+          title: 'Stop',
+          action: this.stopScan,
+          icon: 'mdi-stop',
+          disabled(scan: ScanType) {
+            return !(
+              scan.progress === 'IN_PROGRESS' || scan.progress === 'NOT_STARTED'
+            )
+          }
+        },
+        { divider: true },
+      ]
+    }
+  },
+  mounted() {
+    this.fetchScans()
+  },
+  methods: {
+    stopScan(scan): void {
+      this.onActionScan = scan
+      this.stopDialog = true
+      alert('Stop scan')
+    },
+    async fetchScans() {
+      this.loading = true
+      const response = await this.$axios.post('http://localhost:3420/graphql', {
+        query: `query scans{
+        scans{
+          scans{
+            id
+            title
+            asset
+            createdTime
+            progress
+          }
+        }
+      }`
+      })
+      this.scans = response.data.data.scans.scans.map((scan) => {
+        return {
+          ...scan,
+          scanner: 'Nessus'
+        }
+      })
+      this.loading = false
     }
   }
 })
