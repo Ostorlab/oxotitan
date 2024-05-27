@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 
-interface Scanner {
+export interface Scanner {
   endpoint: string
   apiKey: string
 }
@@ -9,8 +9,8 @@ interface ScannersState {
 }
 
 interface ScannersActions {
-  addScanner(scanner: Scanner): void
-  removeScanner(endpoint: string): void
+  addOrUpdateScanner(scanner: Scanner): void
+  deleteScanner(endpoint: string): void
 }
 
 export const useScannersStore = defineStore<'scanners', ScannersState, Record<string, never>, ScannersActions>('scanners', {
@@ -18,13 +18,22 @@ export const useScannersStore = defineStore<'scanners', ScannersState, Record<st
     scanners: [] as Scanner[]
   }),
   actions: {
-    addScanner(scanner: Scanner) {
-      // TODO(benyissa): implement local storage
-      this.scanners.push(scanner)
+    addOrUpdateScanner(scanner: Scanner) {
+      const index = this.scanners.findIndex((_scanner) => _scanner.endpoint === scanner.endpoint)
+      if (index == -1)
+        this.scanners.push(scanner)
+      else {
+        this.scanners[index] = scanner
+      }
     },
-    removeScanner(endpoint: string) {
-      // TODO(benyissa): implement local storage
-      this.scanners = this.scanners.filter((scanner) => scanner.endpoint !== endpoint)
+    deleteScanner(endpoint: string) {
+      const index = this.scanners.findIndex((scanner) => scanner.endpoint === endpoint)
+      if (index !== -1) {
+        this.scanners.splice(index, 1)
+      }
     }
+  },
+  persist: {
+    storage: persistedState.localStorage
   }
 })

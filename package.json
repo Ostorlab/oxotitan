@@ -18,12 +18,14 @@
     "axios": "^1.7.2",
     "nuxt": "^3.11.2",
     "pinia": "^2.1.7",
+    "pinia-plugin-persistedstate": "^3.2.1",
     "vue": "^3.4.27",
     "vue-router": "^4.3.2"
   },
   "devDependencies": {
     "@nuxt/eslint": "^0.3.13",
     "@nuxt/eslint-config": "^0.3.10",
+    "@pinia-plugin-persistedstate/nuxt": "^1.2.0",
     "eslint": "^8.57.0",
     "husky": "^9.0.11",
     "lint-staged": "^15.2.4",

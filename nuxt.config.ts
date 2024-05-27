@@ -19,7 +19,8 @@ export default defineNuxtConfig({
         config?.plugins?.push(vuetify({ autoImport: true }))
       })
     },
-    '@pinia/nuxt'
+    '@pinia/nuxt',
+    '@pinia-plugin-persistedstate/nuxt'
   ],
   vite: {
     vue: {
@@ -36,6 +37,6 @@ export default defineNuxtConfig({
   },
   features: {
     // Set this to false if the UI is freezing with infinite logs.
-    devLogs: true
+    devLogs: false
   }
 })
