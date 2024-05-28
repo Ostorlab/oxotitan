@@ -3,8 +3,6 @@ import type { AxiosInstance } from 'axios'
 import type { Scanner } from '~/project/types'
 import { useScannersStore } from '~/stores/scanners'
 
-const scannersStore = useScannersStore()
-
 /**
  * Class to aggregate requests to multiple scanners and return the responses
  */
@@ -17,6 +15,7 @@ export default class requestAggregator {
    * @param axios
    */
   constructor(axios: AxiosInstance) {
+    const scannersStore = useScannersStore()
     this.$axios = axios
     this.scanners = scannersStore.scanners
   }

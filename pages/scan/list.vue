@@ -33,7 +33,7 @@
             <DfScanProgress :progress="item.progress || 'unknown'" />
           </template>
           <template #[`item.CreatedTime`]="{ item }">
-            {{ new Date(item.createdTime).toUTCString() }}
+            {{ $moment(item.createdTime).format('MMMM Do YYYY, k:mm:ss') }}
           </template>
           <template #[`item.Action`]="{ item }">
             <v-menu
@@ -74,6 +74,9 @@
           <template #[`item.scanner`]="{ item }">
             <DfTag :name="item.scanner" />
           </template>
+          <template #[`item.asset`]="{ item }">
+            <DfTag :name="item.asset||''" />
+          </template>
         </v-data-table-server>
       </v-card>
     </v-col>
@@ -81,13 +84,13 @@
 </template>
 
 <script lang="ts">
-import { mapActions } from 'pinia'
+import {mapActions} from 'pinia'
 import ScanService from './ScanService'
-import { DfScanProgress } from '~/dragonfly/components/Tags/DfScanProgress'
-import { DfConfirmationModal } from '~/dragonfly/components/Modals/DfConfirmationModal'
-import type { OxoScanType } from '~/graphql/types'
-import { DfTag } from '~/dragonfly/components/Tags/DfTag'
-import { useScannersStore } from '~/stores/scanners'
+import {DfScanProgress} from '~/dragonfly/components/Tags/DfScanProgress'
+import {DfConfirmationModal} from '~/dragonfly/components/Modals/DfConfirmationModal'
+import type {OxoScanType} from '~/graphql/types'
+import {DfTag} from '~/dragonfly/components/Tags/DfTag'
+import {useScannersStore} from '~/stores/scanners'
 
 const HEADERS = [
   {
@@ -203,9 +206,7 @@ export default defineComponent({
         },
         {
           title: 'Delete',
-          action(scan: OxoScanType) {
-            this.service.deleteScan(scan)
-          },
+          action: this.deleteScan,
           icon: 'mdi-delete'
         }
       ]
@@ -235,6 +236,9 @@ export default defineComponent({
     stopScan(scan: OxoScanType): void {
       this.onActionScan = scan
       this.stopDialog = true
+    },
+    deleteScan(scan: OxoScanType): void {
+      this.service.deleteScan(scan)
     },
     async fetchScans() {
       this.loading = true
