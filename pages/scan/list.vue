@@ -213,18 +213,13 @@ export default defineComponent({
     }
   },
   mounted() {
-    this.addScanner({
-      endpoint: 'http://127.0.0.1:3420',
-      apiKey: 'string'
-    })
-    this.addScanner({
-      endpoint: 'http://localhost:3420',
-      apiKey: 'string'
-    })
     this.fetchScans()
   },
   methods: {
     ...mapActions(useScannersStore, ['addScanner']),
+    /**
+     * Confirm the stop of the scan
+     */
     async confirmStop(): Promise<void> {
       if (this.onActionScan === null || this.onActionScan === undefined) {
         return
@@ -233,13 +228,24 @@ export default defineComponent({
       this.onActionScan = null
       await this.fetchScans()
     },
+    /**
+     * Stop the scan
+     * @param scan
+     */
     stopScan(scan: OxoScanType): void {
       this.onActionScan = scan
       this.stopDialog = true
     },
+    /**
+     * Delete the scan
+     * @param scan
+     */
     deleteScan(scan: OxoScanType): void {
       this.service.deleteScan(scan)
     },
+    /**
+     * Fetch the scans
+     */
     async fetchScans() {
       this.loading = true
       this.scans = await this.service.getScans({})
