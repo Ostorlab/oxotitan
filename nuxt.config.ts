@@ -37,6 +37,6 @@ export default defineNuxtConfig({
   },
   features: {
     // Set this to false if the UI is freezing with infinite logs.
-    devLogs: true
+    devLogs: false
   }
 })

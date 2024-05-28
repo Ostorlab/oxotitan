@@ -14,14 +14,8 @@ import type { Scanner } from '~/stores/scanners'
 
 const scannersStore = useScannersStore()
 
-/**
- * Computed property to get the list of scanners.
- */
 const scanners = computed(() => scannersStore.scanners)
 
-/**
- * Emit function to handle custom events.
- */
 const emit = defineEmits(['update-scanner'])
 
 /**
