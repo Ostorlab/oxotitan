@@ -26,8 +26,5 @@ export const useScannersStore = defineStore<'scanners', ScannersState, Record<st
       // TODO(benyissa): implement local storage
       this.scanners = this.scanners.filter((scanner) => scanner.endpoint !== endpoint)
     }
-  },
-  persist: {
-    storage: persistedState.localStorage
   }
 })
