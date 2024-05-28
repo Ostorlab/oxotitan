@@ -1,6 +1,7 @@
 <template>
   <v-form
     ref="form"
+    v-model="isValid"
     class="mt-4"
     @submit.prevent="onSubmit"
   >
@@ -35,6 +36,7 @@
       color="success"
       text="Save"
       prepend-icon="mdi-check"
+      :disabled="!isValid"
     />
     <v-btn
       text="Cancel"
@@ -61,6 +63,7 @@ const endpoint = ref<string>(props.scanner?.endpoint || '')
 const name = ref<string>(props.scanner?.name || '')
 const apiKey = ref<string>(props.scanner?.apiKey || '')
 const form = ref()
+const isValid = ref(false)
 const emit = defineEmits(['close-form'])
 const scannersStore = useScannersStore()
 const rules = {
@@ -72,9 +75,9 @@ const rules = {
  * Handle form submission.
  * Add or update scanner information.
  */
+
 const onSubmit = async (): Promise<void> => {
-  const { valid } = await form.value.validate()
-  if (valid === true) {
+  if (isValid.value === true) {
     scannersStore.addOrUpdateScanner({
       endpoint: endpoint.value,
       apiKey: apiKey.value,
