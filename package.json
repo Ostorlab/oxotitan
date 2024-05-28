@@ -23,11 +23,12 @@
     "nuxt": "^3.11.2",
     "nuxt-monaco-editor": "^1.2.9",
     "pinia": "^2.1.7",
-    "pretty-bytes": "^6.1.1",
     "pinia-plugin-persistedstate": "^3.2.1",
+    "pretty-bytes": "^6.1.1",
     "validator": "^13.12.0",
     "vue": "^3.4.27",
-    "vue-router": "^4.3.2"
+    "vue-router": "^4.3.2",
+    "yaml": "^2.4.2"
   },
   "devDependencies": {
     "@graphql-codegen/cli": "^5.0.2",

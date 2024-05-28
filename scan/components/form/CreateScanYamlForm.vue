@@ -72,11 +72,34 @@
           </div>
         </div>
       </v-card>
+      <div class="mt-4">
+        <v-btn
+          color="success"
+          variant="elevated"
+          @click="createScan"
+        >
+          <v-icon start>
+            mdi-check
+          </v-icon>
+          Submit
+        </v-btn>
+        <v-btn
+          variant="elevated"
+          class="ml-2"
+          @click="$emit('reset')"
+        >
+          <v-icon start>
+            mdi-cancel
+          </v-icon>
+          Reset
+        </v-btn>
+      </div>
     </v-form>
   </div>
 </template>
 
 <script lang="ts">
+import { parse as yamlParse } from 'yaml'
 import LoadingDialog from '~/common/components/LoadingDialog.vue'
 import type { AssetEnum } from '~/scan/types'
 
@@ -115,7 +138,7 @@ export default defineComponent({
       default: null
     }
   },
-  emits: ['update:isStepValid', 'update:scan-target-step-title', 'update:scan-target-step-subtitle'],
+  emits: ['update:isStepValid', 'update:scan-target-step-title', 'update:scan-target-step-subtitle', 'reset'],
   data(): Data {
     return {
       inputTab: 'assets',
@@ -181,11 +204,51 @@ agents:
     this.$emit('update:scan-target-step-subtitle', 'required')
   },
   methods: {
+    /**
+     * Clear the input fields.
+     */
     clear(): void {
       this.agentGroupInput = null
       this.selectedAgentGroup = null
     },
-    createScan() {}
+    /**
+     * Create a scan.
+     */
+    createScan(): void {
+      try {
+        const agentGroupId = this.getAgentGroupId()
+        console.log({ agentGroupId })
+      } catch (e) {
+        console.error(e)
+      }
+    },
+    /**
+     * Get the agent group ID to use for the scan.
+     */
+    getAgentGroupId(): number {
+      try {
+        if (this.selectedAgentGroup !== null && this.selectedAgentGroup[0]?.trim() !== '') {
+          return this.selectedAgentGroup?.id
+        } else {
+          const newAgentGroup = this.createAgentGroup()
+          return newAgentGroup.id
+        }
+      } catch (e) {
+        console.error(e)
+      }
+    },
+    /**
+     * Create an agent group.
+     */
+    createAgentGroup() {
+      try {
+        if (this.agentGroupInput !== null) {
+          yamlParse(this.agentGroupInput)
+        }
+      } catch (e) {
+        console.error(e)
+      }
+    }
   }
 })
 </script>
