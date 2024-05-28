@@ -79,7 +79,7 @@ export default defineComponent({
         },
         {
           title: 'Scanners',
-          to: '/',
+          to: '/scanners',
           icon: 'mdi-shield-search',
           value: 'scanners'
         },
