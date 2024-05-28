@@ -29,7 +29,7 @@
       class="me-2"
       type="submit"
       color="success"
-      :disabled="!endpoint || !apiKey || !name"
+      :disabled="isSaveDisabled"
       text="Save"
       prepend-icon="mdi-check"
     />
@@ -75,4 +75,6 @@ const onSubmit = (): void => {
   name.value = ''
   emit('close-form')
 }
+
+const isSaveDisabled = computed(() => endpoint.value.trim() === '' || apiKey.value.trim() === '' || name.value.trim() === '')
 </script>

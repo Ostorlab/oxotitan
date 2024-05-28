@@ -56,10 +56,7 @@ export const useScannersStore = defineStore<'scanners', ScannersState, Record<st
      * @param endpoint - The endpoint of the scanner to be deleted.
      */
     deleteScanner(endpoint: string): void {
-      const index = this.scanners.findIndex((scanner) => scanner.endpoint === endpoint)
-      if (index !== -1) {
-        this.scanners.splice(index, 1)
-      }
+      this.scanners = this.scanners.filter((scanner) => scanner.endpoint !== endpoint)
     }
   },
   persist: {
