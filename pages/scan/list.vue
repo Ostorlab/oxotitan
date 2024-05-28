@@ -84,13 +84,13 @@
 </template>
 
 <script lang="ts">
-import {mapActions} from 'pinia'
+import { mapActions } from 'pinia'
 import ScanService from './ScanService'
-import {DfScanProgress} from '~/dragonfly/components/Tags/DfScanProgress'
-import {DfConfirmationModal} from '~/dragonfly/components/Modals/DfConfirmationModal'
-import type {OxoScanType} from '~/graphql/types'
-import {DfTag} from '~/dragonfly/components/Tags/DfTag'
-import {useScannersStore} from '~/stores/scanners'
+import { DfScanProgress } from '~/dragonfly/components/Tags/DfScanProgress'
+import { DfConfirmationModal } from '~/dragonfly/components/Modals/DfConfirmationModal'
+import type { OxoScanType } from '~/graphql/types'
+import { DfTag } from '~/dragonfly/components/Tags/DfTag'
+import { useScannersStore } from '~/stores/scanners'
 
 const HEADERS = [
   {
