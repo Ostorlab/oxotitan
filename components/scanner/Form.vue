@@ -1,5 +1,6 @@
 <template>
   <v-form
+    ref="form"
     class="mt-4"
     @submit.prevent="onSubmit"
   >
@@ -10,6 +11,7 @@
       label="Scanner Endpoint"
       placeholder="https://api.example.com/graphql"
       :disabled="props.scanner !== null"
+      :rules="[rules.required, rules.url]"
     />
     <v-text-field
       v-model="name"
@@ -17,6 +19,7 @@
       density="compact"
       label="Scanner Name"
       placeholder="Scanner Name"
+      :rules="[rules.required]"
     />
     <v-text-field
       v-model="apiKey"
@@ -24,6 +27,7 @@
       density="compact"
       label="API Key"
       placeholder="Enter API Key"
+      :rules="[rules.required]"
     />
     <v-btn
       class="me-2"
@@ -33,10 +37,9 @@
       prepend-icon="mdi-check"
     />
     <v-btn
-      type="cancel"
       text="Cancel"
       prepend-icon="mdi-close"
-      @click="emit('close-form')"
+      @click="closeForm"
     />
   </v-form>
 </template>
@@ -56,23 +59,60 @@ const props = defineProps<{
 const endpoint = ref<string>(props.scanner?.endpoint || '')
 const name = ref<string>(props.scanner?.name || '')
 const apiKey = ref<string>(props.scanner?.apiKey || '')
+const form = ref()
 const emit = defineEmits(['close-form'])
 const scannersStore = useScannersStore()
+const rules = {
+  required: (value: string) => value.trim() !== '' || '',
+  url: (value: string) => {
+    try {
+      new URL(value)
+      return true
+    } catch (_) {
+      return 'Must be a valid URL'
+    }
+  }
+}
+
+/**
+ * Check if the form is valid.
+ * @returns {boolean} - True if the form is valid.
+ */
+const isFormValid = async (): Promise<boolean> => {
+  const { valid } = await form.value.validate()
+  return valid === true
+}
 
 /**
  * Handle form submission.
  * Add or update scanner information.
  */
-const onSubmit = (): void => {
-  scannersStore.addOrUpdateScanner({
-    endpoint: endpoint.value,
-    apiKey: apiKey.value,
-    name: name.value
-  })
+const onSubmit = async (): Promise<void> => {
+  if (await isFormValid()) {
+    scannersStore.addOrUpdateScanner({
+      endpoint: endpoint.value,
+      apiKey: apiKey.value,
+      name: name.value
+    })
+    resetForm()
+    emit('close-form')
+  }
+}
+
+/**
+ * Reset the form fields.
+ */
+const resetForm = (): void => {
   endpoint.value = ''
-  apiKey.value = ''
   name.value = ''
+  apiKey.value = ''
+}
+
+/**
+ * Close the form.
+ */
+const closeForm = (): void => {
+  resetForm()
   emit('close-form')
 }
-// TODO(benyissa) ADD FORM VALIDATION
 </script>

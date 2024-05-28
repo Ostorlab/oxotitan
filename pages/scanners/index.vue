@@ -20,7 +20,10 @@
         />
       </v-card-text>
     </v-card>
-    <v-card variant="outlined">
+    <v-card
+      v-if="scanners.length>0"
+      variant="outlined"
+    >
       <v-card-text>
         <ScannerList @update-scanner="onUpdateScanner" />
       </v-card-text>
@@ -30,6 +33,10 @@
 
 <script setup lang="ts">
 import type { Scanner } from '~/stores/scanners'
+
+const scannersStore = useScannersStore()
+
+const scanners = computed(() => scannersStore.scanners)
 
 const showForm = ref(false)
 
