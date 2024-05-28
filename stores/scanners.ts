@@ -58,5 +58,8 @@ export const useScannersStore = defineStore<'scanners', ScannersState, Record<st
     deleteScanner(endpoint: string): void {
       this.scanners = this.scanners.filter((scanner) => scanner.endpoint !== endpoint)
     }
+  },
+  persist: {
+    storage: persistedState.localStorage
   }
 })

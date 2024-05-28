@@ -44,7 +44,6 @@
         >
           <component
             :is="scanTargetForm"
-            ref="scanTargetFormRef"
             v-model:scan-target-step-title="scanTargetStepTitle"
             v-model:scan-target-step-subtitle="scanTargetStepSubtitle"
             v-model:is-step-valid="isStepValid"
@@ -71,7 +70,6 @@ import CreateMobileScanFileForm from '~/scan/components/form/CreateMobileScanFil
 import CreateScanYamlForm from '~/scan/components/form/CreateScanYamlForm.vue'
 
 interface Data {
-  scanTargetFormRef: string | null
   isStepValid: boolean
   stepNumber: number
   finished: boolean
@@ -93,7 +91,6 @@ export default defineComponent({
   },
   data(): Data {
     return {
-      scanTargetFormRef: null,
       scanTargetStepTitle: null,
       scanTargetStepSubtitle: null,
       isStepValid: true,
