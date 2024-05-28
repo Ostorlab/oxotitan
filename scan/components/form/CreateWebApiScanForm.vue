@@ -19,6 +19,28 @@
         prepend-icon="mdi-api"
       />
     </v-form>
+    <div class="mt-4">
+      <v-btn
+        color="success"
+        variant="elevated"
+        @click="createScan"
+      >
+        <v-icon start>
+          mdi-check
+        </v-icon>
+        Submit
+      </v-btn>
+      <v-btn
+        variant="elevated"
+        class="ml-2"
+        @click="$emit('reset')"
+      >
+        <v-icon start>
+          mdi-cancel
+        </v-icon>
+        Reset
+      </v-btn>
+    </div>
   </div>
 </template>
 
@@ -48,7 +70,7 @@ export default defineComponent({
       default: null
     }
   },
-  emits: ['update:isStepValid', 'update:scan-target-step-title', 'update:scan-target-step-subtitle'],
+  emits: ['update:isStepValid', 'update:scan-target-step-title', 'update:scan-target-step-subtitle', 'reset'],
   data(): Data {
     return {
       isFormValid: false,

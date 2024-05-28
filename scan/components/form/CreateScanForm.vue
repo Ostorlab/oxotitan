@@ -81,40 +81,10 @@
             v-model:is-step-valid="isStepValid"
             :asset-type="assetType"
             :asset-platform-type="assetPlatformType"
+            @reset="stepNumber = 1"
           />
-
-          <template #next="{ next }">
-            <v-btn
-              color="success"
-              variant="elevated"
-              :disbaled="isStepValid === false"
-              @click="next"
-            >
-              <v-icon start>
-                mdi-check
-              </v-icon>
-              Submit
-            </v-btn>
-          </template>
-
-          <template #prev="{ prev }">
-            <v-btn
-              v-if="finished === true"
-              variant="elevated"
-              @click="prev"
-            />
-
-            <v-btn
-              v-else
-              variant="elevated"
-              @click="finished = false; stepNumber = 1"
-            >
-              <v-icon start>
-                mdi-cancel
-              </v-icon>
-              Reset
-            </v-btn>
-          </template>
+          <template #next="" />
+          <template #prev="" />
         </v-stepper-vertical-item>
       </template>
     </v-stepper-vertical>

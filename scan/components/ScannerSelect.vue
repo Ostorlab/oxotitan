@@ -4,6 +4,7 @@
     :items="scanners"
     hide-details
     variant="outlined"
+    item-title="endpoint"
     density="compact"
     clearable
     label="Select a scanner"
