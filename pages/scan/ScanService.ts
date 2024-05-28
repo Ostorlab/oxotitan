@@ -40,6 +40,10 @@ export default class ScansService {
     return scans
   }
 
+  /**
+   * Get scans from all scanners
+   * @param queryScansArgs
+   */
   async getScans(queryScansArgs: QueryScansArgs): Promise<OxoScanType[]> {
     queryScansArgs = { ...queryScansArgs }
     if (queryScansArgs.numberElements === -1) {
@@ -53,7 +57,21 @@ export default class ScansService {
     return this._aggregateScans(responses)
   }
 
+  /**
+   * Stop a scan
+   * @param scan
+   */
   stopScan(scan: OxoScanType): Promise<void> {
+    console.log(scan)
+    alert('stopScan not implemented')
+    return Promise.resolve()
+  }
+
+  /**
+   * Delete a scan
+   * @param scan
+   */
+  deleteScan(scan: OxoScanType): Promise<void> {
     console.log(scan)
     alert('stopScan not implemented')
     return Promise.resolve()

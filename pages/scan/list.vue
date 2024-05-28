@@ -81,13 +81,13 @@
 </template>
 
 <script lang="ts">
+import { mapActions } from 'pinia'
 import ScanService from './ScanService'
 import { DfScanProgress } from '~/dragonfly/components/Tags/DfScanProgress'
-import { DfRisk } from '~/dragonfly/components/Tags/DfRisk'
-import { DfPlatform } from '~/dragonfly/components/Tags/DfPlatform'
 import { DfConfirmationModal } from '~/dragonfly/components/Modals/DfConfirmationModal'
 import type { OxoScanType } from '~/graphql/types'
 import { DfTag } from '~/dragonfly/components/Tags/DfTag'
+import { useScannersStore } from '~/stores/scanners'
 
 const HEADERS = [
   {
@@ -99,25 +99,25 @@ const HEADERS = [
   {
     title: 'Target',
     align: 'left',
-    sortable: true,
+    sortable: false,
     key: 'asset'
   },
   {
     title: 'Title',
     align: 'left',
-    sortable: true,
+    sortable: false,
     key: 'title'
   },
   {
     title: 'Created time (UTC)',
     align: 'left',
-    sortable: true,
+    sortable: false,
     key: 'CreatedTime'
   },
   {
     title: 'Progress',
     align: 'left',
-    sortable: true,
+    sortable: false,
     key: 'Progress'
   },
   {
@@ -131,7 +131,11 @@ interface Data {
   service: ScanService
   scans: Array<OxoScanType>
   loading: boolean
-  options: any
+  options: {
+    itemsPerPage: number
+    sortDesc: boolean[]
+    sortBy: Array<{ key: string, order: string }>
+  }
   onActionScan: OxoScanType | null
   stopDialog: boolean
   headers: typeof HEADERS
@@ -155,8 +159,6 @@ export default defineComponent({
   components: {
     DfTag,
     DfScanProgress,
-    DfRisk,
-    DfPlatform,
     DfConfirmationModal
   },
   data(): Data {
@@ -196,15 +198,36 @@ export default defineComponent({
             )
           }
         },
-        { divider: true }
+        {
+          divider: true
+        },
+        {
+          title: 'Delete',
+          action(scan: OxoScanType) {
+            this.service.deleteScan(scan)
+          },
+          icon: 'mdi-delete'
+        }
       ]
     }
   },
   mounted() {
+    this.addScanner({
+      endpoint: 'http://127.0.0.1:3420',
+      apiKey: 'string'
+    })
+    this.addScanner({
+      endpoint: 'http://localhost:3420',
+      apiKey: 'string'
+    })
     this.fetchScans()
   },
   methods: {
+    ...mapActions(useScannersStore, ['addScanner']),
     async confirmStop(): Promise<void> {
+      if (this.onActionScan === null || this.onActionScan === undefined) {
+        return
+      }
       await this.service.stopScan(this.onActionScan)
       this.onActionScan = null
       await this.fetchScans()

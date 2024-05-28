@@ -1,6 +1,9 @@
 import type { AxiosInstance } from 'axios'
 
 import type { Scanner } from '~/project/types'
+import { useScannersStore } from '~/stores/scanners'
+
+const scannersStore = useScannersStore()
 
 /**
  * Class to aggregate requests to multiple scanners and return the responses
@@ -15,16 +18,7 @@ export default class requestAggregator {
    */
   constructor(axios: AxiosInstance) {
     this.$axios = axios
-    this.scanners = [
-      {
-        endpoint: 'http://localhost:3420',
-        apiKey: 'abc123'
-      },
-      {
-        endpoint: 'http://127.0.0.1:3420',
-        apiKey: 'abc123'
-      }
-    ]
+    this.scanners = scannersStore.scanners
   }
 
   /**
