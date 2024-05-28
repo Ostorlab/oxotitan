@@ -45,6 +45,7 @@
 </template>
 
 <script setup lang="ts">
+import isURL from 'validator/es/lib/isURL'
 import type { Scanner } from '~/stores/scanners'
 import { useScannersStore } from '~/stores/scanners'
 
@@ -64,23 +65,7 @@ const emit = defineEmits(['close-form'])
 const scannersStore = useScannersStore()
 const rules = {
   required: (value: string) => value.trim() !== '' || '',
-  url: (value: string) => {
-    try {
-      new URL(value)
-      return true
-    } catch (_) {
-      return 'Must be a valid URL'
-    }
-  }
-}
-
-/**
- * Check if the form is valid.
- * @returns {boolean} - True if the form is valid.
- */
-const isFormValid = async (): Promise<boolean> => {
-  const { valid } = await form.value.validate()
-  return valid === true
+  url: (value: string) => isURL(value) || 'Must be a valid URL'
 }
 
 /**
@@ -88,7 +73,8 @@ const isFormValid = async (): Promise<boolean> => {
  * Add or update scanner information.
  */
 const onSubmit = async (): Promise<void> => {
-  if (await isFormValid()) {
+  const { valid } = await form.value.validate()
+  if (valid === true) {
     scannersStore.addOrUpdateScanner({
       endpoint: endpoint.value,
       apiKey: apiKey.value,
