@@ -1,9 +1,6 @@
 import { defineStore } from 'pinia'
+import type { Scanner } from '~/project/types'
 
-interface Scanner {
-  endpoint: string
-  apiKey: string
-}
 interface ScannersState {
   scanners: Scanner[]
 }

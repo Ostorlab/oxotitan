@@ -1,74 +1,93 @@
 <template>
-  <v-card
-    variant="outlined"
-    class="mt-3"
-  >
-    <v-data-table-server
-      v-model:options="options"
-      hover
-      :headers="headers"
-      :items="scans"
-      :items-length="service.totalScans"
-      :loading="loading"
-      :items-per-page-options="[15, 50, 200, -1]"
-      :items-per-page="options.itemsPerPage"
-    >
-      <template #[`item.Progress`]="{ item }">
-        <DfScanProgress :progress="item.progress" />
-      </template>
-      <template #[`item.CreatedTime`]="{ item }">
-        {{ new Date(item.createdTime).toUTCString() }}
-      </template>
-      <template #[`item.Action`]="{ item }">
-        <v-menu
-          bottom
-          left
-          offset-y
+  <v-row>
+    <v-col cols="12">
+      <DfConfirmationModal
+        v-model="stopDialog"
+        title="Are you sure you would like to stop the scan?"
+        description="A stopped scan cannot be resumed."
+        cancel-button-text="Cancel"
+        confirm-button-text="Stop"
+        cancel-icon="mdi-close"
+        confirm-icon="mdi-check"
+        confirm-button-color="secondary"
+        card-icon="mdi-stop-circle-outline"
+        @confirm="confirmStop"
+      />
+    </v-col>
+    <v-col cols="12">
+      <v-card
+        variant="outlined"
+        class="mt-3"
+      >
+        <v-data-table-server
+          v-model:options="options"
+          hover
+          :headers="headers"
+          :items="scans"
+          :items-length="service.totalScans"
+          :loading="loading"
+          :items-per-page-options="[15, 50, 200, -1]"
+          :items-per-page="options.itemsPerPage"
         >
-          <template #activator="{ props }">
-            <v-btn
-              icon="mdi-dots-vertical"
-              v-bind="props"
-              variant="flat"
-              size="small"
-            />
+          <template #[`item.Progress`]="{ item }">
+            <DfScanProgress :progress="item.progress || 'unknown'" />
           </template>
+          <template #[`item.CreatedTime`]="{ item }">
+            {{ new Date(item.createdTime).toUTCString() }}
+          </template>
+          <template #[`item.Action`]="{ item }">
+            <v-menu
+              bottom
+              left
+              offset-y
+            >
+              <template #activator="{ props }">
+                <v-btn
+                  icon="mdi-dots-vertical"
+                  v-bind="props"
+                  variant="flat"
+                  size="small"
+                />
+              </template>
 
-          <v-list density="compact">
-            <template v-for="(p, i) in actions">
-              <v-divider
-                v-if="p.divider !== undefined"
-                :key="`divider-${i}`"
-                class="mb-2 mt-2"
-              />
-              <v-list-item
-                v-else
-                :key="`item-${i}`"
-                density="compact"
-                :disabled="p.disabled ? p.disabled(item) : false"
-                :prepend-icon="p.icon"
-                @click="p.action && p.action(item)"
-              >
-                <v-list-item-title>{{ p.title }}</v-list-item-title>
-              </v-list-item>
-            </template>
-          </v-list>
-        </v-menu>
-      </template>
-      <template #[`item.scanner`]="{ item }">
-        <v-chip label>
-          {{ item.scanner }}
-        </v-chip>
-      </template>
-    </v-data-table-server>
-  </v-card>
+              <v-list density="compact">
+                <template v-for="(p, i) in actions">
+                  <v-divider
+                    v-if="p.divider !== undefined"
+                    :key="`divider-${i}`"
+                    class="mb-2 mt-2"
+                  />
+                  <v-list-item
+                    v-else
+                    :key="`item-${i}`"
+                    density="compact"
+                    :disabled="p.disabled ? p.disabled(item) : false"
+                    :prepend-icon="p.icon"
+                    @click="p.action && p.action(item)"
+                  >
+                    <v-list-item-title>{{ p.title }}</v-list-item-title>
+                  </v-list-item>
+                </template>
+              </v-list>
+            </v-menu>
+          </template>
+          <template #[`item.scanner`]="{ item }">
+            <DfTag :name="item.scanner" />
+          </template>
+        </v-data-table-server>
+      </v-card>
+    </v-col>
+  </v-row>
 </template>
 
 <script lang="ts">
+import ScanService from './ScanService'
 import { DfScanProgress } from '~/dragonfly/components/Tags/DfScanProgress'
 import { DfRisk } from '~/dragonfly/components/Tags/DfRisk'
 import { DfPlatform } from '~/dragonfly/components/Tags/DfPlatform'
 import { DfConfirmationModal } from '~/dragonfly/components/Modals/DfConfirmationModal'
+import type { OxoScanType } from '~/graphql/types'
+import { DfTag } from '~/dragonfly/components/Tags/DfTag'
 
 const HEADERS = [
   {
@@ -108,6 +127,25 @@ const HEADERS = [
     key: 'Action'
   }
 ]
+interface Data {
+  service: ScanService
+  scans: Array<OxoScanType>
+  loading: boolean
+  options: any
+  onActionScan: OxoScanType | null
+  stopDialog: boolean
+  headers: typeof HEADERS
+  currentPage: number
+
+}
+
+type ActionsType = {
+  title?: string
+  action?: (scan: OxoScanType) => void
+  icon?: string
+  disabled?: (scan: OxoScanType) => boolean
+  divider?: boolean
+}
 
 definePageMeta({
   title: 'Scans',
@@ -115,16 +153,15 @@ definePageMeta({
 })
 export default defineComponent({
   components: {
+    DfTag,
     DfScanProgress,
     DfRisk,
     DfPlatform,
     DfConfirmationModal
   },
-  data() {
+  data(): Data {
     return {
-      service: {
-        totalScans: 0
-      },
+      service: new ScanService(this.$axios),
       scans: [],
       loading: true,
       options: {
@@ -153,13 +190,13 @@ export default defineComponent({
           title: 'Stop',
           action: this.stopScan,
           icon: 'mdi-stop',
-          disabled(scan: ScanType) {
+          disabled(scan: OxoScanType) {
             return !(
               scan.progress === 'IN_PROGRESS' || scan.progress === 'NOT_STARTED'
             )
           }
         },
-        { divider: true },
+        { divider: true }
       ]
     }
   },
@@ -167,32 +204,18 @@ export default defineComponent({
     this.fetchScans()
   },
   methods: {
-    stopScan(scan): void {
+    async confirmStop(): Promise<void> {
+      await this.service.stopScan(this.onActionScan)
+      this.onActionScan = null
+      await this.fetchScans()
+    },
+    stopScan(scan: OxoScanType): void {
       this.onActionScan = scan
       this.stopDialog = true
-      alert('Stop scan')
     },
     async fetchScans() {
       this.loading = true
-      const response = await this.$axios.post('http://localhost:3420/graphql', {
-        query: `query scans{
-        scans{
-          scans{
-            id
-            title
-            asset
-            createdTime
-            progress
-          }
-        }
-      }`
-      })
-      this.scans = response.data.data.scans.scans.map((scan) => {
-        return {
-          ...scan,
-          scanner: 'Nessus'
-        }
-      })
+      this.scans = await this.service.getScans({})
       this.loading = false
     }
   }

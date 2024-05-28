@@ -1,0 +1,68 @@
+import type { AxiosInstance } from 'axios'
+
+import type { Scanner } from '~/project/types'
+
+/**
+ * Class to aggregate requests to multiple scanners and return the responses
+ */
+export default class requestAggregator {
+  private readonly $axios: AxiosInstance
+  private readonly scanners: Scanner[]
+
+  /**
+   * Constructor for the requestAggregator class that initializes the axios instance and the scanners
+   * @param axios
+   */
+  constructor(axios: AxiosInstance) {
+    this.$axios = axios
+    this.scanners = [
+      {
+        endpoint: 'http://localhost:3420',
+        apiKey: 'abc123'
+      },
+      {
+        endpoint: 'http://127.0.0.1:3420',
+        apiKey: 'abc123'
+      }
+    ]
+  }
+
+  /**
+     * Method to create the authorization header for the request
+     * @param scanner
+     */
+  _createAuthorizationHeader(scanner: Scanner): { Authorization: string } {
+    // TODO (mouhcine): Make sure to use the correct authorization header, after ticket #os-9357 is fixed
+    return {
+      Authorization: 'Bearer ' + scanner.apiKey
+    }
+  }
+
+  /**
+     * Method to post a request to all scanners and return the responses
+     * @param request
+     * @param data
+     */
+  async postToAll(request: string, data: NonNullable<unknown>): Promise<Map<string, unknown>> {
+    const responses = new Map<string, unknown>()
+    for (const scanner of this.scanners) {
+      const response = await this.$axios.post(scanner.endpoint + request, data, {
+        headers: this._createAuthorizationHeader(scanner)
+      })
+      responses.set(scanner.endpoint, response.data)
+    }
+    return responses
+  }
+
+  /**
+     * Method to post a request to a specific scanner and return the response
+     * @param scanner
+     * @param request
+     * @param data
+     */
+  async postToScanner(scanner: Scanner, request: string, data: NonNullable<unknown>) {
+    return await this.$axios.post(scanner.endpoint + request, data, {
+      headers: this._createAuthorizationHeader(scanner)
+    })
+  }
+}
