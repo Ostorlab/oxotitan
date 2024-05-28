@@ -10,6 +10,7 @@
       :title="scanner.name"
       :subtitle="scanner.endpoint"
       prepend-icon="mdi-laptop"
+      class="mb-6"
     >
       <template #append>
         <v-btn
