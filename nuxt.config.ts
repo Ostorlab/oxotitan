@@ -18,7 +18,9 @@ export default defineNuxtConfig({
       nuxt.hooks.hook('vite:extendConfig', (config) => {
         config?.plugins?.push(vuetify({ autoImport: true }))
       })
-    }
+    },
+    '@pinia/nuxt',
+    '@pinia-plugin-persistedstate/nuxt'
   ],
   vite: {
     vue: {
@@ -32,5 +34,8 @@ export default defineNuxtConfig({
     config: {
       stylistic: true
     }
+  },
+  features: {
+    devLogs: false
   }
 })

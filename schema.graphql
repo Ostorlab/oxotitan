@@ -1,0 +1,130 @@
+# This file was generated. Do not edit manually.
+
+schema {
+    query: Query
+    mutation: Mutations
+}
+
+"Import scan mutation."
+type ImportScanMutation {
+    message: String
+}
+
+type Mutations {
+    "Import scan from file"
+    importScan(file: Upload!, scanId: Int): ImportScanMutation
+}
+
+"Graphene object type for an aggregated knowledge base vulnerability."
+type OxoAggregatedKnowledgeBaseVulnerabilityType {
+    highestCvssV3BaseScore: Float
+    highestCvssV3Vector: String
+    highestRiskRating: RiskRatingEnum
+    kb: OxoKnowledgeBaseVulnerabilityType
+    "List of vulnerabilities."
+    vulnerabilities(detailTitles: [String], numberElements: Int, page: Int): OxoVulnerabilitiesType
+}
+
+"SQLAlchemy object type for a knowledge base vulnerability."
+type OxoKnowledgeBaseVulnerabilityType {
+    description: String
+    recommendation: String
+    references: String
+    shortDescription: String
+    title: String
+}
+
+"Scan object."
+type OxoScanType {
+    asset: String
+    createdTime: DateTime
+    id: ID!
+    "List of aggregated knowledge base vulnerabilities."
+    kbVulnerabilities(detailTitle: String): [OxoAggregatedKnowledgeBaseVulnerabilityType]
+    messageStatus: String
+    progress: String
+    title: String
+    "List of vulnerabilities."
+    vulnerabilities(detailTitles: [String], numberElements: Int, page: Int, vulnIds: [Int]): OxoVulnerabilitiesType
+}
+
+"Graphene object type for a list of scans."
+type OxoScansType {
+    scans: [OxoScanType]!
+}
+
+"Graphene object type for a list of vulnerabilities."
+type OxoVulnerabilitiesType {
+    vulnerabilities: [OxoVulnerabilityType]!
+}
+
+"SQLAlchemy object type for a vulnerability."
+type OxoVulnerabilityType {
+    cvssV3BaseScore: Float
+    cvssV3Vector: String
+    detail: OxoKnowledgeBaseVulnerabilityType
+    dna: String
+    id: ID!
+    riskRating: RiskRating
+    technicalDetail: String
+}
+
+type Query {
+    "List of scans."
+    scans(numberElements: Int, orderBy: OxoScanOrderByEnum, page: Int, scanIds: [Int], sort: SortEnum): OxoScansType
+}
+
+"Enum for the elements to order a scan by."
+enum OxoScanOrderByEnum {
+    CreatedTime
+    Progress
+    ScanId
+    Title
+}
+
+"Enumeration of the risk rating of a scan."
+enum RiskRating {
+    CRITICAL
+    HARDENING
+    HIGH
+    IMPORTANT
+    INFO
+    LOW
+    MEDIUM
+    POTENTIALLY
+    SECURE
+}
+
+"Enum for the risk rating of a scan."
+enum RiskRatingEnum {
+    CRITICAL
+    HARDENING
+    HIGH
+    IMPORTANT
+    INFO
+    LOW
+    MEDIUM
+    POTENTIALLY
+    SECURE
+}
+
+"Sort enum, for the sorting order of the results."
+enum SortEnum {
+    ASC
+    DESC
+}
+
+"""
+
+The `DateTime` scalar type represents a DateTime
+value as specified by
+[iso8601](https://en.wikipedia.org/wiki/ISO_8601).
+"""
+scalar DateTime
+
+"""
+
+Create scalar that ignores normal serialization/deserialization, since
+that will be handled by the multipart request spec
+"""
+scalar Upload
