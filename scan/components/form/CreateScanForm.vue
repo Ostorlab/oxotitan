@@ -44,75 +44,16 @@
         >
           <component
             :is="scanTargetForm"
+            ref="scanTargetFormRef"
             v-model:scan-target-step-title="scanTargetStepTitle"
             v-model:scan-target-step-subtitle="scanTargetStepSubtitle"
             v-model:is-step-valid="isStepValid"
             :asset-type="assetType"
             :asset-platform-type="assetPlatformType"
+            @reset="stepNumber = 1"
           />
-          <template #next="{ next }">
-            <v-btn
-              color="primary"
-              variant="elevated"
-              :disabled="isStepValid === false"
-              @click="next"
-            >
-              <v-icon start>
-                mdi-skip-next-outline
-              </v-icon>
-              Continue
-            </v-btn>
-          </template>
-
-          <template #prev="{ prev }">
-            <v-btn
-              variant="elevated"
-              @click="prev"
-            >
-              Previous
-            </v-btn>
-          </template>
-        </v-stepper-vertical-item>
-
-        <v-stepper-vertical-item
-          title="Scanner"
-          subtitle="Select or create a scanner to run the scan on"
-          value="3"
-          @click:next="null"
-        >
-          Lorem ipsum dolor sit amet consectetur adipisicing elit.
-
-          <template #next="{ next }">
-            <v-btn
-              color="success"
-              variant="elevated"
-              @click="next"
-            >
-              <v-icon start>
-                mdi-check
-              </v-icon>
-              Submit
-            </v-btn>
-          </template>
-
-          <template #prev="{ prev }">
-            <v-btn
-              v-if="finished === true"
-              variant="elevated"
-              @click="prev"
-            />
-
-            <v-btn
-              v-else
-              variant="elevated"
-              @click="finished = false; stepNumber = 1"
-            >
-              <v-icon start>
-                mdi-cancel
-              </v-icon>
-              Reset
-            </v-btn>
-          </template>
+          <template #next="" />
+          <template #prev="" />
         </v-stepper-vertical-item>
       </template>
     </v-stepper-vertical>
@@ -130,6 +71,7 @@ import CreateMobileScanFileForm from '~/scan/components/form/CreateMobileScanFil
 import CreateScanYamlForm from '~/scan/components/form/CreateScanYamlForm.vue'
 
 interface Data {
+  scanTargetFormRef: string | null
   isStepValid: boolean
   stepNumber: number
   finished: boolean
@@ -151,6 +93,7 @@ export default defineComponent({
   },
   data(): Data {
     return {
+      scanTargetFormRef: null,
       scanTargetStepTitle: null,
       scanTargetStepSubtitle: null,
       isStepValid: true,
