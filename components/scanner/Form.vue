@@ -9,7 +9,6 @@
       density="compact"
       label="Scanner Endpoint"
       placeholder="https://api.example.com/graphql"
-
       :disabled="props.scanner !== null"
     />
     <v-text-field
@@ -34,7 +33,6 @@
       text="Save"
       prepend-icon="mdi-check"
     />
-
     <v-btn
       type="cancel"
       text="Cancel"
@@ -46,20 +44,27 @@
 
 <script setup lang="ts">
 import type { Scanner } from '~/stores/scanners'
+import { useScannersStore } from '~/stores/scanners'
 
-const props = defineProps({
-  scanner: {
-    type: Object as () => Scanner | null,
-    default: null
-  }
-})
-const endpoint = ref(props.scanner?.endpoint || '')
-const name = ref(props.scanner?.name || '')
-const apiKey = ref(props.scanner?.apiKey || '')
+/**
+ * Props
+ * @property {Scanner | null} scanner - Scanner object to edit or null for a new scanner.
+ */
+const props = defineProps<{
+  scanner: Scanner | null
+}>()
+
+const endpoint = ref<string>(props.scanner?.endpoint || '')
+const name = ref<string>(props.scanner?.name || '')
+const apiKey = ref<string>(props.scanner?.apiKey || '')
 const emit = defineEmits(['close-form'])
 const scannersStore = useScannersStore()
 
-const onSubmit = () => {
+/**
+ * Handle form submission.
+ * Add or update scanner information.
+ */
+const onSubmit = (): void => {
   scannersStore.addOrUpdateScanner({
     endpoint: endpoint.value,
     apiKey: apiKey.value,
@@ -67,6 +72,7 @@ const onSubmit = () => {
   })
   endpoint.value = ''
   apiKey.value = ''
+  name.value = ''
   emit('close-form')
 }
 </script>

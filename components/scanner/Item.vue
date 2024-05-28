@@ -13,9 +13,7 @@
       class="mb-6"
     >
       <template #append>
-        <v-btn
-          variant="flat"
-        >
+        <v-btn variant="flat">
           <v-icon icon="mdi-dots-vertical" />
           <v-menu
             activator="parent"
@@ -43,30 +41,44 @@
 </template>
 
 <script setup lang="ts">
-import { type Scanner, useScannersStore } from '@/stores/scanners'
+import { type Scanner } from '@/stores/scanners'
+
+/**
+ * Props
+ * @property {Scanner} scanner - Scanner object containing scanner details.
+ */
+const props = defineProps<{
+  scanner: Scanner
+}>()
 
 const showForm = ref(false)
-
-const props = defineProps({
-  scanner: {
-    type: Object as () => Scanner,
-    required: true
-  }
-})
-
 const scannersStore = useScannersStore()
 
-const onRemoveScanner = () => {
+/**
+ * Remove the current scanner.
+ */
+const onRemoveScanner = (): void => {
   scannersStore.deleteScanner(props.scanner.endpoint)
 }
 
-const onUpdateScanner = () => {
+/**
+ * Update the current scanner.
+ * Opens the form for editing.
+ */
+const onUpdateScanner = (): void => {
   showForm.value = true
 }
-const onCloseForm = () => {
+
+/**
+ * Close the scanner form.
+ */
+const onCloseForm = (): void => {
   showForm.value = false
 }
 
+/**
+ * Actions available for the scanner.
+ */
 const actions = [
   {
     title: 'Edit',

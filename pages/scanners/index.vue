@@ -32,13 +32,22 @@
 import type { Scanner } from '~/stores/scanners'
 
 const showForm = ref(false)
+
 const currentScanner = ref<Scanner | null>(null)
 
-const onUpdateScanner = (scanner: Scanner) => {
+/**
+ * Handle the update-scanner event.
+ * @param {Scanner} scanner - The scanner object to be updated.
+ */
+const onUpdateScanner = (scanner: Scanner): void => {
   showForm.value = true
   currentScanner.value = scanner
 }
-const onCloseForm = () => {
+
+/**
+ * Handle the close-form event.
+ */
+const onCloseForm = (): void => {
   showForm.value = false
   currentScanner.value = null
 }
