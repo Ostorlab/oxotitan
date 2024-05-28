@@ -12,7 +12,7 @@
         density="compact"
         clearable
         label="Package Name"
-        placeholder="Select enter the package name"
+        placeholder="Enter the package name"
         prepend-icon="mdi-storefront"
       />
     </v-form>
