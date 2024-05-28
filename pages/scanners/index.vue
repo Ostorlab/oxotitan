@@ -1,13 +1,17 @@
 <template>
-  <v-container>
-    <v-card>
+  <v-container class="ga-2">
+    <v-card
+      variant="outlined"
+      class="my-4"
+    >
       <v-card-text>
         <v-btn
           v-if="!showForm"
           color="primary"
+          prepend-icon="mdi-plus"
           @click="showForm = !showForm"
         >
-          Add Scanner
+          New
         </v-btn>
         <ScannerForm
           v-else
@@ -16,8 +20,7 @@
         />
       </v-card-text>
     </v-card>
-    <v-divider class="my-6" />
-    <v-card>
+    <v-card variant="outlined">
       <v-card-text>
         <ScannerList @update-scanner="onUpdateScanner" />
       </v-card-text>

@@ -1,7 +1,7 @@
 <template>
   <v-form
     class="mt-4"
-    @submit.prevent="OnSubmit"
+    @submit.prevent="onSubmit"
   >
     <v-text-field
       v-model="endpoint"
@@ -32,12 +32,13 @@
       color="success"
       :disabled="!endpoint || !apiKey || !name"
       text="Save"
+      prepend-icon="mdi-check"
     />
 
     <v-btn
       type="cancel"
-      color="error"
       text="Cancel"
+      prepend-icon="mdi-close"
       @click="emit('close-form')"
     />
   </v-form>
@@ -58,7 +59,7 @@ const apiKey = ref(props.scanner?.apiKey || '')
 const emit = defineEmits(['close-form'])
 const scannersStore = useScannersStore()
 
-const OnSubmit = () => {
+const onSubmit = () => {
   scannersStore.addOrUpdateScanner({
     endpoint: endpoint.value,
     apiKey: apiKey.value,
