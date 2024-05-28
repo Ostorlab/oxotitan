@@ -36,7 +36,7 @@ export default defineNuxtConfig({
     }
   },
   features: {
-    // Set this to false if the UI is freezing with infinite logs.
-    devLogs: true
+    // Some infinite warnings in dev mode blocking the app in browser. So, disabling it. Set it to True for debugging.
+    devLogs: false
   }
 })
