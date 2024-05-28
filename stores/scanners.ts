@@ -1,30 +1,65 @@
 import { defineStore } from 'pinia'
 
+/**
+ * Represents a Scanner object.
+ */
 export interface Scanner {
   endpoint: string
   apiKey: string
+  name: string
 }
+
+/**
+ * Represents the state of the scanners store.
+ */
 interface ScannersState {
   scanners: Scanner[]
 }
 
+/**
+ * Represents the actions of the scanners store.
+ */
 interface ScannersActions {
-  addScanner(scanner: Scanner): void
-  removeScanner(endpoint: string): void
+  /**
+   * Adds a new scanner or updates an existing scanner.
+   * @param scanner - The scanner to be added or updated.
+   */
+  addOrUpdateScanner(scanner: Scanner): void
+
+  /**
+   * Deletes a scanner by its endpoint.
+   * @param endpoint - The endpoint of the scanner to be deleted.
+   */
+  deleteScanner(endpoint: string): void
 }
 
 export const useScannersStore = defineStore<'scanners', ScannersState, Record<string, never>, ScannersActions>('scanners', {
-  state: () => ({
+  state: (): ScannersState => ({
     scanners: [] as Scanner[]
   }),
   actions: {
-    addScanner(scanner: Scanner) {
-      // TODO(benyissa): implement local storage
-      this.scanners.push(scanner)
+    /**
+     * Adds a new scanner or updates an existing scanner.
+     * @param scanner - The scanner to be added or updated.
+     */
+    addOrUpdateScanner(scanner: Scanner): void {
+      const index = this.scanners.findIndex((_scanner) => _scanner.endpoint === scanner.endpoint)
+      if (index === -1) {
+        this.scanners.push(scanner)
+      } else {
+        this.scanners[index] = scanner
+      }
     },
-    removeScanner(endpoint: string) {
-      // TODO(benyissa): implement local storage
+
+    /**
+     * Deletes a scanner by its endpoint.
+     * @param endpoint - The endpoint of the scanner to be deleted.
+     */
+    deleteScanner(endpoint: string): void {
       this.scanners = this.scanners.filter((scanner) => scanner.endpoint !== endpoint)
     }
+  },
+  persist: {
+    storage: persistedState.localStorage
   }
 })

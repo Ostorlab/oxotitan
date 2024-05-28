@@ -1,11 +1,6 @@
 schema: schema.graphql
 extensions:
   endpoints:
-    Public API:
-      url: https://api.ostorlab.co/apis/public_graphql
-      headers:
-        user-agent: JS GraphQL
-      introspect: true
     Private API:
       url: http://0.0.0.0:3420/graphql
       introspect: true

@@ -13,12 +13,15 @@ export default defineNuxtConfig({
     transpile: ['vuetify']
   },
   modules: [
+    'nuxt-monaco-editor',
     '@nuxt/eslint',
     (_options, nuxt) => {
       nuxt.hooks.hook('vite:extendConfig', (config) => {
         config?.plugins?.push(vuetify({ autoImport: true }))
       })
-    }
+    },
+    '@pinia/nuxt',
+    '@pinia-plugin-persistedstate/nuxt'
   ],
   vite: {
     vue: {
@@ -32,5 +35,9 @@ export default defineNuxtConfig({
     config: {
       stylistic: true
     }
+  },
+  features: {
+    // Some infinite warnings in dev mode blocking the app in browser. So, disabling it. Set it to True for debugging.
+    devLogs: false
   }
 })
