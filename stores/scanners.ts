@@ -3,6 +3,7 @@ import { defineStore } from 'pinia'
 export interface Scanner {
   endpoint: string
   apiKey: string
+  name: string
 }
 interface ScannersState {
   scanners: Scanner[]

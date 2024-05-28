@@ -9,8 +9,15 @@
       density="compact"
       label="Scanner Endpoint"
       placeholder="https://api.example.com/graphql"
-      required
+
       :disabled="props.scanner !== null"
+    />
+    <v-text-field
+      v-model="name"
+      variant="outlined"
+      density="compact"
+      label="Scanner Name"
+      placeholder="Scanner Name"
     />
     <v-text-field
       v-model="apiKey"
@@ -18,21 +25,25 @@
       density="compact"
       label="API Key"
       placeholder="Enter API Key"
-      required
     />
     <v-btn
+      class="me-2"
       type="submit"
       color="success"
-      variant="outlined"
-      :disabled="!endpoint || !apiKey"
-    >
-      Save
-    </v-btn>
+      :disabled="!endpoint || !apiKey || !name"
+      text="Save"
+    />
+
+    <v-btn
+      type="cancel"
+      color="error"
+      text="Cancel"
+      @click="emit('close-form')"
+    />
   </v-form>
 </template>
 
 <script setup lang="ts">
-import { defineProps, ref } from 'vue'
 import type { Scanner } from '~/stores/scanners'
 
 const props = defineProps({
@@ -42,6 +53,7 @@ const props = defineProps({
   }
 })
 const endpoint = ref(props.scanner?.endpoint || '')
+const name = ref(props.scanner?.name || '')
 const apiKey = ref(props.scanner?.apiKey || '')
 const emit = defineEmits(['close-form'])
 const scannersStore = useScannersStore()
@@ -49,7 +61,8 @@ const scannersStore = useScannersStore()
 const OnSubmit = () => {
   scannersStore.addOrUpdateScanner({
     endpoint: endpoint.value,
-    apiKey: apiKey.value
+    apiKey: apiKey.value,
+    name: name.value
   })
   endpoint.value = ''
   apiKey.value = ''

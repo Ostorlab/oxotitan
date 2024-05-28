@@ -3,18 +3,22 @@
     <v-card>
       <v-card-text>
         <v-btn
-          :color="showForm ? 'error' : 'primary'"
-          variant="outlined"
+          v-if="!showForm"
+          color="primary"
           @click="showForm = !showForm"
         >
-          {{ showForm ? 'Cancel' : 'Add Scanner' }}
+          Add Scanner
         </v-btn>
         <ScannerForm
-          v-if="showForm"
+          v-else
           :scanner="currentScanner"
           @close-form="onCloseForm"
         />
-        <v-divider class="my-4" />
+      </v-card-text>
+    </v-card>
+    <v-divider class="my-6" />
+    <v-card>
+      <v-card-text>
         <ScannerList @update-scanner="onUpdateScanner" />
       </v-card-text>
     </v-card>
