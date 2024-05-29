@@ -1,5 +1,5 @@
 <template>
-  <div class="mb-n8">
+  <div>
     <LoadingDialog
       v-model:loading-dialog="loadingDialog"
       message="Please stand by while creating scan"
@@ -11,12 +11,9 @@
         variant="outlined"
         density="compact"
         clearable
-        item-title="title"
         label="Package Name"
-        placeholder="Select application from the store"
+        placeholder="Enter the package name"
         prepend-icon="mdi-storefront"
-        class="mb-4"
-        return-object
       />
     </v-form>
   </div>
@@ -50,7 +47,7 @@ export default defineComponent({
       default: null
     }
   },
-  emits: ['update:isStepValid'],
+  emits: ['update:isStepValid', 'update:scan-target-step-title', 'update:scan-target-step-subtitle'],
   data(): Data {
     return {
       isFormValid: false,
@@ -65,6 +62,10 @@ export default defineComponent({
     isFormValid(newVal) {
       this.$emit('update:isStepValid', typeof newVal === 'boolean' ? newVal : false)
     }
+  },
+  mounted() {
+    this.$emit('update:scan-target-step-title', 'Package Name')
+    this.$emit('update:scan-target-step-subtitle', 'required')
   },
   methods: {
     clear(): void {
