@@ -184,8 +184,6 @@ export default defineComponent({
           return 'mdi-pound'
         case 'assigned':
           return 'mdi-account-outline'
-        case 'scanner':
-          return 'mdi-server-outline'
         default:
           return ''
       }

@@ -1,5 +1,5 @@
 <template>
-  <v-row>
+  <v-row justify="center">
     <template v-if="scanners.length>0">
       <v-col
         v-for="scanner in scanners"
@@ -10,13 +10,16 @@
       </v-col>
     </template>
     <v-col
-      v-else
+      v-else-if="scanners.length===0"
       content="center"
+      cols="6"
+      align-self="center"
     >
-      <v-card>
+      <v-card variant="outlined">
         <v-card-title>No scanners found</v-card-title>
         <v-card-actions>
           <v-btn
+            variant="elevated"
             color="primary"
             to="/scanners"
           >
@@ -30,7 +33,6 @@
 
 <script lang="ts">
 import { mapState } from 'pinia'
-import { useScannersStore } from '~/stores/scanners'
 import ScanList from '~/pages/scan/scanList.vue'
 
 definePageMeta({

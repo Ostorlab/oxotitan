@@ -18,10 +18,9 @@
       class="pa-2"
     >
       <v-card-title class="pa-0">
-        <DfTag
-          name="Scanner"
-          :value="scanner.name || scanner.endpoint"
-        />
+        <v-chip label>
+          {{ scanner.name || scanner.endpoint }}
+        </v-chip>
       </v-card-title>
       <v-data-table-server
         v-model:options="options"
