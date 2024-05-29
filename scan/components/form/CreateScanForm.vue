@@ -1,7 +1,7 @@
 <template>
   <v-card variant="outlined">
     <v-stepper-vertical
-      v-model="stepNumber"
+      v-model.number="stepNumber"
       color="primary"
       next-text="Continue"
       non-linear
@@ -12,7 +12,7 @@
           :complete="step > 1"
           title="Scanner"
           subtitle="Select or create a scanner to run the scan on"
-          value="1"
+          :value="1"
         >
           <ScannerSelect v-model:model-value="selectedScanner" />
           <template #next="{ next }">
@@ -31,11 +31,49 @@
 
           <template #prev />
         </v-stepper-vertical-item>
-
         <v-stepper-vertical-item
           :complete="step > 2"
+          title="Title"
+          subtitle="Optional"
+          :value="2"
+        >
+          <v-text-field
+            v-model="scanTitle"
+            variant="outlined"
+            density="compact"
+            clearable
+            hide-details
+            label="Scan Title (Otpional)"
+            placeholder="Enter a scan title to easily identify your scan"
+            prepend-icon="mdi-format-tile"
+          />
+          <template #next="{ next }">
+            <v-btn
+              color="primary"
+              variant="elevated"
+              @click="next"
+            >
+              <v-icon start>
+                mdi-skip-next-outline
+              </v-icon>
+              Continue
+            </v-btn>
+          </template>
+
+          <template #prev="{ prev }">
+            <v-btn
+              variant="elevated"
+              @click="prev"
+            >
+              Previous
+            </v-btn>
+          </template>
+        </v-stepper-vertical-item>
+
+        <v-stepper-vertical-item
+          :complete="step > 3"
           title="Asset"
-          value="2"
+          :value="3"
         >
           <AssetTypeSelector
             id="select_asset"
@@ -66,26 +104,16 @@
             </v-btn>
           </template>
         </v-stepper-vertical-item>
-
-        <v-stepper-vertical-item
-          :title="scanTargetStepTitle || 'Scan Target'"
-          :subtitle="scanTargetStepSubtitle"
-          value="3"
-          :error="isStepValid === false"
-          @click:next="null"
-        >
-          <component
-            :is="scanTargetForm"
-            v-model:scan-target-step-title="scanTargetStepTitle"
-            v-model:scan-target-step-subtitle="scanTargetStepSubtitle"
-            v-model:is-step-valid="isStepValid"
-            :asset-type="assetType"
-            :asset-platform-type="assetPlatformType"
-            @reset="stepNumber = 1"
-          />
-          <template #next="" />
-          <template #prev="" />
-        </v-stepper-vertical-item>
+        <component
+          :is="scanTargetForm"
+          v-model:scan-target-step-title="scanTargetStepTitle"
+          v-model:scan-target-step-subtitle="scanTargetStepSubtitle"
+          v-model:is-step-valid="isStepValid"
+          :asset-type="assetType"
+          :step="4"
+          :asset-platform-type="assetPlatformType"
+          @reset="stepNumber = 1"
+        />
       </template>
     </v-stepper-vertical>
   </v-card>
@@ -107,6 +135,7 @@ interface Data {
   isStepValid: boolean
   stepNumber: number
   finished: boolean
+  scanTitle: string | null
   assetTypeItems: Array<Group>
   assetPlatformType: AssetEnum | undefined | null
   scanTargetStepTitle: string | null
@@ -127,6 +156,7 @@ export default defineComponent({
   },
   data(): Data {
     return {
+      scanTitle: null,
       selectedScanner: null,
       scanTargetStepTitle: null,
       scanTargetStepSubtitle: null,
