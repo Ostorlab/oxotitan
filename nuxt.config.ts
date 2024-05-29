@@ -21,7 +21,8 @@ export default defineNuxtConfig({
       })
     },
     '@pinia/nuxt',
-    '@pinia-plugin-persistedstate/nuxt'
+    '@pinia-plugin-persistedstate/nuxt',
+    'notivue/nuxt'
   ],
   vite: {
     vue: {
@@ -38,6 +39,6 @@ export default defineNuxtConfig({
   },
   features: {
     // Some infinite warnings in dev mode blocking the app in browser. So, disabling it. Set it to True for debugging.
-    devLogs: false
+    devLogs: true
   }
 })

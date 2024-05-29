@@ -50,6 +50,7 @@
 import isURL from 'validator/es/lib/isURL'
 import type { Scanner } from '~/stores/scanners'
 import { useScannersStore } from '~/stores/scanners'
+import { useNotificationsStore } from '~/stores/notifications'
 
 /**
  * Props
@@ -66,6 +67,8 @@ const form = ref()
 const isValid = ref(false)
 const emit = defineEmits(['close-form'])
 const scannersStore = useScannersStore()
+const notificationsStore = useNotificationsStore()
+
 const rules = {
   required: (value: string) => value.trim() !== '' || '',
   url: (value: string) => isURL(value) || 'Must be a valid URL'
@@ -78,13 +81,18 @@ const rules = {
 
 const onSubmit = async (): Promise<void> => {
   if (isValid.value === true) {
-    scannersStore.addOrUpdateScanner({
-      endpoint: endpoint.value,
-      apiKey: apiKey.value,
-      name: name.value
-    })
-    resetForm()
-    emit('close-form')
+    try {
+      scannersStore.addOrUpdateScanner({
+        endpoint: endpoint.value,
+        apiKey: apiKey.value,
+        name: name.value
+      })
+      resetForm()
+      emit('close-form')
+      notificationsStore.reportSuccess('Scanner saved successfully.')
+    } catch (error) {
+      notificationsStore.reportError('Failed to save scanner information. Please try again.')
+    }
   }
 }
 

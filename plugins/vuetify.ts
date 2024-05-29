@@ -3,18 +3,19 @@ import '@mdi/font/css/materialdesignicons.css'
 import 'vuetify/styles'
 import { createVuetify, type ThemeDefinition } from 'vuetify'
 import * as labsComponents from 'vuetify/labs/components'
+import { colors } from 'assets/css/colors'
 
 const myCustomTheme: ThemeDefinition = {
   dark: false,
   colors: {
-    primary: '#00415d',
-    accent: '#0081ba',
-    secondary: '#d9534f',
-    info: '#4078c0',
-    success: '#1f883d',
-    warning: '#c9510c',
-    error: '#bd2c00',
-    background: '#fff'
+    primary: colors.primary,
+    accent: colors.accent,
+    secondary: colors.accent,
+    info: colors.info,
+    success: colors.success,
+    warning: colors.warning,
+    error: colors.error,
+    background: colors.background
   }
 }
 
