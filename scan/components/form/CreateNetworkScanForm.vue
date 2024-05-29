@@ -1,5 +1,10 @@
 <template>
-  <div>
+  <v-stepper-vertical-item
+    title="Target IPs"
+    subtitle="required"
+    :error="ipErrorMessages.length > 0"
+    :value="step"
+  >
     <LoadingDialog
       v-model:loading-dialog="loadingDialog"
       message="Please stand by while creating scan"
@@ -20,36 +25,35 @@
         @input="addToTargetIps"
         @keyup.enter="addToTargetIps"
       />
-      <div class="mt-4">
-        <v-btn
-          color="success"
-          variant="elevated"
-          @click="createScan"
-        >
-          <v-icon start>
-            mdi-check
-          </v-icon>
-          Submit
-        </v-btn>
-        <v-btn
-          variant="elevated"
-          class="ml-2"
-          @click="$emit('reset')"
-        >
-          <v-icon start>
-            mdi-cancel
-          </v-icon>
-          Reset
-        </v-btn>
-      </div>
     </v-form>
-  </div>
+    <template #next="{ next }">
+      <v-btn
+        color="primary"
+        variant="elevated"
+        :disabled="isFormValid === false"
+        @click="next"
+      >
+        <v-icon start>
+          mdi-skip-next-outline
+        </v-icon>
+        Continue
+      </v-btn>
+    </template>
+    <template #prev="{ prev }">
+      <v-btn
+        variant="elevated"
+        class="ml-2"
+        @click="prev"
+      >
+        Previous
+      </v-btn>
+    </template>
+  </v-stepper-vertical-item>
 </template>
 
 <script lang="ts">
 import validator from 'validator'
 import LoadingDialog from '~/common/components/LoadingDialog.vue'
-import type { AssetEnum } from '~/scan/types'
 
 interface Data {
   ip: string | null
@@ -63,16 +67,11 @@ export default defineComponent({
     LoadingDialog
   },
   props: {
-    assetPlatformType: {
-      type: String as () => AssetEnum | string | null,
-      default: null
-    },
-    assetType: {
-      type: String as () => AssetEnum | string | null,
-      default: null
+    step: {
+      type: Number,
+      default: 1
     }
   },
-  emits: ['update:isStepValid', 'update:scan-target-step-title', 'update:scan-target-step-subtitle', 'reset'],
   data(): Data {
     return {
       ip: null,
@@ -105,15 +104,6 @@ export default defineComponent({
       }
       return this.userIps?.length > 0 && this.ipErrorMessages.length === 0
     }
-  },
-  watch: {
-    isFormValid(newVal) {
-      this.$emit('update:isStepValid', newVal)
-    }
-  },
-  mounted() {
-    this.$emit('update:scan-target-step-title', 'Target IPs')
-    this.$emit('update:scan-target-step-subtitle', 'required')
   },
   methods: {
     /**

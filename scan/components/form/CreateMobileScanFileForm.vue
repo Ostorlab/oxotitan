@@ -1,5 +1,10 @@
 <template>
-  <div>
+  <v-stepper-vertical-item
+    title="Application File"
+    subtitle="required"
+    :error="v$.application.maximumSize.$invalid === true"
+    :value="step"
+  >
     <LoadingDialog
       v-model:loading-dialog="loadingDialog"
       message="Please stand by while creating scan"
@@ -22,30 +27,30 @@
         </v-alert>
         <UploadFile v-model:model-value="application" />
       </v-col>
-      <div class="mt-4">
-        <v-btn
-          color="success"
-          variant="elevated"
-          @click="createScan"
-        >
-          <v-icon start>
-            mdi-check
-          </v-icon>
-          Submit
-        </v-btn>
-        <v-btn
-          variant="elevated"
-          class="ml-2"
-          @click="$emit('reset')"
-        >
-          <v-icon start>
-            mdi-cancel
-          </v-icon>
-          Reset
-        </v-btn>
-      </div>
     </v-row>
-  </div>
+    <template #next="{ next }">
+      <v-btn
+        color="primary"
+        variant="elevated"
+        :disabled="isStepValid === false"
+        @click="next"
+      >
+        <v-icon start>
+          mdi-skip-next-outline
+        </v-icon>
+        Continue
+      </v-btn>
+    </template>
+    <template #prev="{ prev }">
+      <v-btn
+        variant="elevated"
+        class="ml-2"
+        @click="prev"
+      >
+        Previous
+      </v-btn>
+    </template>
+  </v-stepper-vertical-item>
 </template>
 
 <script lang="ts">
@@ -53,7 +58,6 @@ import { useVuelidate } from '@vuelidate/core'
 import { helpers } from '@vuelidate/validators'
 import LoadingDialog from '~/common/components/LoadingDialog.vue'
 import UploadFile from '~/scan/components/UploadFile.vue'
-import type { AssetEnum } from '~/scan/types'
 
 const MAX_FILE_SIZE = 600000000 // 600 MB
 
@@ -76,16 +80,11 @@ export default defineComponent({
     UploadFile
   },
   props: {
-    assetPlatformType: {
-      type: String as () => AssetEnum | string | null,
-      default: null
-    },
-    assetType: {
-      type: String as () => AssetEnum | string | null,
-      default: null
+    step: {
+      type: Number,
+      default: 1
     }
   },
-  emits: ['update:isStepValid', 'update:scan-target-step-title', 'update:scan-target-step-subtitle', 'reset'],
   setup() {
     return {
       v$: useVuelidate()
@@ -105,18 +104,10 @@ export default defineComponent({
       loadingDialog: false
     }
   },
-  watch: {
-    application: {
-      immediate: true,
-      deep: true,
-      handler(newVal) {
-        this.$emit('update:isStepValid', newVal !== null && newVal !== undefined && this.v$.application?.$invalid === false)
-      }
+  computed: {
+    isStepValid() {
+      return this.application !== null && this.application !== undefined && this.v$.application?.$invalid === false
     }
-  },
-  mounted() {
-    this.$emit('update:scan-target-step-title', 'Application File')
-    this.$emit('update:scan-target-step-subtitle', 'required')
   },
   methods: {
     clear(): void {

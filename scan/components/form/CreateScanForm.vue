@@ -1,7 +1,7 @@
 <template>
   <v-card variant="outlined">
     <v-stepper-vertical
-      v-model="stepNumber"
+      v-model.number="stepNumber"
       color="primary"
       next-text="Continue"
       non-linear
@@ -35,7 +35,7 @@
         <v-stepper-vertical-item
           :complete="step > 2"
           title="Asset"
-          value="2"
+          :value="2"
         >
           <AssetTypeSelector
             id="select_asset"
@@ -66,26 +66,16 @@
             </v-btn>
           </template>
         </v-stepper-vertical-item>
-
-        <v-stepper-vertical-item
-          :title="scanTargetStepTitle || 'Scan Target'"
-          :subtitle="scanTargetStepSubtitle"
-          value="3"
-          :error="isStepValid === false"
-          @click:next="null"
-        >
-          <component
-            :is="scanTargetForm"
-            v-model:scan-target-step-title="scanTargetStepTitle"
-            v-model:scan-target-step-subtitle="scanTargetStepSubtitle"
-            v-model:is-step-valid="isStepValid"
-            :asset-type="assetType"
-            :asset-platform-type="assetPlatformType"
-            @reset="stepNumber = 1"
-          />
-          <template #next="" />
-          <template #prev="" />
-        </v-stepper-vertical-item>
+        <component
+          :is="scanTargetForm"
+          v-model:scan-target-step-title="scanTargetStepTitle"
+          v-model:scan-target-step-subtitle="scanTargetStepSubtitle"
+          v-model:is-step-valid="isStepValid"
+          :asset-type="assetType"
+          :step="3"
+          :asset-platform-type="assetPlatformType"
+          @reset="stepNumber = 1"
+        />
       </template>
     </v-stepper-vertical>
   </v-card>

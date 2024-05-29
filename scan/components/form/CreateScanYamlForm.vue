@@ -1,5 +1,13 @@
 <template>
-  <div>
+  <CreateScanTargetAssetYamlForm
+    :value="step"
+  />
+  <v-stepper-vertical-item
+    title="YAML definition file"
+    subtitle="required"
+    :error="isStepValid === false"
+    :value="step+1"
+  >
     <LoadingDialog
       v-model:loading-dialog="loadingDialog"
       message="Please stand by while creating scan"
@@ -81,37 +89,46 @@
           </div>
         </div>
       </v-card>
-      <div class="mt-4">
-        <v-btn
-          color="success"
-          variant="elevated"
-          :loading="loading"
-          @click="createScan"
-        >
-          <v-icon start>
-            mdi-check
-          </v-icon>
-          Submit
-        </v-btn>
-        <v-btn
-          variant="elevated"
-          class="ml-2"
-          @click="$emit('reset')"
-        >
-          <v-icon start>
-            mdi-cancel
-          </v-icon>
-          Reset
-        </v-btn>
-      </div>
     </v-form>
-  </div>
+    <template #next>
+      <v-btn
+        color="success"
+        variant="elevated"
+        :loading="loading"
+        @click="createScan"
+      >
+        <v-icon start>
+          mdi-check
+        </v-icon>
+        Submit
+      </v-btn>
+    </template>
+    <template #prev="{ prev }">
+      <v-btn
+        variant="elevated"
+        class="ml-2"
+        @click="prev"
+      >
+        Previous
+      </v-btn>
+      <v-btn
+        variant="elevated"
+        class="ml-2"
+        @click="$emit('reset')"
+      >
+        <v-icon start>
+          mdi-cancel
+        </v-icon>
+        Reset
+      </v-btn>
+    </template>
+  </v-stepper-vertical-item>
 </template>
 
 <script lang="ts">
 import { parse as yamlParse } from 'yaml'
 import LoadingDialog from '~/common/components/LoadingDialog.vue'
-import type { AssetEnum } from '~/scan/types'
+import CreateScanTargetAssetYamlForm from '~/scan/components/form/CreateScanTargetAssetYamlForm.vue'
 import AgentGroupService from '~/agents/services/agentGroup.service'
 
 interface Data {
@@ -139,24 +156,20 @@ interface Data {
 export default defineComponent({
   name: 'CreateScanYamlForm',
   components: {
-    LoadingDialog
+    LoadingDialog,
+    CreateScanTargetAssetYamlForm
   },
   props: {
-    assetPlatformType: {
-      type: String as () => AssetEnum | string | null,
-      default: null
-    },
-    assetType: {
-      type: String as () => AssetEnum | string | null,
-      default: null
+    step: {
+      type: Number,
+      default: 1
     }
   },
-  emits: ['update:isStepValid', 'update:scan-target-step-title', 'update:scan-target-step-subtitle', 'reset'],
+  emits: ['reset'],
   data(): Data {
     return {
       loading: false,
       agentGroupService: new AgentGroupService(this.$axios),
-      inputTab: 'assets',
       selectedAgentGroup: null,
       agentGroupInput: `
 description: Agent group definition for web scan
@@ -206,17 +219,11 @@ agents:
   },
   computed: {
     isFormValid() {
-      const isValid = this.agentGroupInput !== null && this.agentGroupInput?.trim() !== ''
-      this.$emit('update:isStepValid', isValid)
-      return isValid
+      return this.agentGroupInput !== null && this.agentGroupInput?.trim() !== ''
     }
   },
   async created() {
     await this.getAgentGroups()
-  },
-  mounted() {
-    this.$emit('update:scan-target-step-title', 'YAML definition file')
-    this.$emit('update:scan-target-step-subtitle', 'required')
   },
   methods: {
     /**
