@@ -179,32 +179,7 @@ agents:
   - { name: token, type: string, value: abcdefg }
   key: agent/org/nuclei
       `,
-      existingAgentGroups: [
-        {
-          key: 'onprem_ip',
-          description: 'Network scan',
-          agentGroup: `
-description: Network scan
-name: onprem_ip
-agents:
-- args:
-  - { name: token, type: string, value: abcdefg }
-  key: agent/org/tsunami
-          `
-        },
-        {
-          key: 'onprem_mobile',
-          description: 'Android scan',
-          agentGroup: `
-description: Android scan
-name: onprem_mobile
-agents:
-- args:
-  - { name: token, type: string, value: abcdefg }
-  key: agent/org/tester
-          `
-        }
-      ],
+      existingAgentGroups: [],
       loadingDialog: false,
       editorLanguage: 'yaml',
       editorOptions: {
