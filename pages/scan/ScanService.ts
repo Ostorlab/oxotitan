@@ -1,6 +1,7 @@
 import type { AxiosInstance } from 'axios'
 import type { OxoScanType, QueryScansArgs } from '~/graphql/types'
 import requestAggregator from '~/utils/requestAggregator'
+import type { Scanner } from '~/project/types'
 
 const SCANS_QUERY = gql`query scans($scanIds: [Int], $page: Int, $numberElements: Int, $orderBy: OxoScanOrderByEnum, $sort: SortEnum) {
 
@@ -28,38 +29,26 @@ export default class ScansService {
     this.totalScans = 0
   }
 
-  _aggregateScans(responses: Map<string, unknown>): OxoScanType[] {
-    this.totalScans = 0
-    let scans: OxoScanType[] = []
-    for (const [endpoint, response] of responses) {
-      // this.totalScans += response?.data?.scans.pageInfo?.count || 0
-      let requestScans = response?.data?.scans?.scans || []
-      requestScans = requestScans.map((scan: OxoScanType) => {
-        return {
-          ...scan,
-          scanner: endpoint
-        }
-      })
-      scans = scans.concat(requestScans)
-    }
-    return scans
-  }
-
   /**
    * Get scans from all scanners
+   * @param scanner
    * @param queryScansArgs
    */
-  async getScans(queryScansArgs: QueryScansArgs): Promise<OxoScanType[]> {
+  async getScans(scanner: Scanner, queryScansArgs: QueryScansArgs): Promise<OxoScanType[]> {
     queryScansArgs = { ...queryScansArgs }
     if (queryScansArgs.numberElements === -1) {
       queryScansArgs.numberElements = undefined
       queryScansArgs.page = undefined
     }
-    const responses = await this.requestAggregator.postToAll({
-      query: SCANS_QUERY,
-      variables: queryScansArgs
-    })
-    return this._aggregateScans(responses)
+    const response = await this.requestAggregator.postToScanner(
+      scanner,
+      {
+        query: SCANS_QUERY,
+        variables: queryScansArgs
+      })
+    const scans = response?.data?.data.scans.scans || []
+    this.totalScans = response?.data?.data?.scans?.pageInfo?.count || scans.length
+    return scans
   }
 
   /**

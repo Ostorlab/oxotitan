@@ -32,21 +32,6 @@ export default class requestAggregator {
   }
 
   /**
-     * Method to post a request to all scanners and return the responses
-     * @param data
-     */
-  async postToAll(data: NonNullable<unknown>): Promise<Map<string, unknown>> {
-    const responses = new Map<string, unknown>()
-    for (const scanner of this.scanners) {
-      const response = await this.$axios.post(scanner.endpoint, data, {
-        headers: this._createAuthorizationHeader(scanner)
-      })
-      responses.set(scanner.endpoint, response.data)
-    }
-    return responses
-  }
-
-  /**
      * Method to post a request to a specific scanner and return the response
      * @param scanner
      * @param data
