@@ -51,6 +51,10 @@
       </v-btn>
     </template>
   </v-stepper-vertical-item>
+  <AgentGroupSelect
+    :step="step + 1"
+    @reset="$emit('reset')"
+  />
 </template>
 
 <script lang="ts">
@@ -58,6 +62,7 @@ import { useVuelidate } from '@vuelidate/core'
 import { helpers } from '@vuelidate/validators'
 import LoadingDialog from '~/common/components/LoadingDialog.vue'
 import UploadFile from '~/scan/components/UploadFile.vue'
+import AgentGroupSelect from '~/scan/components/AgentGroupSelect'
 
 const MAX_FILE_SIZE = 600000000 // 600 MB
 
@@ -77,7 +82,8 @@ export default defineComponent({
   name: 'CreateMobileScanFileForm',
   components: {
     LoadingDialog,
-    UploadFile
+    UploadFile,
+    AgentGroupSelect
   },
   props: {
     step: {
@@ -85,6 +91,7 @@ export default defineComponent({
       default: 1
     }
   },
+  emits: ['reset'],
   setup() {
     return {
       v$: useVuelidate()

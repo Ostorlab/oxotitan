@@ -28,7 +28,7 @@
       <v-btn
         color="primary"
         variant="elevated"
-        :disabled="rawUrlsErrorMessages.length > 0 === false"
+        :disabled="isContinueDisabled"
         @click="next"
       >
         <v-icon start>
@@ -47,11 +47,16 @@
       </v-btn>
     </template>
   </v-stepper-vertical-item>
+  <AgentGroupSelect
+    :step="step + 1"
+    @reset="$emit('reset')"
+  />
 </template>
 
 <script lang="ts">
 import validator from 'validator'
 import LoadingDialog from '~/common/components/LoadingDialog.vue'
+import AgentGroupSelect from '~/scan/components/AgentGroupSelect'
 
 interface Data {
   rawUrls: string | null
@@ -62,7 +67,8 @@ interface Data {
 export default defineComponent({
   name: 'CreateWebApiScanForm',
   components: {
-    LoadingDialog
+    LoadingDialog,
+    AgentGroupSelect
   },
   props: {
     step: {
@@ -70,6 +76,7 @@ export default defineComponent({
       default: 1
     }
   },
+  emits: ['reset'],
   data(): Data {
     return {
       isFormValid: false,
@@ -95,6 +102,9 @@ export default defineComponent({
         }
       }
       return errors
+    },
+    isContinueDisabled(): boolean {
+      return this.rawUrlsErrorMessages.length > 0 || this.rawUrls === null || this.rawUrls?.trim() === ''
     }
   },
   methods: {

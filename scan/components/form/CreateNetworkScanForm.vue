@@ -49,11 +49,16 @@
       </v-btn>
     </template>
   </v-stepper-vertical-item>
+  <AgentGroupSelect
+    :step="step + 1"
+    @reset="$emit('reset')"
+  />
 </template>
 
 <script lang="ts">
 import validator from 'validator'
 import LoadingDialog from '~/common/components/LoadingDialog.vue'
+import AgentGroupSelect from '~/scan/components/AgentGroupSelect'
 
 interface Data {
   ip: string | null
@@ -64,7 +69,8 @@ interface Data {
 export default defineComponent({
   name: 'CreateNetworkScanForm',
   components: {
-    LoadingDialog
+    LoadingDialog,
+    AgentGroupSelect
   },
   props: {
     step: {
@@ -72,6 +78,7 @@ export default defineComponent({
       default: 1
     }
   },
+  emits: ['reset'],
   data(): Data {
     return {
       ip: null,
