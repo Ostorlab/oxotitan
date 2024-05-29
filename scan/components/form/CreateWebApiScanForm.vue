@@ -5,15 +5,18 @@
       message="Please stand by while creating scan"
     />
     <v-form v-model="isFormValid">
-      <v-text-field
-        v-model="packageName"
-        :rules="[rules.required]"
+      <p class="subtitle-1 mb-3">
+        Please specify the target Web APIs:
+      </p>
+      <v-textarea
+        v-model="rawUrls"
+        :error-messages="rawUrlsErrorMessages"
         variant="outlined"
         density="compact"
         clearable
-        label="Package Name"
-        placeholder="Enter the package name"
-        prepend-icon="mdi-storefront"
+        label="Web APIs"
+        placeholder="Add Web APIs each on a separate line"
+        prepend-icon="mdi-api"
       />
     </v-form>
     <div class="mt-4">
@@ -42,20 +45,18 @@
 </template>
 
 <script lang="ts">
+import validator from 'validator'
 import LoadingDialog from '~/common/components/LoadingDialog.vue'
 import type { AssetEnum } from '~/scan/types'
 
 interface Data {
-  packageName: string | null
+  rawUrls: string | null
   loadingDialog: boolean
   isFormValid: boolean
-  rules: {
-    required: (value: string | null) => boolean | string
-  }
 }
 
 export default defineComponent({
-  name: 'CreateMobileScanStoreForm',
+  name: 'CreateWebApiScanForm',
   components: {
     LoadingDialog
   },
@@ -73,33 +74,50 @@ export default defineComponent({
   data(): Data {
     return {
       isFormValid: false,
-      packageName: null,
-      loadingDialog: false,
-      rules: {
-        required: (value: string | null) => !!value || 'Package Name is required'
+      rawUrls: null,
+      loadingDialog: false
+    }
+  },
+  computed: {
+    /**
+     * The formatted user URLs.
+     */
+    userUrls(): Array<string> {
+      return this.rawUrls?.split('\n').filter(Boolean) || []
+    },
+    /**
+     * The error messages for the user URLs.
+     */
+    rawUrlsErrorMessages(): Array<string> {
+      const errors: Array<string> = []
+      for (const url of this.userUrls) {
+        if (validator.isURL(url) === false) {
+          errors.push(`URL ${url} is invalid`)
+        }
       }
+      return errors
     }
   },
   watch: {
-    isFormValid(newVal) {
-      this.$emit('update:isStepValid', typeof newVal === 'boolean' ? newVal : false)
+    rawUrlsErrorMessages(newVal) {
+      this.$emit('update:isStepValid', newVal.length > 0)
     }
   },
   mounted() {
-    this.$emit('update:scan-target-step-title', 'Package Name')
+    this.$emit('update:scan-target-step-title', 'Target Web APIs')
     this.$emit('update:scan-target-step-subtitle', 'required')
   },
   methods: {
+    /**
+     * Clear the input.
+     */
     clear(): void {
-      this.packageName = null
+      this.rawUrls = null
     },
-    createScan() {}
+    /**
+     * Create a scan.
+     */
+    createScan(): void {}
   }
 })
 </script>
-
-  <style>
-  .fill-width.v-input--selection-controls .v-input__control {
-    width: 100% !important;
-  }
-  </style>

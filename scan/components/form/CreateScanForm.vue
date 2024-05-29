@@ -10,19 +10,16 @@
       <template #default="{ step }">
         <v-stepper-vertical-item
           :complete="step > 1"
-          title="Asset"
+          title="Scanner"
+          subtitle="Select or create a scanner to run the scan on"
           value="1"
         >
-          <AssetTypeSelector
-            id="select_asset"
-            v-model:model-value="assetPlatformType"
-            :items="assetTypeItems"
-            @click="stepNumber++"
-          />
+          <ScannerSelect v-model:model-value="selectedScanner" />
           <template #next="{ next }">
             <v-btn
               color="primary"
               variant="elevated"
+              :disabled="selectedScanner === null"
               @click="next"
             >
               <v-icon start>
@@ -37,21 +34,20 @@
 
         <v-stepper-vertical-item
           :complete="step > 2"
-          title="Application"
-          subtitle="required"
+          title="Asset"
           value="2"
-          :error="isStepValid === false && step > 2"
         >
-          <component
-            :is="scanTargetForm"
-            v-model:is-step-valid="isStepValid"
-            :asset-type="assetType"
-            :asset-platform-type="assetPlatformType"
+          <AssetTypeSelector
+            id="select_asset"
+            v-model:model-value="assetPlatformType"
+            :items="assetTypeItems"
+            @click="stepNumber++"
           />
           <template #next="{ next }">
             <v-btn
               color="primary"
               variant="elevated"
+              :disabled="isStepValid === false"
               @click="next"
             >
               <v-icon start>
@@ -72,44 +68,23 @@
         </v-stepper-vertical-item>
 
         <v-stepper-vertical-item
-          title="Agent Group"
-          subtitle="Select or create an agent group to use"
+          :title="scanTargetStepTitle || 'Scan Target'"
+          :subtitle="scanTargetStepSubtitle"
           value="3"
-          @click:next="onClickFinish"
+          :error="isStepValid === false"
+          @click:next="null"
         >
-          Lorem ipsum dolor sit amet consectetur adipisicing elit.
-
-          <template #next="{ next }">
-            <v-btn
-              color="success"
-              variant="elevated"
-              @click="next"
-            >
-              <v-icon start>
-                mdi-check
-              </v-icon>
-              Submit
-            </v-btn>
-          </template>
-
-          <template #prev="{ prev }">
-            <v-btn
-              v-if="finished === true"
-              variant="elevated"
-              @click="prev"
-            />
-
-            <v-btn
-              v-else
-              variant="elevated"
-              @click="finished = false; stepNumber = 1"
-            >
-              <v-icon start>
-                mdi-cancel
-              </v-icon>
-              Reset
-            </v-btn>
-          </template>
+          <component
+            :is="scanTargetForm"
+            v-model:scan-target-step-title="scanTargetStepTitle"
+            v-model:scan-target-step-subtitle="scanTargetStepSubtitle"
+            v-model:is-step-valid="isStepValid"
+            :asset-type="assetType"
+            :asset-platform-type="assetPlatformType"
+            @reset="stepNumber = 1"
+          />
+          <template #next="" />
+          <template #prev="" />
         </v-stepper-vertical-item>
       </template>
     </v-stepper-vertical>
@@ -117,9 +92,16 @@
 </template>
 
 <script lang="ts">
+import type { Scanner } from '~/stores/scanners'
 import { AssetEnum, type Group } from '~/scan/types'
 import AssetTypeSelector from '~/scan/components/AssetTypeSelector.vue'
 import CreateMobileScanStoreForm from '~/scan/components/form/CreateMobileScanStoreForm.vue'
+import CreateWebScanForm from '~/scan/components/form/CreateWebScanForm.vue'
+import CreateWebApiScanForm from '~/scan/components/form/CreateWebApiScanForm.vue'
+import CreateNetworkScanForm from '~/scan/components/form/CreateNetworkScanForm.vue'
+import CreateMobileScanFileForm from '~/scan/components/form/CreateMobileScanFileForm.vue'
+import CreateScanYamlForm from '~/scan/components/form/CreateScanYamlForm.vue'
+import ScannerSelect from '~/scan/components/ScannerSelect.vue'
 
 interface Data {
   isStepValid: boolean
@@ -127,13 +109,27 @@ interface Data {
   finished: boolean
   assetTypeItems: Array<Group>
   assetPlatformType: AssetEnum | undefined | null
+  scanTargetStepTitle: string | null
+  scanTargetStepSubtitle: string | null
+  selectedScanner: Scanner | null
 }
 
 export default defineComponent({
   name: 'CreateScanForm',
-  components: { AssetTypeSelector, CreateMobileScanStoreForm },
+  components: {
+    AssetTypeSelector,
+    CreateMobileScanStoreForm,
+    CreateWebScanForm,
+    CreateWebApiScanForm,
+    CreateNetworkScanForm,
+    CreateScanYamlForm,
+    ScannerSelect
+  },
   data(): Data {
     return {
+      selectedScanner: null,
+      scanTargetStepTitle: null,
+      scanTargetStepSubtitle: null,
       isStepValid: true,
       stepNumber: 1,
       finished: false,
@@ -222,13 +218,45 @@ export default defineComponent({
      * The input form to show based on the asset type.
      */
     scanTargetForm(): ReturnType<typeof defineComponent> {
-      return CreateMobileScanStoreForm
+      switch (this.assetPlatformType) {
+        case AssetEnum.ANDROID_APK:
+        case AssetEnum.IOS_IPA:
+          return CreateMobileScanFileForm
+        case AssetEnum.ANDROID_PLAYSTORE:
+        case AssetEnum.IOS_APPSTORE:
+          return CreateMobileScanStoreForm
+        case AssetEnum.WEB_APP:
+          return CreateWebScanForm
+        case AssetEnum.WEB_API:
+          return CreateWebApiScanForm
+        case AssetEnum.NETWORK:
+          return CreateNetworkScanForm
+        case AssetEnum.YAML:
+          return CreateScanYamlForm
+        default:
+          return null
+      }
     },
     /**
      * The selected asset type.
      */
-    assetType(): string {
-      return 'android'
+    assetType(): AssetEnum | string | null {
+      switch (this.assetPlatformType) {
+        case AssetEnum.ANDROID_APK:
+        case AssetEnum.ANDROID_PLAYSTORE:
+          return 'android'
+        case AssetEnum.IOS_IPA:
+        case AssetEnum.IOS_APPSTORE:
+          return 'ios'
+        case AssetEnum.WEB_API:
+          return AssetEnum.WEB_API
+        case AssetEnum.WEB_APP:
+          return AssetEnum.WEB_APP
+        case AssetEnum.NETWORK:
+          return AssetEnum.NETWORK
+        default:
+          return null
+      }
     }
   }
 })
