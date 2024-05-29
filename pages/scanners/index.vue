@@ -32,7 +32,7 @@
 </template>
 
 <script setup lang="ts">
-import type { Scanner } from '~/stores/scanners'
+import type { Scanner } from '~/project/types'
 
 const scannersStore = useScannersStore()
 
