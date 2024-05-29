@@ -41,20 +41,29 @@
               </v-icon>
               Existing Agent Groups
             </div>
-            <v-list
-              v-model:selected="selectedAgentGroup"
-              style="height: 300px; flex-grow: 1; border-right: 1px solid #DADADA;"
-              density="compact"
-              return-object
-            >
-              <v-list-item
-                v-for="item in existingAgentGroups"
-                :key="item.key"
-                :value="item"
-                :title="item.key"
-                :subtitle="item.description"
-              />
-            </v-list>
+            <div style="border-right: 1px solid #DADADA; height: 300px">
+              <p
+                v-if="existingAgentGroups.length === 0"
+                class="ml-4 pt-2 text-grey"
+              >
+                You have not yet created any scanners
+              </p>
+              <v-list
+                v-else
+                v-model:selected="selectedAgentGroup"
+                style="height: 100%; flex-grow: 1;"
+                density="compact"
+                return-object
+              >
+                <v-list-item
+                  v-for="item in existingAgentGroups"
+                  :key="`${item.key}-${item.id}`"
+                  :value="item"
+                  :title="item.key"
+                  :subtitle="item.description"
+                />
+              </v-list>
+            </div>
           </div>
           <div style="width: 70%">
             <div class="d-flex align-center tab-header">
@@ -76,6 +85,7 @@
         <v-btn
           color="success"
           variant="elevated"
+          :loading="loading"
           @click="createScan"
         >
           <v-icon start>
@@ -102,8 +112,10 @@
 import { parse as yamlParse } from 'yaml'
 import LoadingDialog from '~/common/components/LoadingDialog.vue'
 import type { AssetEnum } from '~/scan/types'
+import AgentGroupService from '~/agents/services/agentGroup.service'
 
 interface Data {
+  loading: boolean
   selectedAgentGroup: {
     key: string
     description: string
@@ -121,6 +133,7 @@ interface Data {
     description: string
     agentGroup: string
   }>
+  agentGroupService: AgentGroupService
 }
 
 export default defineComponent({
@@ -141,11 +154,12 @@ export default defineComponent({
   emits: ['update:isStepValid', 'update:scan-target-step-title', 'update:scan-target-step-subtitle', 'reset'],
   data(): Data {
     return {
+      loading: false,
+      agentGroupService: new AgentGroupService(this.$axios),
       inputTab: 'assets',
       selectedAgentGroup: null,
       agentGroupInput: `
 description: Agent group definition for web scan
-kind: AgentGroup
 name: onprem_web
 agents:
 - args:
@@ -158,7 +172,6 @@ agents:
           description: 'Network scan',
           agentGroup: `
 description: Network scan
-kind: AgentGroup
 name: onprem_ip
 agents:
 - args:
@@ -171,7 +184,6 @@ agents:
           description: 'Android scan',
           agentGroup: `
 description: Android scan
-kind: AgentGroup
 name: onprem_mobile
 agents:
 - args:
@@ -199,6 +211,9 @@ agents:
       return isValid
     }
   },
+  async created() {
+    await this.getAgentGroups()
+  },
   mounted() {
     this.$emit('update:scan-target-step-title', 'YAML definition file')
     this.$emit('update:scan-target-step-subtitle', 'required')
@@ -211,26 +226,36 @@ agents:
       this.agentGroupInput = null
       this.selectedAgentGroup = null
     },
-    /**
-     * Create a scan.
-     */
-    createScan(): void {
+    async getAgentGroups(): Promise<void> {
       try {
-        const agentGroupId = this.getAgentGroupId()
-        console.log({ agentGroupId })
+        this.existingAgentGroups = await this.agentGroupService.getAgentGroups()
       } catch (e) {
         console.error(e)
       }
     },
     /**
+     * Create a scan.
+     */
+    async createScan(): void {
+      try {
+        this.loading = true
+        const agentGroupId = await this.getAgentGroupId()
+        console.log({ agentGroupId })
+      } catch (e) {
+        console.error(e)
+      } finally {
+        this.loading = false
+      }
+    },
+    /**
      * Get the agent group ID to use for the scan.
      */
-    getAgentGroupId(): number {
+    async getAgentGroupId(): number {
       try {
-        if (this.selectedAgentGroup !== null && this.selectedAgentGroup[0]?.trim() !== '') {
-          return this.selectedAgentGroup?.id
+        if ((this.selectedAgentGroup || []).length > 0) {
+          return this.selectedAgentGroup[0]?.id
         } else {
-          const newAgentGroup = this.createAgentGroup()
+          const newAgentGroup = await this.createAgentGroup()
           return newAgentGroup.id
         }
       } catch (e) {
@@ -240,10 +265,17 @@ agents:
     /**
      * Create an agent group.
      */
-    createAgentGroup() {
+    async createAgentGroup() {
       try {
         if (this.agentGroupInput !== null) {
-          yamlParse(this.agentGroupInput)
+          const agentGroupDefinition = yamlParse(this.agentGroupInput)
+          const agentGroup = await this.agentGroupService.createAgentGroup({
+            description: agentGroupDefinition?.description,
+            agents: agentGroupDefinition?.agents,
+            name: agentGroupDefinition?.name
+          })
+          await this.getAgentGroups()
+          return agentGroup
         }
       } catch (e) {
         console.error(e)
