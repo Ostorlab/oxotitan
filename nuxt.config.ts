@@ -13,13 +13,15 @@ export default defineNuxtConfig({
     transpile: ['vuetify']
   },
   modules: [
+    'nuxt-monaco-editor',
     '@nuxt/eslint',
     (_options, nuxt) => {
       nuxt.hooks.hook('vite:extendConfig', (config) => {
         config?.plugins?.push(vuetify({ autoImport: true }))
       })
     },
-    '@pinia/nuxt'
+    '@pinia/nuxt',
+    '@pinia-plugin-persistedstate/nuxt'
   ],
   pinia: {
     storesDirs: ['./stores/**']
@@ -38,7 +40,7 @@ export default defineNuxtConfig({
     }
   },
   features: {
-    // Set this to false if the UI is freezing with infinite logs.
+    // Some infinite warnings in dev mode blocking the app in browser. So, disabling it. Set it to True for debugging.
     devLogs: false
   }
 })
