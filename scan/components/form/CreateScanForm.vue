@@ -12,7 +12,7 @@
           :complete="step > 1"
           title="Scanner"
           subtitle="Select or create a scanner to run the scan on"
-          value="1"
+          :value="1"
         >
           <ScannerSelect v-model:model-value="selectedScanner" />
           <template #next="{ next }">
