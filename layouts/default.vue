@@ -12,51 +12,51 @@
         mdi-menu
       </v-icon>
     </v-btn>
-    <!--    <v-navigation-drawer -->
-    <!--      v-model="drawer" -->
-    <!--      temporary -->
-    <!--    > -->
-    <!--      <div class="d-flex align-center pa-3"> -->
-    <!--        <img -->
-    <!--          src="/logo/oxo.png" -->
-    <!--          alt="Ostorlab logo" -->
-    <!--          style="height:40px; object-fit: contain" -->
-    <!--        > -->
-    <!--        <v-btn -->
-    <!--          size="small" -->
-    <!--          variant="tonal" -->
-    <!--          class="ml-auto px-1" -->
-    <!--          @click="drawer = !drawer" -->
-    <!--        > -->
-    <!--          <v-icon :size="20"> -->
-    <!--            mdi-close -->
-    <!--          </v-icon> -->
-    <!--        </v-btn> -->
-    <!--      </div> -->
+    <v-navigation-drawer
+      v-model="drawer"
+      temporary
+    >
+      <div class="d-flex align-center pa-3">
+        <img
+          src="/logo/oxo.png"
+          alt="Ostorlab logo"
+          style="height:40px; object-fit: contain"
+        >
+        <v-btn
+          size="small"
+          variant="tonal"
+          class="ml-auto px-1"
+          @click="drawer = !drawer"
+        >
+          <v-icon :size="20">
+            mdi-close
+          </v-icon>
+        </v-btn>
+      </div>
 
-    <!--      <v-divider /> -->
+      <v-divider />
 
-    <!--      <v-list -->
-    <!--        density="compact" -->
-    <!--        nav -->
-    <!--      > -->
-    <!--        <v-list-item -->
-    <!--          v-for="drawerItem in drawerItems" -->
-    <!--          :key="drawerItem.to" -->
-    <!--          :value="drawerItem.value" -->
-    <!--          :to="drawerItem.to" -->
-    <!--        > -->
-    <!--          <div class="d-flex align-center"> -->
-    <!--            <v-icon> -->
-    <!--              {{ drawerItem.icon }} -->
-    <!--            </v-icon> -->
-    <!--            <p class="mb-0 ml-2"> -->
-    <!--              {{ drawerItem.title }} -->
-    <!--            </p> -->
-    <!--          </div> -->
-    <!--        </v-list-item> -->
-    <!--      </v-list> -->
-    <!--    </v-navigation-drawer> -->
+      <v-list
+        density="compact"
+        nav
+      >
+        <v-list-item
+          v-for="drawerItem in drawerItems"
+          :key="drawerItem.to"
+          :value="drawerItem.value"
+          :to="drawerItem.to"
+        >
+          <div class="d-flex align-center">
+            <v-icon>
+              {{ drawerItem.icon }}
+            </v-icon>
+            <p class="mb-0 ml-2">
+              {{ drawerItem.title }}
+            </p>
+          </div>
+        </v-list-item>
+      </v-list>
+    </v-navigation-drawer>
     <v-main>
       <div class="mx-4 mt-2">
         <slot />
