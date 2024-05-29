@@ -3,15 +3,20 @@ import type { OxoScanType, QueryScansArgs } from '~/graphql/types'
 import requestAggregator from '~/utils/requestAggregator'
 
 const SCANS_QUERY = gql`query scans($scanIds: [Int], $page: Int, $numberElements: Int, $orderBy: OxoScanOrderByEnum, $sort: SortEnum) {
-    scans(scanIds: $scanIds, page: $page, numberElements: $numberElements, orderBy: $orderBy, sort: $sort) {
-        scans {
-            id
-            title
-            asset
-            createdTime
-            progress
-        }
+
+  scans(scanIds: $scanIds, page: $page, numberElements: $numberElements, orderBy: $orderBy, sort: $sort) {
+    pageInfo{
+      count
+      numPages
     }
+    scans {
+      id
+      title
+      asset
+      createdTime
+      progress
+    }
+  }
 }
 `
 
@@ -27,7 +32,7 @@ export default class ScansService {
     this.totalScans = 0
     let scans: OxoScanType[] = []
     for (const [endpoint, response] of responses) {
-      this.totalScans += response?.data?.scans?.scans?.length || 0
+      // this.totalScans += response?.data?.scans.pageInfo?.count || 0
       let requestScans = response?.data?.scans?.scans || []
       requestScans = requestScans.map((scan: OxoScanType) => {
         return {
@@ -50,7 +55,7 @@ export default class ScansService {
       queryScansArgs.numberElements = undefined
       queryScansArgs.page = undefined
     }
-    const responses = await this.requestAggregator.postToAll('/graphql', {
+    const responses = await this.requestAggregator.postToAll({
       query: SCANS_QUERY,
       variables: queryScansArgs
     })

@@ -33,13 +33,12 @@ export default class requestAggregator {
 
   /**
      * Method to post a request to all scanners and return the responses
-     * @param request
      * @param data
      */
-  async postToAll(request: string, data: NonNullable<unknown>): Promise<Map<string, unknown>> {
+  async postToAll(data: NonNullable<unknown>): Promise<Map<string, unknown>> {
     const responses = new Map<string, unknown>()
     for (const scanner of this.scanners) {
-      const response = await this.$axios.post(scanner.endpoint + request, data, {
+      const response = await this.$axios.post(scanner.endpoint, data, {
         headers: this._createAuthorizationHeader(scanner)
       })
       responses.set(scanner.endpoint, response.data)
@@ -50,11 +49,10 @@ export default class requestAggregator {
   /**
      * Method to post a request to a specific scanner and return the response
      * @param scanner
-     * @param request
      * @param data
      */
-  async postToScanner(scanner: Scanner, request: string, data: NonNullable<unknown>) {
-    return await this.$axios.post(scanner.endpoint + request, data, {
+  async postToScanner(scanner: Scanner, data: NonNullable<unknown>) {
+    return await this.$axios.post(scanner.endpoint, data, {
       headers: this._createAuthorizationHeader(scanner)
     })
   }

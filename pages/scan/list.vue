@@ -19,6 +19,7 @@
         variant="outlined"
         class="mt-3"
       >
+        {{ service.totalScans }}
         <v-data-table-server
           v-model:options="options"
           hover

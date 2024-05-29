@@ -6,7 +6,7 @@ interface ScannersState {
 }
 
 /**
- * Represents the actions of the scanners store.
+ * Represents the actions of the scanners' store.
  */
 interface ScannersActions {
   /**
