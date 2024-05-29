@@ -20,6 +20,7 @@
     "@vuelidate/validators": "^2.0.4",
     "axios": "^1.7.2",
     "lodash": "^4.17.21",
+    "notivue": "^2.4.4",
     "nuxt": "^3.11.2",
     "nuxt-monaco-editor": "^1.2.9",
     "pinia": "^2.1.7",
