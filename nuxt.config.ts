@@ -13,6 +13,7 @@ export default defineNuxtConfig({
     transpile: ['vuetify']
   },
   modules: [
+    'nuxt-monaco-editor',
     '@nuxt/eslint',
     (_options, nuxt) => {
       nuxt.hooks.hook('vite:extendConfig', (config) => {
