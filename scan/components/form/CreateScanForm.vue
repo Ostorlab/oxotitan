@@ -31,11 +31,49 @@
 
           <template #prev />
         </v-stepper-vertical-item>
-
         <v-stepper-vertical-item
           :complete="step > 2"
-          title="Asset"
+          title="Title"
+          subtitle="Optional"
           :value="2"
+        >
+          <v-text-field
+            v-model="scanTitle"
+            variant="outlined"
+            density="compact"
+            clearable
+            hide-details
+            label="Scan Title (Otpional)"
+            placeholder="Enter a scan title to easily identify your scan"
+            prepend-icon="mdi-format-tile"
+          />
+          <template #next="{ next }">
+            <v-btn
+              color="primary"
+              variant="elevated"
+              @click="next"
+            >
+              <v-icon start>
+                mdi-skip-next-outline
+              </v-icon>
+              Continue
+            </v-btn>
+          </template>
+
+          <template #prev="{ prev }">
+            <v-btn
+              variant="elevated"
+              @click="prev"
+            >
+              Previous
+            </v-btn>
+          </template>
+        </v-stepper-vertical-item>
+
+        <v-stepper-vertical-item
+          :complete="step > 3"
+          title="Asset"
+          :value="3"
         >
           <AssetTypeSelector
             id="select_asset"
@@ -72,7 +110,7 @@
           v-model:scan-target-step-subtitle="scanTargetStepSubtitle"
           v-model:is-step-valid="isStepValid"
           :asset-type="assetType"
-          :step="3"
+          :step="4"
           :asset-platform-type="assetPlatformType"
           @reset="stepNumber = 1"
         />
@@ -97,6 +135,7 @@ interface Data {
   isStepValid: boolean
   stepNumber: number
   finished: boolean
+  scanTitle: string | null
   assetTypeItems: Array<Group>
   assetPlatformType: AssetEnum | undefined | null
   scanTargetStepTitle: string | null
@@ -117,6 +156,7 @@ export default defineComponent({
   },
   data(): Data {
     return {
+      scanTitle: null,
       selectedScanner: null,
       scanTargetStepTitle: null,
       scanTargetStepSubtitle: null,
