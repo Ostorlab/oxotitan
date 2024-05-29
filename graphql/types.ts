@@ -26,6 +26,12 @@ export type Scalars = {
   Upload: { input: any, output: any }
 }
 
+/** Delete Scan & its information mutation. */
+export type DeleteScanMutation = {
+  __typename?: 'DeleteScanMutation'
+  result?: Maybe<Scalars['Boolean']['output']>
+}
+
 /** Import scan mutation. */
 export type ImportScanMutation = {
   __typename?: 'ImportScanMutation'
@@ -34,8 +40,14 @@ export type ImportScanMutation = {
 
 export type Mutations = {
   __typename?: 'Mutations'
-  /** Import scan from file */
+  /** Delete a scan & all its information. */
+  deleteScan?: Maybe<DeleteScanMutation>
+  /** Import scan from file. */
   importScan?: Maybe<ImportScanMutation>
+}
+
+export type MutationsDeleteScanArgs = {
+  scanId: Scalars['Int']['input']
 }
 
 export type MutationsImportScanArgs = {
@@ -110,6 +122,7 @@ export type OxoScanTypeVulnerabilitiesArgs = {
 /** Graphene object type for a list of scans. */
 export type OxoScansType = {
   __typename?: 'OxoScansType'
+  pageInfo?: Maybe<PageInfo>
   scans: Array<Maybe<OxoScanType>>
 }
 
@@ -131,10 +144,25 @@ export type OxoVulnerabilityType = {
   technicalDetail?: Maybe<Scalars['String']['output']>
 }
 
+/** Page info object type. */
+export type PageInfo = {
+  __typename?: 'PageInfo'
+  count?: Maybe<Scalars['Int']['output']>
+  hasNext?: Maybe<Scalars['Boolean']['output']>
+  hasPrevious?: Maybe<Scalars['Boolean']['output']>
+  numPages?: Maybe<Scalars['Int']['output']>
+}
+
 export type Query = {
   __typename?: 'Query'
+  /** Retrieve scan by id. */
+  scan?: Maybe<OxoScanType>
   /** List of scans. */
   scans?: Maybe<OxoScansType>
+}
+
+export type QueryScanArgs = {
+  scanId?: InputMaybe<Scalars['Int']['input']>
 }
 
 export type QueryScansArgs = {
@@ -173,6 +201,6 @@ export enum RiskRatingEnum {
 
 /** Sort enum, for the sorting order of the results. */
 export enum SortEnum {
-  Asc = 'ASC',
-  Desc = 'DESC'
+  Asc = 'Asc',
+  Desc = 'Desc'
 }
