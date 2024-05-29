@@ -10,19 +10,16 @@
       <template #default="{ step }">
         <v-stepper-vertical-item
           :complete="step > 1"
-          title="Asset"
+          title="Scanner"
+          subtitle="Select or create a scanner to run the scan on"
           value="1"
         >
-          <AssetTypeSelector
-            id="select_asset"
-            v-model:model-value="assetPlatformType"
-            :items="assetTypeItems"
-            @click="stepNumber++"
-          />
+          <ScannerSelect v-model:model-value="selectedScanner" />
           <template #next="{ next }">
             <v-btn
               color="primary"
               variant="elevated"
+              :disabled="selectedScanner === null"
               @click="next"
             >
               <v-icon start>
@@ -37,10 +34,45 @@
 
         <v-stepper-vertical-item
           :complete="step > 2"
-          :title="scanTargetStepTitle"
-          :subtitle="scanTargetStepSubtitle"
+          title="Asset"
           value="2"
-          :error="isStepValid === false && step > 2"
+        >
+          <AssetTypeSelector
+            id="select_asset"
+            v-model:model-value="assetPlatformType"
+            :items="assetTypeItems"
+            @click="stepNumber++"
+          />
+          <template #next="{ next }">
+            <v-btn
+              color="primary"
+              variant="elevated"
+              :disabled="isStepValid === false"
+              @click="next"
+            >
+              <v-icon start>
+                mdi-skip-next-outline
+              </v-icon>
+              Continue
+            </v-btn>
+          </template>
+
+          <template #prev="{ prev }">
+            <v-btn
+              variant="elevated"
+              @click="prev"
+            >
+              Previous
+            </v-btn>
+          </template>
+        </v-stepper-vertical-item>
+
+        <v-stepper-vertical-item
+          :title="scanTargetStepTitle || 'Scan Target'"
+          :subtitle="scanTargetStepSubtitle"
+          value="3"
+          :error="isStepValid === false"
+          @click:next="null"
         >
           <component
             :is="scanTargetForm"
@@ -60,6 +92,7 @@
 </template>
 
 <script lang="ts">
+import type { Scanner } from '~/stores/scanners'
 import { AssetEnum, type Group } from '~/scan/types'
 import AssetTypeSelector from '~/scan/components/AssetTypeSelector.vue'
 import CreateMobileScanStoreForm from '~/scan/components/form/CreateMobileScanStoreForm.vue'
@@ -68,6 +101,7 @@ import CreateWebApiScanForm from '~/scan/components/form/CreateWebApiScanForm.vu
 import CreateNetworkScanForm from '~/scan/components/form/CreateNetworkScanForm.vue'
 import CreateMobileScanFileForm from '~/scan/components/form/CreateMobileScanFileForm.vue'
 import CreateScanYamlForm from '~/scan/components/form/CreateScanYamlForm.vue'
+import ScannerSelect from '~/scan/components/ScannerSelect.vue'
 
 interface Data {
   isStepValid: boolean
@@ -77,6 +111,7 @@ interface Data {
   assetPlatformType: AssetEnum | undefined | null
   scanTargetStepTitle: string | null
   scanTargetStepSubtitle: string | null
+  selectedScanner: Scanner | null
 }
 
 export default defineComponent({
@@ -87,10 +122,12 @@ export default defineComponent({
     CreateWebScanForm,
     CreateWebApiScanForm,
     CreateNetworkScanForm,
-    CreateScanYamlForm
+    CreateScanYamlForm,
+    ScannerSelect
   },
   data(): Data {
     return {
+      selectedScanner: null,
       scanTargetStepTitle: null,
       scanTargetStepSubtitle: null,
       isStepValid: true,
