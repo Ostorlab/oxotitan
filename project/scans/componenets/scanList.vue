@@ -243,8 +243,17 @@ export default defineComponent({
      * Delete the scan
      * @param scan
      */
-    deleteScan(scan: OxoScanType): void {
-      this.service.deleteScan(scan)
+    async deleteScan(scan: OxoScanType): Promise<void> {
+      this.loading = true
+      try {
+        await this.service.deleteScan(this.scanner, parseInt(scan.id))
+        this.reportSuccess('Scan deleted successfully')
+      } catch (e) {
+        this.reportError(`An error occurred while deleting the scan: ${e!.message}`)
+      } finally {
+        this.loading = false
+      }
+      await this.fetchScans()
     },
     /**
      * Fetch the scans

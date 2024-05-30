@@ -21,6 +21,13 @@ const SCANS_QUERY = gql`query scans($scanIds: [Int], $page: Int, $numberElements
 }
 `
 
+const DELETE_SCAN_MUTATION = gql`mutation stopScan($scanId: Int!) {
+  deleteScan(scanId: $scanId) {
+    result
+  }
+}
+`
+
 export default class ScansService {
   private readonly requestAggregator: requestHandler
   totalScans: number
@@ -62,10 +69,18 @@ export default class ScansService {
 
   /**
    * Delete a scan
-   * @param _scan
+   * @param scanner
+   * @param scanId
    */
-  deleteScan(_scan: OxoScanType): Promise<void> {
-    // TODO (mouhcine): Implement deleteScan
-    return Promise.resolve()
+  async deleteScan(scanner: Scanner, scanId: number): Promise<boolean> {
+    const response = await this.requestAggregator.post(
+      scanner,
+      {
+        query: DELETE_SCAN_MUTATION,
+        variables: {
+          scanId: scanId
+        }
+      })
+    return response?.data?.deleteScan?.result || false
   }
 }
