@@ -5,13 +5,61 @@ schema {
     mutation: Mutations
 }
 
+"Graphene object type for a list of agent arguments."
+type AgentArgumentType {
+    description: String
+    id: ID!
+    name: String
+    type: String
+    value: String
+}
+
+"Graphene object type for a list of agent arguments."
+type AgentArgumentsType {
+    args: [AgentArgumentType]!
+}
+
+"SQLAlchemy object type for an agent group."
+type AgentGroupType {
+    agents: AgentsType!
+    createdTime: DateTime
+    description: String
+    id: ID!
+    key: String
+    name: String
+}
+
+type AgentGroupsType {
+    agentGroups: [AgentGroupType]!
+    pageInfo: PageInfo
+}
+
+"SQLAlchemy object type for an agent."
+type AgentType {
+    args: AgentArgumentsType!
+    id: ID!
+    key: String
+}
+
+"Graphene object type for a list of agents."
+type AgentsType {
+    agents: [AgentType]!
+}
+
+"Delete Scan & its information mutation."
+type DeleteScanMutation {
+    result: Boolean
+}
+
 "Import scan mutation."
 type ImportScanMutation {
     message: String
 }
 
 type Mutations {
-    "Import scan from file"
+    "Delete a scan & all its information."
+    deleteScan(scanId: Int!): DeleteScanMutation
+    "Import scan from file."
     importScan(file: Upload!, scanId: Int): ImportScanMutation
 }
 
@@ -50,6 +98,7 @@ type OxoScanType {
 
 "Graphene object type for a list of scans."
 type OxoScansType {
+    pageInfo: PageInfo
     scans: [OxoScanType]!
 }
 
@@ -69,9 +118,26 @@ type OxoVulnerabilityType {
     technicalDetail: String
 }
 
+"Page info object type."
+type PageInfo {
+    count: Int
+    hasNext: Boolean
+    hasPrevious: Boolean
+    numPages: Int
+}
+
 type Query {
+    agentGroups(agentGroupIds: [Int], numberElements: Int, orderBy: AgentGroupOrderByEnum, page: Int, search: String, sort: SortEnum): AgentGroupsType
+    "Retrieve scan by id."
+    scan(scanId: Int): OxoScanType
     "List of scans."
     scans(numberElements: Int, orderBy: OxoScanOrderByEnum, page: Int, scanIds: [Int], sort: SortEnum): OxoScansType
+}
+
+enum AgentGroupOrderByEnum {
+    AgentGroupId
+    CreatedTime
+    Name
 }
 
 "Enum for the elements to order a scan by."
@@ -110,8 +176,8 @@ enum RiskRatingEnum {
 
 "Sort enum, for the sorting order of the results."
 enum SortEnum {
-    ASC
-    DESC
+    Asc
+    Desc
 }
 
 """
