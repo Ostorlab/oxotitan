@@ -1,4 +1,5 @@
 <template>
+  <!-- TODO (Rabson) Read vulnTitle from object passed from the scan page -->
   <VulnerabilityDetail
     :scan-id="$route.params.scan"
     vuln-title="SQL Injection"
@@ -6,7 +7,6 @@
 </template>
 
 <script lang="ts">
-// :vuln-id="$route.params.vuln"
 import VulnerabilityDetail from '~/scan/components/vulnz/VulnerabilityDetail.vue'
 
 export default defineComponent({
