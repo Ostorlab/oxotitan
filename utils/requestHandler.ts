@@ -5,7 +5,7 @@ import type { Scanner } from '~/project/types'
 /**
  * Class to aggregate requests to multiple scanners and return the responses
  */
-export default class requestHandler {
+export default class RequestHandler {
   private readonly $axios: AxiosInstance
 
   /**
@@ -20,10 +20,10 @@ export default class requestHandler {
      * Method to create the authorization header for the request
      * @param scanner
      */
-  _createAuthorizationHeader(scanner: Scanner): { Authorization: string } {
+  _createAuthorizationHeader(scanner: Scanner): { 'X-API-KEY': string } {
     // TODO (mouhcine): Make sure to use the correct authorization header, after ticket #os-9357 is fixed
     return {
-      Authorization: 'Bearer ' + scanner.apiKey
+      'X-API-KEY': scanner.apiKey
     }
   }
 
