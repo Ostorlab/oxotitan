@@ -20,10 +20,9 @@ export default class requestHandler {
      * Method to create the authorization header for the request
      * @param scanner
      */
-  _createAuthorizationHeader(scanner: Scanner): { Authorization: string } {
-    // TODO (mouhcine): Make sure to use the correct authorization header, after ticket #os-9357 is fixed
+  _createAuthorizationHeader(scanner: Scanner): { 'X-Api-Key': string } {
     return {
-      Authorization: 'Bearer ' + scanner.apiKey
+      'X-Api-Key': scanner.apiKey
     }
   }
 
