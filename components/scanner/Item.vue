@@ -53,12 +53,18 @@ const props = defineProps<{
 
 const showForm = ref(false)
 const scannersStore = useScannersStore()
+const notificationsStore = useNotificationsStore()
 
 /**
  * Remove the current scanner.
  */
 const onRemoveScanner = (): void => {
-  scannersStore.deleteScanner(props.scanner.endpoint)
+  try {
+    scannersStore.deleteScanner(props.scanner.endpoint)
+    notificationsStore.reportSuccess('Scanner deleted successfully.')
+  } catch (error) {
+    notificationsStore.reportError('Failed to delete scanner. Please try again.')
+  }
 }
 
 /**

@@ -1,23 +1,12 @@
 import { defineStore } from 'pinia'
+import type { Scanner } from '~/project/types'
 
-/**
- * Represents a Scanner object.
- */
-export interface Scanner {
-  endpoint: string
-  apiKey: string
-  name: string
-}
-
-/**
- * Represents the state of the scanners store.
- */
 interface ScannersState {
   scanners: Scanner[]
 }
 
 /**
- * Represents the actions of the scanners store.
+ * Represents the actions of the scanners' store.
  */
 interface ScannersActions {
   /**

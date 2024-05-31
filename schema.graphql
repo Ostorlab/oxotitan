@@ -5,13 +5,20 @@ schema {
     mutation: Mutations
 }
 
+"Delete Scan & its information mutation."
+type DeleteScanMutation {
+    result: Boolean
+}
+
 "Import scan mutation."
 type ImportScanMutation {
     message: String
 }
 
 type Mutations {
-    "Import scan from file"
+    "Delete a scan & all its information."
+    deleteScan(scanId: Int!): DeleteScanMutation
+    "Import scan from file."
     importScan(file: Upload!, scanId: Int): ImportScanMutation
 }
 
@@ -50,6 +57,7 @@ type OxoScanType {
 
 "Graphene object type for a list of scans."
 type OxoScansType {
+    pageInfo: PageInfo
     scans: [OxoScanType]!
 }
 
@@ -69,7 +77,17 @@ type OxoVulnerabilityType {
     technicalDetail: String
 }
 
+"Page info object type."
+type PageInfo {
+    count: Int
+    hasNext: Boolean
+    hasPrevious: Boolean
+    numPages: Int
+}
+
 type Query {
+    "Retrieve scan by id."
+    scan(scanId: Int): OxoScanType
     "List of scans."
     scans(numberElements: Int, orderBy: OxoScanOrderByEnum, page: Int, scanIds: [Int], sort: SortEnum): OxoScansType
 }
@@ -110,8 +128,8 @@ enum RiskRatingEnum {
 
 "Sort enum, for the sorting order of the results."
 enum SortEnum {
-    ASC
-    DESC
+    Asc
+    Desc
 }
 
 """
