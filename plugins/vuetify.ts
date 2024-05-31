@@ -10,7 +10,7 @@ const myCustomTheme: ThemeDefinition = {
   colors: {
     primary: colors.primary,
     accent: colors.accent,
-    secondary: colors.accent,
+    secondary: colors.secondary,
     info: colors.info,
     success: colors.success,
     warning: colors.warning,
