@@ -31,6 +31,7 @@
         :loading="loading"
         :items-per-page-options="[15, 50, 200, -1]"
         :items-per-page="options.itemsPerPage"
+        @click:row="goScan"
       >
         <template #[`item.Progress`]="{ item }">
           <DfScanProgress :progress="item.progress || 'unknown'" />
@@ -84,6 +85,7 @@
 
 <script lang="ts">
 import { mapActions, mapState } from 'pinia'
+import crc32 from 'crc32/lib/crc32.js'
 import ScanService from '~/project/scans/services/ScanService'
 import { DfScanProgress } from '~/dragonfly/components/Tags/DfScanProgress'
 import { DfConfirmationModal } from '~/dragonfly/components/Modals/DfConfirmationModal'
@@ -220,6 +222,17 @@ export default defineComponent({
   },
   methods: {
     ...mapActions(useNotificationsStore, ['reportSuccess', 'reportError']),
+    goScan(_event: PointerEvent, scan: { item: OxoScanType }) {
+      this.$router.push(
+        {
+          name: 'scan-scanner-scan',
+          params: {
+            scan: scan.item.id,
+            scanner: crc32(this.scanner.endpoint)
+          }
+        }
+      )
+    },
     /**
      * Confirm the stop of the scan
      */

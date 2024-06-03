@@ -5,6 +5,47 @@ schema {
     mutation: Mutations
 }
 
+"Graphene object type for a list of agent arguments."
+type AgentArgumentType {
+    description: String
+    id: ID!
+    name: String
+    type: String
+    value: String
+}
+
+"Graphene object type for a list of agent arguments."
+type AgentArgumentsType {
+    args: [AgentArgumentType]!
+}
+
+"SQLAlchemy object type for an agent group."
+type AgentGroupType {
+    agents: AgentsType!
+    createdTime: DateTime
+    description: String
+    id: ID!
+    key: String
+    name: String
+}
+
+type AgentGroupsType {
+    agentGroups: [AgentGroupType]!
+    pageInfo: PageInfo
+}
+
+"SQLAlchemy object type for an agent."
+type AgentType {
+    args: AgentArgumentsType!
+    id: ID!
+    key: String
+}
+
+"Graphene object type for a list of agents."
+type AgentsType {
+    agents: [AgentType]!
+}
+
 "Delete Scan & its information mutation."
 type DeleteScanMutation {
     result: Boolean
@@ -20,6 +61,8 @@ type Mutations {
     deleteScan(scanId: Int!): DeleteScanMutation
     "Import scan from file."
     importScan(file: Upload!, scanId: Int): ImportScanMutation
+    "Stops running scan, scan is marked as stopped once the engine has completed cancellation."
+    stopScan(scanId: Int!): StopScanMutation
 }
 
 "Graphene object type for an aggregated knowledge base vulnerability."
@@ -36,9 +79,15 @@ type OxoAggregatedKnowledgeBaseVulnerabilityType {
 type OxoKnowledgeBaseVulnerabilityType {
     description: String
     recommendation: String
-    references: String
+    references: [OxoReferenceType]
     shortDescription: String
     title: String
+}
+
+"Graphene object type for a reference."
+type OxoReferenceType {
+    title: String
+    url: String
 }
 
 "Scan object."
@@ -63,6 +112,7 @@ type OxoScansType {
 
 "Graphene object type for a list of vulnerabilities."
 type OxoVulnerabilitiesType {
+    pageInfo: PageInfo
     vulnerabilities: [OxoVulnerabilityType]!
 }
 
@@ -86,10 +136,22 @@ type PageInfo {
 }
 
 type Query {
+    agentGroups(agentGroupIds: [Int], numberElements: Int, orderBy: AgentGroupOrderByEnum, page: Int, search: String, sort: SortEnum): AgentGroupsType
     "Retrieve scan by id."
     scan(scanId: Int): OxoScanType
     "List of scans."
     scans(numberElements: Int, orderBy: OxoScanOrderByEnum, page: Int, scanIds: [Int], sort: SortEnum): OxoScansType
+}
+
+"Stop scan mutation."
+type StopScanMutation {
+    scan: OxoScanType
+}
+
+enum AgentGroupOrderByEnum {
+    AgentGroupId
+    CreatedTime
+    Name
 }
 
 "Enum for the elements to order a scan by."
