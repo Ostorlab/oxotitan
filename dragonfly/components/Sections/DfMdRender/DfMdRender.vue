@@ -34,7 +34,7 @@ defineProps({
   }
 })
 
-onMounted(async () => {
+onMounted(() => {
   Prism.highlightAll()
 })
 </script>
