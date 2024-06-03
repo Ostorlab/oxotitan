@@ -66,18 +66,9 @@ const emit = defineEmits(['close-form'])
 const scannersStore = useScannersStore()
 const notificationsStore = useNotificationsStore()
 
-/**
- * Generate a new scanner ID.
- */
-function generateScannerId(): number {
-  return scannersStore.scanners.length > 0
-    ? scannersStore.scanners[scannersStore.scanners.length - 1].id + 1
-    : 1
-}
 const endpoint = ref<string>(props.scanner?.endpoint || '')
 const name = ref<string>(props.scanner?.name || '')
 const apiKey = ref<string>(props.scanner?.apiKey || '')
-const scannerId = ref<number>(props.scanner?.id || generateScannerId())
 const rules = {
   required: (value: string) => value.trim() !== '' || '',
   url: (value: string) => isURL(value) || 'Must be a valid URL'
@@ -94,8 +85,7 @@ const onSubmit = async (): Promise<void> => {
       scannersStore.addOrUpdateScanner({
         endpoint: endpoint.value,
         apiKey: apiKey.value,
-        name: name.value,
-        id: scannerId.value
+        name: name.value
       })
       resetForm()
       emit('close-form')
