@@ -16,6 +16,7 @@ import 'prismjs/components/prism-liquid'
 import 'prismjs/components/prism-markdown'
 import 'prismjs/components/prism-markup-templating'
 import 'prismjs/components/prism-php'
+import 'prismjs/components/prism-java'
 
 import 'assets/themes/prism/prism-tomorrow.css'
 
