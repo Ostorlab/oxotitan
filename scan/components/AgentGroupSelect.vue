@@ -63,11 +63,14 @@
 </template>
 
 <script lang="ts">
+import { mapActions } from 'pinia'
 import AgentGroupService from '~/agents/services/agentGroup.service'
+import { useNotificationsStore } from '~/stores/notifications'
+import type { Scanner } from '~/project/types'
 
 interface Data {
-  selectedAgentGroup: Scanner | null
-  agentGroups: Array<Scanner>
+  selectedAgentGroup: unknown | null
+  agentGroups: Array<unknown>
   agentGroupService: AgentGroupService
 }
 export default defineComponent({
@@ -76,6 +79,10 @@ export default defineComponent({
     step: {
       type: Number,
       default: 1
+    },
+    selectedScanner: {
+      type: Object as () => Scanner,
+      required: true
     }
   },
   emits: ['reset', 'createScan', 'update:model-value'],
@@ -86,15 +93,25 @@ export default defineComponent({
       agentGroups: []
     }
   },
-  async created() {
-    await this.getAgentGroups()
+  watch: {
+    selectedScanner: {
+      immediate: true,
+      deep: true,
+      async handler(newVal) {
+        this.getAgentGroups(newVal)
+      }
+    }
   },
   methods: {
-    async getAgentGroups(): Promise<void> {
+    ...mapActions(useNotificationsStore, ['reportError']),
+    /**
+     * Fetch  agent groups.
+     */
+    async getAgentGroups(scanner: Scanner): Promise<void> {
       try {
-        this.agentGroups = await this.agentGroupService.getAgentGroups()
-      } catch (e) {
-        console.error(e)
+        this.agentGroups = await this.agentGroupService.getAgentGroups(scanner)
+      } catch (e: unknown) {
+        this.reportError(e?.message || 'Error fetching agent groups')
       }
     }
   }

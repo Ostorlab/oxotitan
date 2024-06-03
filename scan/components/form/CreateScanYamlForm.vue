@@ -126,11 +126,13 @@
 </template>
 
 <script lang="ts">
+import { mapActions } from 'pinia'
 import { parse as yamlParse } from 'yaml'
 import LoadingDialog from '~/common/components/LoadingDialog.vue'
 import CreateScanTargetAssetYamlForm from '~/scan/components/form/CreateScanTargetAssetYamlForm.vue'
 import AgentGroupService from '~/agents/services/agentGroup.service'
 import type { Scanner } from '~/project/types'
+import { useNotificationsStore } from '~/stores/notifications'
 
 interface Data {
   loading: boolean
@@ -141,7 +143,6 @@ interface Data {
   } | null
   agentGroupInput: string | null
   loadingDialog: boolean
-  inputTab: 'assets' | 'agentGroup'
   editorLanguage: string
   editorOptions: {
     [key: string]: string | boolean | { [key: string]: boolean }
@@ -153,6 +154,15 @@ interface Data {
   }>
   agentGroupService: AgentGroupService
 }
+
+const AGENT_GROUP_EXAMPLE = `
+description: Agent group definition for web scan
+name: onprem_web
+agents:
+- args:
+  - { name: token, type: string, value: abcdefg }
+  key: agent/org/nuclei
+      `
 
 export default defineComponent({
   name: 'CreateScanYamlForm',
@@ -176,14 +186,7 @@ export default defineComponent({
       loading: false,
       agentGroupService: new AgentGroupService(this.$axios),
       selectedAgentGroup: null,
-      agentGroupInput: `
-description: Agent group definition for web scan
-name: onprem_web
-agents:
-- args:
-  - { name: token, type: string, value: abcdefg }
-  key: agent/org/nuclei
-      `,
+      agentGroupInput: AGENT_GROUP_EXAMPLE,
       existingAgentGroups: [],
       loadingDialog: false,
       editorLanguage: 'yaml',
@@ -198,7 +201,7 @@ agents:
     }
   },
   computed: {
-    isFormValid() {
+    isFormValid(): boolean {
       return this.agentGroupInput !== null && this.agentGroupInput?.trim() !== ''
     }
   },
@@ -206,6 +209,7 @@ agents:
     await this.getAgentGroups()
   },
   methods: {
+    ...mapActions(useNotificationsStore, ['reportError']),
     /**
      * Clear the input fields.
      */
@@ -213,11 +217,14 @@ agents:
       this.agentGroupInput = null
       this.selectedAgentGroup = null
     },
+    /**
+     * Fetch agent groups.
+     */
     async getAgentGroups(): Promise<void> {
       try {
         this.existingAgentGroups = await this.agentGroupService.getAgentGroups(this.selectedScanner)
-      } catch (e) {
-        console.error(e)
+      } catch (e: unknown) {
+        this.reportError(e?.message || 'Error fetching agent groups')
       }
     },
     /**
@@ -228,8 +235,8 @@ agents:
         this.loading = true
         const agentGroupId = await this.getAgentGroupId()
         console.log({ agentGroupId })
-      } catch (e) {
-        console.error(e)
+      } catch (e: unknown) {
+        this.reportError(e?.message || 'Error creating scan')
       } finally {
         this.loading = false
       }
@@ -245,8 +252,8 @@ agents:
           const newAgentGroup = await this.createAgentGroup()
           return newAgentGroup.id
         }
-      } catch (e) {
-        console.error(e)
+      } catch (e: unknown) {
+        this.reportError(e?.message || 'Error getting agent group')
       }
     },
     /**
@@ -267,8 +274,8 @@ agents:
           await this.getAgentGroups()
           return agentGroup
         }
-      } catch (e) {
-        console.error(e)
+      } catch (e: unknown) {
+        this.reportError(e?.message || 'Error creating agent group')
       }
     }
   }

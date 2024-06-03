@@ -53,6 +53,7 @@
   </v-stepper-vertical-item>
   <AgentGroupSelect
     :step="step + 1"
+    :selected-scanner="selectedScanner"
     @reset="$emit('reset')"
   />
 </template>
@@ -62,7 +63,8 @@ import { useVuelidate } from '@vuelidate/core'
 import { helpers } from '@vuelidate/validators'
 import LoadingDialog from '~/common/components/LoadingDialog.vue'
 import UploadFile from '~/scan/components/UploadFile.vue'
-import AgentGroupSelect from '~/scan/components/AgentGroupSelect'
+import AgentGroupSelect from '~/scan/components/AgentGroupSelect.vue'
+import type { Scanner } from '~/project/types'
 
 const MAX_FILE_SIZE = 600000000 // 600 MB
 
@@ -89,6 +91,10 @@ export default defineComponent({
     step: {
       type: Number,
       default: 1
+    },
+    selectedScanner: {
+      type: Object as () => Scanner,
+      required: true
     }
   },
   emits: ['reset'],

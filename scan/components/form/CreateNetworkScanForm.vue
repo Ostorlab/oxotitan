@@ -51,6 +51,7 @@
   </v-stepper-vertical-item>
   <AgentGroupSelect
     :step="step + 1"
+    :selected-scanner="selectedScanner"
     @reset="$emit('reset')"
   />
 </template>
@@ -58,7 +59,8 @@
 <script lang="ts">
 import validator from 'validator'
 import LoadingDialog from '~/common/components/LoadingDialog.vue'
-import AgentGroupSelect from '~/scan/components/AgentGroupSelect'
+import type { Scanner } from '~/project/types'
+import AgentGroupSelect from '~/scan/components/AgentGroupSelect.vue'
 
 interface Data {
   ip: string | null
@@ -76,6 +78,10 @@ export default defineComponent({
     step: {
       type: Number,
       default: 1
+    },
+    selectedScanner: {
+      type: Object as () => Scanner,
+      required: true
     }
   },
   emits: ['reset'],

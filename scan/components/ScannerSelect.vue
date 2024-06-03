@@ -34,7 +34,6 @@ export default defineComponent({
     ...mapStores(useScannersStore)
   },
   mounted() {
-    console.log()
     this.scanners = this.scannersStore?.scanners || []
   }
 })

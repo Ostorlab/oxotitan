@@ -54,6 +54,15 @@ interface Data {
   }
 }
 
+const TARGET_GROUP_EXAMPLE = `
+description: Target group definition
+kind: targetGroup
+name: master_scan
+assets:
+  androidStore:
+      - package_name: "com.example.test"
+      `
+
 export default defineComponent({
   name: 'CreateScanTargetAssetYamlForm',
   props: {
@@ -65,14 +74,7 @@ export default defineComponent({
   data(): Data {
     return {
       loading: false,
-      targetAssets: `
-description: Target group definition
-kind: targetGroup
-name: master_scan
-assets:
-  androidStore:
-      - package_name: "com.example.test"
-      `,
+      targetAssets: TARGET_GROUP_EXAMPLE,
       editorLanguage: 'yaml',
       editorOptions: {
         theme: 'vs',
@@ -85,7 +87,7 @@ assets:
     }
   },
   computed: {
-    isFormValid() {
+    isFormValid(): boolean {
       return this.targetAssets !== null && this.agentGroupInput?.trim() !== ''
     }
   },
@@ -97,19 +99,9 @@ assets:
       this.targetAssets = null
     },
     /**
-     * Create a scan.
+     * Create assets.
      */
-    async createAssets(): void {
-      try {
-        this.loading = true
-        const agentGroupId = await this.getAgentGroupId()
-        console.log({ agentGroupId })
-      } catch (e) {
-        console.error(e)
-      } finally {
-        this.loading = false
-      }
-    }
+    createAssets(): void {}
   }
 })
 </script>

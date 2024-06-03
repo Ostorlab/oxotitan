@@ -37,6 +37,7 @@ export default class AgentGroupService {
 
   /**
    * Get the list of agent groups.
+   * @param Scanner - The scanner from which to fetch the agent groups.
    */
   async getAgentGroups(scanner: Scanner) {
     const response = await this.requestHandler.post(scanner,
@@ -45,9 +46,8 @@ export default class AgentGroupService {
       })
 
     if ((response?.data?.errors || []).length > 0) {
-      throw new Error(response.data.errors[0]?.message)
+      throw new Error(response?.data?.errors[0]?.message)
     }
-    console
     return response?.data?.data?.agentGroups?.agentGroups || []
   }
 
