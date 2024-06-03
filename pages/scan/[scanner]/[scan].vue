@@ -251,7 +251,9 @@ export default defineComponent ({
     const scanner = this.scanners.find((_scanner) => crc32(_scanner.endpoint) === this.$route.params.scanner)
     if (scanner === undefined) {
       this.reportError('Scanner not found')
-      this.$router.push('/scan/list')
+      this.$router.push({
+        name: 'scan-list'
+      })
     } else {
       this.scanner = scanner
       await this.fetchKBVulnerabilities()
@@ -291,6 +293,9 @@ export default defineComponent ({
     goToDetailNewTab(_vuln: OxoAggregatedKnowledgeBaseVulnerabilityType) {
       // TODO: Implement this after the vulnerability details page is created
     },
+    /**
+     * Stop the scan
+     */
     async stopScan() {
       this.stopBtnLoading = true
       try {
