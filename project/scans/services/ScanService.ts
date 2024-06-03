@@ -1,6 +1,6 @@
 import type { AxiosInstance } from 'axios'
 import type { OxoScanType, QueryScansArgs } from '~/graphql/types'
-import requestHandler from '~/utils/requestHandler'
+import RequestHandler from '~/utils/requestHandler'
 import type { Scanner } from '~/project/types'
 
 const SCANS_QUERY = gql`query scans($scanIds: [Int], $page: Int, $numberElements: Int, $orderBy: OxoScanOrderByEnum, $sort: SortEnum) {
@@ -29,10 +29,10 @@ const DELETE_SCAN_MUTATION = gql`mutation stopScan($scanId: Int!) {
 `
 
 export default class ScansService {
-  private readonly requestAggregator: requestHandler
+  private readonly requestAggregator: RequestHandler
   totalScans: number
   constructor(axios: AxiosInstance) {
-    this.requestAggregator = new requestHandler(axios)
+    this.requestAggregator = new RequestHandler(axios)
     this.totalScans = 0
   }
 

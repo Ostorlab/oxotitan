@@ -113,6 +113,7 @@ import { parse as yamlParse } from 'yaml'
 import LoadingDialog from '~/common/components/LoadingDialog.vue'
 import type { AssetEnum } from '~/scan/types'
 import AgentGroupService from '~/agents/services/agentGroup.service'
+import type { Scanner } from '~/project/types'
 
 interface Data {
   loading: boolean
@@ -149,6 +150,10 @@ export default defineComponent({
     assetType: {
       type: String as () => AssetEnum | string | null,
       default: null
+    },
+    selectedScanner: {
+      type: Object as () => Scanner,
+      required: true
     }
   },
   emits: ['update:isStepValid', 'update:scan-target-step-title', 'update:scan-target-step-subtitle', 'reset'],
@@ -228,7 +233,7 @@ agents:
     },
     async getAgentGroups(): Promise<void> {
       try {
-        this.existingAgentGroups = await this.agentGroupService.getAgentGroups()
+        this.existingAgentGroups = await this.agentGroupService.getAgentGroups(this.selectedScanner)
       } catch (e) {
         console.error(e)
       }
@@ -236,7 +241,7 @@ agents:
     /**
      * Create a scan.
      */
-    async createScan(): void {
+    async createScan(): Promise<void> {
       try {
         this.loading = true
         const agentGroupId = await this.getAgentGroupId()
@@ -250,7 +255,7 @@ agents:
     /**
      * Get the agent group ID to use for the scan.
      */
-    async getAgentGroupId(): number {
+    async getAgentGroupId(): Promise<number | undefined> {
       try {
         if ((this.selectedAgentGroup || []).length > 0) {
           return this.selectedAgentGroup[0]?.id
@@ -270,9 +275,12 @@ agents:
         if (this.agentGroupInput !== null) {
           const agentGroupDefinition = yamlParse(this.agentGroupInput)
           const agentGroup = await this.agentGroupService.createAgentGroup({
-            description: agentGroupDefinition?.description,
-            agents: agentGroupDefinition?.agents,
-            name: agentGroupDefinition?.name
+            scanner: this.selectedScanner,
+            agentGroup: {
+              description: agentGroupDefinition?.description,
+              agents: agentGroupDefinition?.agents,
+              name: agentGroupDefinition?.name
+            }
           })
           await this.getAgentGroups()
           return agentGroup

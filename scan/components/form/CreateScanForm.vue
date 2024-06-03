@@ -79,6 +79,7 @@
             v-model:scan-target-step-title="scanTargetStepTitle"
             v-model:scan-target-step-subtitle="scanTargetStepSubtitle"
             v-model:is-step-valid="isStepValid"
+            :selected-scanner="selectedScanner"
             :asset-type="assetType"
             :asset-platform-type="assetPlatformType"
             @reset="stepNumber = 1"
@@ -92,7 +93,7 @@
 </template>
 
 <script lang="ts">
-import type { Scanner } from '~/stores/scanners'
+import type { Scanner } from '~/project/types'
 import { AssetEnum, type Group } from '~/scan/types'
 import AssetTypeSelector from '~/scan/components/AssetTypeSelector.vue'
 import CreateMobileScanStoreForm from '~/scan/components/form/CreateMobileScanStoreForm.vue'
