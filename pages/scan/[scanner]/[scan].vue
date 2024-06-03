@@ -147,16 +147,16 @@
 </template>
 
 <script lang="ts">
-import {mapActions, mapState} from 'pinia'
+import { mapActions, mapState } from 'pinia'
 import crc32 from 'crc32/lib/crc32'
 import VulnerabilityService from '~/project/scans/services/vulnerability.service'
 import ScansService from '~/project/scans/services/ScanService'
 
-import {DfConfirmationModal} from '~/dragonfly/components/Modals/DfConfirmationModal'
+import { DfConfirmationModal } from '~/dragonfly/components/Modals/DfConfirmationModal'
 import VulnzTable from '~/project/scans/componenets/VulnzTable.vue'
 import VunerabilityDetailDialog from '~/project/scans/componenets/VunerabilityDetailDialog.vue'
-import {useNotificationsStore} from '~/stores/notifications'
-import {useScannersStore} from '~/stores/scanners'
+import { useNotificationsStore } from '~/stores/notifications'
+import { useScannersStore } from '~/stores/scanners'
 import DfScanProgress from '~/dragonfly/components/Tags/DfScanProgress/DfScanProgress.vue'
 import type {
   Maybe,
@@ -164,7 +164,7 @@ import type {
   OxoScanType,
   OxoVulnerabilitiesType
 } from '~/graphql/types'
-import type {Scanner} from '~/project/types'
+import type { Scanner } from '~/project/types'
 
 definePageMeta({
   layout: 'default',
