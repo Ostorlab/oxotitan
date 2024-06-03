@@ -1,5 +1,10 @@
 <template>
-  <div>
+  <v-stepper-vertical-item
+    title="Target Web APIs"
+    subtitle="required"
+    :error="rawUrlsErrorMessages.length > 0"
+    :value="step"
+  >
     <LoadingDialog
       v-model:loading-dialog="loadingDialog"
       message="Please stand by while creating scan"
@@ -19,35 +24,41 @@
         prepend-icon="mdi-api"
       />
     </v-form>
-    <div class="mt-4">
+    <template #next="{ next }">
       <v-btn
-        color="success"
+        color="primary"
         variant="elevated"
-        @click="createScan"
+        :disabled="isContinueDisabled"
+        @click="next"
       >
         <v-icon start>
-          mdi-check
+          mdi-skip-next-outline
         </v-icon>
-        Submit
+        Continue
       </v-btn>
+    </template>
+    <template #prev="{ prev }">
       <v-btn
         variant="elevated"
         class="ml-2"
-        @click="$emit('reset')"
+        @click="prev"
       >
-        <v-icon start>
-          mdi-cancel
-        </v-icon>
-        Reset
+        Previous
       </v-btn>
-    </div>
-  </div>
+    </template>
+  </v-stepper-vertical-item>
+  <AgentGroupSelect
+    :step="step + 1"
+    :selected-scanner="selectedScanner"
+    @reset="$emit('reset')"
+  />
 </template>
 
 <script lang="ts">
 import validator from 'validator'
 import LoadingDialog from '~/common/components/LoadingDialog.vue'
-import type { AssetEnum } from '~/scan/types'
+import type { Scanner } from '~/project/types'
+import AgentGroupSelect from '~/scan/components/AgentGroupSelect.vue'
 
 interface Data {
   rawUrls: string | null
@@ -58,19 +69,20 @@ interface Data {
 export default defineComponent({
   name: 'CreateWebApiScanForm',
   components: {
-    LoadingDialog
+    LoadingDialog,
+    AgentGroupSelect
   },
   props: {
-    assetPlatformType: {
-      type: String as () => AssetEnum | string | null,
-      default: null
+    step: {
+      type: Number,
+      default: 1
     },
-    assetType: {
-      type: String as () => AssetEnum | string | null,
-      default: null
+    selectedScanner: {
+      type: Object as () => Scanner,
+      required: true
     }
   },
-  emits: ['update:isStepValid', 'update:scan-target-step-title', 'update:scan-target-step-subtitle', 'reset'],
+  emits: ['reset'],
   data(): Data {
     return {
       isFormValid: false,
@@ -96,16 +108,10 @@ export default defineComponent({
         }
       }
       return errors
+    },
+    isContinueDisabled(): boolean {
+      return this.rawUrlsErrorMessages.length > 0 || this.rawUrls === null || this.rawUrls?.trim() === ''
     }
-  },
-  watch: {
-    rawUrlsErrorMessages(newVal) {
-      this.$emit('update:isStepValid', newVal.length > 0)
-    }
-  },
-  mounted() {
-    this.$emit('update:scan-target-step-title', 'Target Web APIs')
-    this.$emit('update:scan-target-step-subtitle', 'required')
   },
   methods: {
     /**

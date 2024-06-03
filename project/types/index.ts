@@ -6,3 +6,8 @@ export interface Scanner {
   apiKey: string
   name: string
 }
+
+export enum TextFormats {
+  Html = 'HTML',
+  Markdown = 'MARKDOWN'
+}

@@ -1,5 +1,10 @@
 <template>
-  <div>
+  <v-stepper-vertical-item
+    title="Package Name"
+    subtitle="required"
+    :error="stepHasErrors"
+    :value="step"
+  >
     <LoadingDialog
       v-model:loading-dialog="loadingDialog"
       message="Please stand by while creating scan"
@@ -16,34 +21,40 @@
         prepend-icon="mdi-storefront"
       />
     </v-form>
-    <div class="mt-4">
+    <template #next="{ next }">
       <v-btn
-        color="success"
+        color="primary"
         variant="elevated"
-        @click="createScan"
+        :disabled="isContinueDisabled"
+        @click="next"
       >
         <v-icon start>
-          mdi-check
+          mdi-skip-next-outline
         </v-icon>
-        Submit
+        Continue
       </v-btn>
+    </template>
+    <template #prev="{ prev }">
       <v-btn
         variant="elevated"
         class="ml-2"
-        @click="$emit('reset')"
+        @click="prev"
       >
-        <v-icon start>
-          mdi-cancel
-        </v-icon>
-        Reset
+        Previous
       </v-btn>
-    </div>
-  </div>
+    </template>
+  </v-stepper-vertical-item>
+  <AgentGroupSelect
+    :step="step + 1"
+    :selected-scanner="selectedScanner"
+    @reset="$emit('reset')"
+  />
 </template>
 
 <script lang="ts">
 import LoadingDialog from '~/common/components/LoadingDialog.vue'
-import type { AssetEnum } from '~/scan/types'
+import type { Scanner } from '~/project/types'
+import AgentGroupSelect from '~/scan/components/AgentGroupSelect.vue'
 
 interface Data {
   packageName: string | null
@@ -57,19 +68,20 @@ interface Data {
 export default defineComponent({
   name: 'CreateMobileScanStoreForm',
   components: {
-    LoadingDialog
+    LoadingDialog,
+    AgentGroupSelect
   },
   props: {
-    assetPlatformType: {
-      type: String as () => AssetEnum | string | null,
-      default: null
+    step: {
+      type: Number,
+      default: 1
     },
-    assetType: {
-      type: String as () => AssetEnum | string | null,
-      default: null
+    selectedScanner: {
+      type: Object as () => Scanner,
+      required: true
     }
   },
-  emits: ['update:isStepValid', 'update:scan-target-step-title', 'update:scan-target-step-subtitle', 'reset'],
+  emits: ['reset'],
   data(): Data {
     return {
       isFormValid: false,
@@ -80,14 +92,13 @@ export default defineComponent({
       }
     }
   },
-  watch: {
-    isFormValid(newVal) {
-      this.$emit('update:isStepValid', typeof newVal === 'boolean' ? newVal : false)
+  computed: {
+    stepHasErrors(): boolean {
+      return this.packageName !== null && this.isFormValid === false
+    },
+    isContinueDisabled(): boolean {
+      return this.packageName === null || this.packageName?.trim() === '' || this.stepHasErrors === true
     }
-  },
-  mounted() {
-    this.$emit('update:scan-target-step-title', 'Package Name')
-    this.$emit('update:scan-target-step-subtitle', 'required')
   },
   methods: {
     clear(): void {
