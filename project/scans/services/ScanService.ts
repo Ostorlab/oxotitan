@@ -60,9 +60,10 @@ export default class ScansService {
 
   /**
    * Stop a scan
-   * @param _scan
+   * @param _scanner
+   * @param _scanId
    */
-  stopScan(_scan: OxoScanType): Promise<void> {
+  stopScan(_scanner: Scanner, _scanId: number): Promise<void> {
     // TODO (mouhcine): Implement stopScan
     return Promise.resolve()
   }
