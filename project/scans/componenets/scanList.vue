@@ -222,6 +222,12 @@ export default defineComponent({
   },
   methods: {
     ...mapActions(useNotificationsStore, ['reportSuccess', 'reportError']),
+
+    /**
+     * Go to the scan page.
+     * @param _event
+     * @param scan
+     */
     goScan(_event: PointerEvent, scan: { item: OxoScanType }) {
       this.$router.push(
         {
