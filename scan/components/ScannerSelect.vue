@@ -7,6 +7,7 @@
     item-title="endpoint"
     density="compact"
     clearable
+    return-object
     label="Select a scanner"
     placeholder="Select or create a scanner to run the scan on"
   />
@@ -14,7 +15,7 @@
 
 <script lang="ts">
 import { mapStores } from 'pinia'
-import type { Scanner } from '~/stores/scanners'
+import type { Scanner } from '~/project/types'
 import { useScannersStore } from '~/stores/scanners'
 
 interface Data {
