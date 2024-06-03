@@ -114,3 +114,9 @@ export default defineComponent({
   }
 })
 </script>
+
+<style scoped lang="scss">
+* ::v-deep(.v-chip__content){
+  color: white;
+}
+</style>
