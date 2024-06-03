@@ -1,7 +1,7 @@
 <template>
   <v-card
     v-if="tabsData !== null"
-    outlined
+    variant="outlined"
     flat
     class="markdown-tabs"
   >
@@ -12,6 +12,7 @@
         v-for="tabHeader in tabsData.tabsHeaders"
         :key="tabHeader"
         style="text-transform: none"
+        :value="tabs[tabsDataIndex]"
       >
         <div class="d-flex align-center">
           <v-img
@@ -26,11 +27,13 @@
         </div>
       </v-tab>
     </v-tabs>
-    <v-tabs-items v-model="tabs[tabsDataIndex]">
-      <v-tab-item
+    <v-tabs-window v-model="tabs[tabsDataIndex]">
+      <v-tabs-window-item
         v-for="tabItems in tabsData.tabsContent"
         :key="`tabItem-${tabItems.length}`"
         :transition="false"
+        :reverse-transition="false"
+        :value="tabs[tabsDataIndex]"
       >
         <div
           v-for="tabContent in tabItems"
@@ -46,8 +49,8 @@
             :content="tabContent.content"
           />
         </div>
-      </v-tab-item>
-    </v-tabs-items>
+      </v-tabs-window-item>
+    </v-tabs-window>
   </v-card>
 </template>
 

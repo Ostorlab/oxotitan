@@ -2,7 +2,7 @@
   <!-- TODO (Rabson) Read vulnTitle from object passed from the scan page -->
   <VulnerabilityDetail
     :scan-id="$route.params.scan"
-    vuln-title="XSS"
+    vuln-title="Insecure Storage of Application Data"
   />
 </template>
 
