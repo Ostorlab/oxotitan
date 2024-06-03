@@ -8,4 +8,10 @@ export default createConfigForNuxt({
       braceStyle: '1tbs'
     }
   }
-})
+}).append(
+  {
+    rules: {
+      '@typescript-eslint/no-extraneous-class': 'off'
+    }
+  }
+)
