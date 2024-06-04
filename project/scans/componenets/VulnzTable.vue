@@ -107,7 +107,7 @@ export default defineComponent({
     /***
       * Returns the vulnerabilities sorted by risk and CVSS score.
       */
-    kbVulnerabilities() {
+    kbVulnerabilities(): Array<FormattedVulnz> {
       const formattedVulnz: Array<FormattedVulnz> = []
 
       for (const v of this.vulnz) {

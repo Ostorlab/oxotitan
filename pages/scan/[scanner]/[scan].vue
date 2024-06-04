@@ -129,10 +129,10 @@
         Vulnerabilities
         <v-chip
           v-if="totalVulnerabilities !== null"
-          small
+          size="small"
           class="ml-2"
         >
-          {{ totalVulnerabilities || "!" }}
+          {{ totalVulnerabilities }}
         </v-chip>
       </v-card-title>
       <v-divider />
@@ -174,7 +174,6 @@ definePageMeta({
 interface Data {
   vulnDetailsDialog: boolean
   selectedVulnerability: OxoAggregatedKnowledgeBaseVulnerabilityType | null
-  totalIssues: number
   options: {
     page: number
     itemsPerPage: number
@@ -200,9 +199,6 @@ export default defineComponent ({
     VulnzTable,
     VunerabilityDetailDialog
   },
-  layout: 'dashboard',
-  title: 'Scan Details',
-  secondContextualMenuItems: ['scan1', 'scan2'],
   data(): Data {
     return {
       // This a dummy scanner object, it get replaced with the actual scanner object from the store, if no scanner is found, the user is redirected to the scan list page
@@ -213,7 +209,6 @@ export default defineComponent ({
       },
       vulnDetailsDialog: false,
       selectedVulnerability: null,
-      totalIssues: 0,
       options: {
         page: 1,
         itemsPerPage: 15
@@ -243,7 +238,7 @@ export default defineComponent ({
     /**
      * The total number of vulnerabilities.
      */
-    totalVulnerabilities() {
+    totalVulnerabilities(): number {
       return this.vulns?.length || 0
     }
   },
@@ -261,7 +256,10 @@ export default defineComponent ({
   },
   methods: {
     ...mapActions(useNotificationsStore, ['reportError', 'reportInfo', 'reportSuccess']),
-    async fetchKBVulnerabilities() {
+    /**
+     * Fetches the scan vulnerabilities.
+     */
+    async fetchKBVulnerabilities(): Promise<void> {
       try {
         this.loadingDialog = true
         const kb = await this.vulnerabilityService.getKBVulnerabilities(
@@ -283,20 +281,28 @@ export default defineComponent ({
      * Shows the details of the selected vulnerability.
      * @param vuln The vulnerability whose details to show.
      */
-    showVulnDetails(vuln: OxoAggregatedKnowledgeBaseVulnerabilityType) {
+    showVulnDetails(vuln: OxoAggregatedKnowledgeBaseVulnerabilityType): void {
       this.selectedVulnerability = vuln
       this.vulnDetailsDialog = true
     },
-    goToDetail(_vuln: OxoAggregatedKnowledgeBaseVulnerabilityType) {
+    /**
+     * Go to the vulnerability details page.
+     * @param _vuln
+     */
+    goToDetail(_vuln: OxoAggregatedKnowledgeBaseVulnerabilityType): void {
     // TODO: Implement this after the vulnerability details page is created
     },
-    goToDetailNewTab(_vuln: OxoAggregatedKnowledgeBaseVulnerabilityType) {
+    /**
+     * Go to the vulnerability details page in a new tab.
+     * @param _vuln
+     */
+    goToDetailNewTab(_vuln: OxoAggregatedKnowledgeBaseVulnerabilityType): void {
       // TODO: Implement this after the vulnerability details page is created
     },
     /**
      * Stop the scan
      */
-    async stopScan() {
+    async stopScan(): Promise<void> {
       this.stopBtnLoading = true
       try {
         await this.scanService.stopScan(this.scanner, this.scanId)
