@@ -47,7 +47,7 @@
           variant="elevated"
         >
           <v-icon start>
-            mdi-cancel
+            mdi-close
           </v-icon>Cancel
         </v-btn>
       </v-card-actions>
