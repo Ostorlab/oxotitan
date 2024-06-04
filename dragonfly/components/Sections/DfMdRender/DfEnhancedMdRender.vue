@@ -137,8 +137,11 @@ export default defineComponent({
     }
   },
   methods: {
+    /**
+     * Process the markdown and add custom formatting.
+     * @param markdown The raw markdown to enhance.
+     */
     enhanceMarkdown(markdown: string): void {
-      // this.enhancedMarkdown = MarkdownEnhancer.enhanceMarkdown(markdown)
       this.enhancedMarkdown = MarkdownEnhancer.enhanceMarkdown(markdown)
     },
     /**
