@@ -8,7 +8,7 @@ const API_KEY_HEADER = 'X-Api-Key'
  * Class to aggregate requests to multiple scanners and return the responses
  */
 export default class RequestHandler {
-  private readonly $axios: AxiosInstance
+  readonly $axios: AxiosInstance
 
   /**
    * Constructor for the requestAggregator class that initializes the axios instance and the scanners

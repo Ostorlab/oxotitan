@@ -78,6 +78,12 @@ export default defineComponent({
           value: 'new-scan'
         },
         {
+          title: 'Import Scan',
+          to: '/scan/import',
+          icon: 'mdi-shield-link-variant-outline',
+          value: 'import-scan'
+        },
+        {
           title: 'Scanners',
           to: '/scanners',
           icon: 'mdi-shield-search',
