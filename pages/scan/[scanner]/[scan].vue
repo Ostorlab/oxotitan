@@ -303,8 +303,8 @@ export default defineComponent ({
      * Stop the scan
      */
     async stopScan(): Promise<void> {
-      this.stopBtnLoading = true
       try {
+        this.stopBtnLoading = true
         await this.scanService.stopScan(this.scanner, this.scanId)
         await this.fetchKBVulnerabilities()
       } catch (e) {
@@ -317,8 +317,8 @@ export default defineComponent ({
      * Delete the scan
      */
     async deleteScan(): Promise<void> {
-      this.loadingDialog = true
       try {
+        this.loadingDialog = true
         await this.scanService.deleteScan(this.scanner, this.scanId)
         this.reportSuccess('Scan deleted successfully')
         this.$router.push('/scan/list')

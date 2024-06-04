@@ -31,7 +31,7 @@
         :loading="loading"
         :items-per-page-options="[15, 50, 200, -1]"
         :items-per-page="options.itemsPerPage"
-        @click:row="goScan"
+        @click:row="goToScan"
       >
         <template #[`item.Progress`]="{ item }">
           <DfScanProgress :progress="item.progress || 'unknown'" />
@@ -228,7 +228,7 @@ export default defineComponent({
      * @param _event
      * @param scan
      */
-    goScan(_event: PointerEvent, scan: { item: OxoScanType }) {
+    goToScan(_event: PointerEvent, scan: { item: OxoScanType }) {
       this.$router.push(
         {
           name: 'scan-scanner-scan',
