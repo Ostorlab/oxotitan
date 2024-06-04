@@ -1,5 +1,13 @@
 <template>
-  <div>
+  <CreateScanTargetAssetYamlForm
+    :value="step"
+  />
+  <v-stepper-vertical-item
+    title="YAML definition file"
+    subtitle="required"
+    :error="isStepValid === false"
+    :value="step+1"
+  >
     <LoadingDialog
       v-model:loading-dialog="loadingDialog"
       message="Please stand by while creating scan"
@@ -41,20 +49,29 @@
               </v-icon>
               Existing Agent Groups
             </div>
-            <v-list
-              v-model:selected="selectedAgentGroup"
-              style="height: 300px; flex-grow: 1; border-right: 1px solid #DADADA;"
-              density="compact"
-              return-object
-            >
-              <v-list-item
-                v-for="item in existingAgentGroups"
-                :key="item.key"
-                :value="item"
-                :title="item.key"
-                :subtitle="item.description"
-              />
-            </v-list>
+            <div style="border-right: 1px solid #DADADA; height: 300px">
+              <p
+                v-if="existingAgentGroups.length === 0"
+                class="ml-4 pt-2 text-grey"
+              >
+                You have not yet created any scanners
+              </p>
+              <v-list
+                v-else
+                v-model:selected="selectedAgentGroup"
+                style="height: 100%; flex-grow: 1;"
+                density="compact"
+                return-object
+              >
+                <v-list-item
+                  v-for="item in existingAgentGroups"
+                  :key="`${item.key}-${item.id}`"
+                  :value="item"
+                  :title="item.key"
+                  :subtitle="item.description"
+                />
+              </v-list>
+            </div>
           </div>
           <div style="width: 70%">
             <div class="d-flex align-center tab-header">
@@ -72,38 +89,53 @@
           </div>
         </div>
       </v-card>
-      <div class="mt-4">
-        <v-btn
-          color="success"
-          variant="elevated"
-          @click="createScan"
-        >
-          <v-icon start>
-            mdi-check
-          </v-icon>
-          Submit
-        </v-btn>
-        <v-btn
-          variant="elevated"
-          class="ml-2"
-          @click="$emit('reset')"
-        >
-          <v-icon start>
-            mdi-cancel
-          </v-icon>
-          Reset
-        </v-btn>
-      </div>
     </v-form>
-  </div>
+    <template #next>
+      <v-btn
+        color="success"
+        variant="elevated"
+        :loading="loading"
+        @click="createScan"
+      >
+        <v-icon start>
+          mdi-check
+        </v-icon>
+        Submit
+      </v-btn>
+    </template>
+    <template #prev="{ prev }">
+      <v-btn
+        variant="elevated"
+        class="ml-2"
+        @click="prev"
+      >
+        Previous
+      </v-btn>
+      <v-btn
+        variant="elevated"
+        class="ml-2"
+        @click="$emit('reset')"
+      >
+        <v-icon start>
+          mdi-cancel
+        </v-icon>
+        Reset
+      </v-btn>
+    </template>
+  </v-stepper-vertical-item>
 </template>
 
 <script lang="ts">
+import { mapActions } from 'pinia'
 import { parse as yamlParse } from 'yaml'
 import LoadingDialog from '~/common/components/LoadingDialog.vue'
-import type { AssetEnum } from '~/scan/types'
+import CreateScanTargetAssetYamlForm from '~/scan/components/form/CreateScanTargetAssetYamlForm.vue'
+import AgentGroupService from '~/agents/services/agentGroup.service'
+import type { Scanner } from '~/project/types'
+import { useNotificationsStore } from '~/stores/notifications'
 
 interface Data {
+  loading: boolean
   selectedAgentGroup: {
     key: string
     description: string
@@ -111,7 +143,6 @@ interface Data {
   } | null
   agentGroupInput: string | null
   loadingDialog: boolean
-  inputTab: 'assets' | 'agentGroup'
   editorLanguage: string
   editorOptions: {
     [key: string]: string | boolean | { [key: string]: boolean }
@@ -121,65 +152,42 @@ interface Data {
     description: string
     agentGroup: string
   }>
+  agentGroupService: AgentGroupService
 }
 
-export default defineComponent({
-  name: 'CreateScanYamlForm',
-  components: {
-    LoadingDialog
-  },
-  props: {
-    assetPlatformType: {
-      type: String as () => AssetEnum | string | null,
-      default: null
-    },
-    assetType: {
-      type: String as () => AssetEnum | string | null,
-      default: null
-    }
-  },
-  emits: ['update:isStepValid', 'update:scan-target-step-title', 'update:scan-target-step-subtitle', 'reset'],
-  data(): Data {
-    return {
-      inputTab: 'assets',
-      selectedAgentGroup: null,
-      agentGroupInput: `
+const AGENT_GROUP_EXAMPLE = `
 description: Agent group definition for web scan
-kind: AgentGroup
 name: onprem_web
 agents:
 - args:
   - { name: token, type: string, value: abcdefg }
   key: agent/org/nuclei
-      `,
-      existingAgentGroups: [
-        {
-          key: 'onprem_ip',
-          description: 'Network scan',
-          agentGroup: `
-description: Network scan
-kind: AgentGroup
-name: onprem_ip
-agents:
-- args:
-  - { name: token, type: string, value: abcdefg }
-  key: agent/org/tsunami
-          `
-        },
-        {
-          key: 'onprem_mobile',
-          description: 'Android scan',
-          agentGroup: `
-description: Android scan
-kind: AgentGroup
-name: onprem_mobile
-agents:
-- args:
-  - { name: token, type: string, value: abcdefg }
-  key: agent/org/tester
-          `
-        }
-      ],
+      `
+
+export default defineComponent({
+  name: 'CreateScanYamlForm',
+  components: {
+    LoadingDialog,
+    CreateScanTargetAssetYamlForm
+  },
+  props: {
+    step: {
+      type: Number,
+      default: 1
+    },
+    selectedScanner: {
+      type: Object as () => Scanner,
+      required: true
+    }
+  },
+  emits: ['reset'],
+  data(): Data {
+    return {
+      loading: false,
+      agentGroupService: new AgentGroupService(this.$axios),
+      selectedAgentGroup: null,
+      agentGroupInput: AGENT_GROUP_EXAMPLE,
+      existingAgentGroups: [],
       loadingDialog: false,
       editorLanguage: 'yaml',
       editorOptions: {
@@ -193,17 +201,15 @@ agents:
     }
   },
   computed: {
-    isFormValid() {
-      const isValid = this.agentGroupInput !== null && this.agentGroupInput?.trim() !== ''
-      this.$emit('update:isStepValid', isValid)
-      return isValid
+    isFormValid(): boolean {
+      return this.agentGroupInput !== null && this.agentGroupInput?.trim() !== ''
     }
   },
-  mounted() {
-    this.$emit('update:scan-target-step-title', 'YAML definition file')
-    this.$emit('update:scan-target-step-subtitle', 'required')
+  async created() {
+    await this.getAgentGroups()
   },
   methods: {
+    ...mapActions(useNotificationsStore, ['reportError']),
     /**
      * Clear the input fields.
      */
@@ -212,41 +218,64 @@ agents:
       this.selectedAgentGroup = null
     },
     /**
+     * Fetch agent groups.
+     */
+    async getAgentGroups(): Promise<void> {
+      try {
+        this.existingAgentGroups = await this.agentGroupService.getAgentGroups(this.selectedScanner)
+      } catch (e: unknown) {
+        this.reportError(e?.message || 'Error fetching agent groups')
+      }
+    },
+    /**
      * Create a scan.
      */
-    createScan(): void {
+    async createScan(): Promise<void> {
       try {
-        const agentGroupId = this.getAgentGroupId()
+        this.loading = true
+        const agentGroupId = await this.getAgentGroupId()
         console.log({ agentGroupId })
-      } catch (e) {
-        console.error(e)
+      } catch (e: unknown) {
+        this.reportError(e?.message || 'Error creating scan')
+      } finally {
+        this.loading = false
       }
     },
     /**
      * Get the agent group ID to use for the scan.
      */
-    getAgentGroupId(): number {
+    async getAgentGroupId(): Promise<number | undefined> {
       try {
-        if (this.selectedAgentGroup !== null && this.selectedAgentGroup[0]?.trim() !== '') {
-          return this.selectedAgentGroup?.id
+        if ((this.selectedAgentGroup || []).length > 0) {
+          return this.selectedAgentGroup[0]?.id
         } else {
-          const newAgentGroup = this.createAgentGroup()
+          const newAgentGroup = await this.createAgentGroup()
           return newAgentGroup.id
         }
-      } catch (e) {
-        console.error(e)
+      } catch (e: unknown) {
+        this.reportError(e?.message || 'Error getting agent group')
       }
     },
     /**
      * Create an agent group.
      */
-    createAgentGroup() {
+    async createAgentGroup() {
       try {
         if (this.agentGroupInput !== null) {
-          yamlParse(this.agentGroupInput)
+          const agentGroupDefinition = yamlParse(this.agentGroupInput)
+          const agentGroup = await this.agentGroupService.createAgentGroup({
+            scanner: this.selectedScanner,
+            agentGroup: {
+              description: agentGroupDefinition?.description,
+              agents: agentGroupDefinition?.agents,
+              name: agentGroupDefinition?.name
+            }
+          })
+          await this.getAgentGroups()
+          return agentGroup
         }
-      } catch (e) {
-        console.error(e)
+      } catch (e: unknown) {
+        this.reportError(e?.message || 'Error creating agent group')
       }
     }
   }
