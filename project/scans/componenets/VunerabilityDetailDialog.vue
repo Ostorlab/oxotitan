@@ -11,11 +11,14 @@
       class="ml-auto"
     >
       <v-card
-        class="dialog-card px-2"
+        class="dialog-card pa-2"
         :loading="loading"
         style="min-height: 100vh"
       >
-        {{ vuln }}
+        <VulnerabilityDetail
+          :vuln-title="vuln.key"
+          :scan-id="scanId"
+        />
       </v-card>
     </v-dialog>
   </div>
@@ -23,6 +26,7 @@
 
 <script lang="ts">
 import type { OxoAggregatedKnowledgeBaseVulnerabilityType } from '~/graphql/types'
+import VulnerabilityDetail from '~/scan/components/vulnz/VulnerabilityDetail.vue'
 
 interface Data {
   dialog: boolean
@@ -31,6 +35,7 @@ interface Data {
 
 export default defineComponent({
   name: 'VulnerabilityDetailDialog',
+  components: { VulnerabilityDetail },
   props: {
     modelValue: {
       type: Boolean,
