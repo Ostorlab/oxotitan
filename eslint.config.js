@@ -11,7 +11,8 @@ export default createConfigForNuxt({
 }).append(
   {
     rules: {
-      '@typescript-eslint/no-extraneous-class': 'off'
+      '@typescript-eslint/no-extraneous-class': 'off',
+      '@typescript-eslint/no-explicit-any': 'off'
     }
   }
 )

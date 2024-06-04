@@ -2,7 +2,7 @@ import type { AxiosInstance } from 'axios'
 
 import type { Scanner } from '~/project/types'
 
-const API_KEY_HEADER = 'X-API-KEY'
+const API_KEY_HEADER = 'X-Api-Key'
 
 /**
  * Class to aggregate requests to multiple scanners and return the responses
