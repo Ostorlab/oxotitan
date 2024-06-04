@@ -40,6 +40,7 @@
                   :key="`scan-${i}`"
                 >
                   <v-list-item :to="constructScanDetailLink(subitem)">
+                    <!-- TODO (Rabson) Update to add support for assets -->
                     <v-list-item-title>
                       <code>{{ getScanTitle(subitem) }}</code>
                     </v-list-item-title>
