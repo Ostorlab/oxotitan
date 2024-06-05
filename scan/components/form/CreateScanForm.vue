@@ -312,9 +312,15 @@ export default defineComponent({
   },
   methods: {
     ...mapActions(useNotificationsStore, ['reportError']),
+    /**
+     * Create scan.
+     */
     async createScan(): Promise<void> {
       await this.createAssets()
     },
+    /**
+     * Create assets.
+     */
     async createAssets(): Promise<void> {
       if (this.selectedScanner === null) {
         this.reportError('No scanner selected')
@@ -330,7 +336,10 @@ export default defineComponent({
         this.reportError(e?.message || 'Error creating assets')
       }
     },
-    resetForm() {
+    /**
+     * Reset the form.
+     */
+    resetForm(): void {
       this.stepNumber = 1
       this.assets = []
     }
