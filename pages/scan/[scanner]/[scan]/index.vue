@@ -164,7 +164,7 @@ import type {
   OxoScanType,
   OxoVulnerabilitiesType
 } from '~/graphql/types'
-import type { Scanner } from '~/project/types'
+import type { Scanner, FormattedVulnz } from '~/project/types'
 
 definePageMeta({
   layout: 'default',
@@ -287,17 +287,27 @@ export default defineComponent ({
     },
     /**
      * Go to the vulnerability details page.
-     * @param _vuln
+     * @param vuln
      */
-    goToDetail(_vuln: OxoAggregatedKnowledgeBaseVulnerabilityType): void {
-    // TODO: Implement this after the vulnerability details page is created
+    goToDetail(vuln: FormattedVulnz): void {
+      this.$router.push(
+        {
+          name: 'scan-scanner-scan-vuln-vuln',
+          params: {
+            scan: this.scanId,
+            scanner: crc32(this.scanner.endpoint),
+            vuln: vuln.key ?? vuln.kb.id
+          }
+        }
+      )
     },
     /**
      * Go to the vulnerability details page in a new tab.
-     * @param _vuln
+     * @param vuln
      */
-    goToDetailNewTab(_vuln: OxoAggregatedKnowledgeBaseVulnerabilityType): void {
-      // TODO: Implement this after the vulnerability details page is created
+    goToDetailNewTab(vuln: FormattedVulnz): void {
+      const routeData = this.$router.resolve(`/scan/${crc32(this.scanner.endpoint)}/${this.scanId}/vuln/${vuln.key ?? vuln.kb.id}`)
+      window.open(routeData.href, '_blank')
     },
     /**
      * Stop the scan

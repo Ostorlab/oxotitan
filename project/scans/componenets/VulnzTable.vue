@@ -10,13 +10,28 @@
         <DfRisk
           :cvss-score="item.cvssV3"
           :risk="item.risk"
+          class="cursor-pointer"
+          @click="goToDetail(item)"
+          @click.middle="goToDetailNewTab(item)"
         />
       </template>
       <template #[`item.title`]="{ item }">
-        {{ item.title }}
+        <div
+          class="cursor-pointer"
+          @click="goToDetail(item)"
+          @click.middle="goToDetailNewTab(item)"
+        >
+          {{ item.title }}
+        </div>
       </template>
       <template #[`item.description`]="{ item }">
-        {{ item.description }}
+        <div
+          class="cursor-pointer"
+          @click="goToDetail(item)"
+          @click.middle="goToDetailNewTab(item)"
+        >
+          {{ item.description }}
+        </div>
       </template>
       <template #[`item.show`]="{ item }">
         <v-btn
@@ -33,7 +48,8 @@
 <script lang="ts">
 import { sort } from 'fast-sort'
 import { DfRisk } from '~/dragonfly/components/Tags/DfRisk'
-import type { Maybe, RiskRating } from '~/graphql/types'
+import type { OxoVulnerabilityType } from '~/graphql/types'
+import { type FormattedVulnz } from '~/project/types'
 
 const Risks = {
   info: 1,
@@ -47,23 +63,6 @@ const Risks = {
   critical: 9
 }
 
-type FormattedVulnz = {
-  key: string
-  goToVulnId: boolean
-  risk: Maybe<any | RiskRating> | undefined
-  title: string
-  securityIssue: boolean
-  privacyIssue: boolean
-  targetedByMalware: boolean
-  targetedByRansomware: boolean
-  targetedByNationState: boolean
-  hasPublicExploit: boolean
-  cvssV3: Maybe<number> | undefined
-  description: string | undefined
-  descriptionFormat: any
-  kb: Maybe<any> | undefined
-}
-
 export default defineComponent({
   name: 'VulnzTable',
   components: {
@@ -71,7 +70,7 @@ export default defineComponent({
   },
   props: {
     vulnz: {
-      type: Array as () => Array<any>,
+      type: Array as () => Array<OxoVulnerabilityType>,
       required: true,
       default: () => []
     }
@@ -195,21 +194,27 @@ export default defineComponent({
     /**
      * Emits an event to open the vulnerability page.
      */
-    goToDetail(item): void {
-      this.$emit('goToDetail', item)
+    goToDetail(vuln: FormattedVulnz): void {
+      this.$emit('goToDetail', vuln)
     },
     /**
      * Emits an event to open the vulnerability page in a new tab.
      */
-    goToDetailNewTab(item): void {
-      this.$emit('goToDetailNewTab', item)
+    goToDetailNewTab(vuln: FormattedVulnz): void {
+      this.$emit('goToDetailNewTab', vuln)
     },
     /**
      * Emits an event to show the vulnerability details.
      */
-    showVulnDetails(item): void {
-      this.$emit('showVulnDetails', item)
+    showVulnDetails(vuln: FormattedVulnz): void {
+      this.$emit('showVulnDetails', vuln)
     }
   }
 })
 </script>
+
+<style>
+.cursor-pointer {
+  cursor: pointer;
+}
+</style>
