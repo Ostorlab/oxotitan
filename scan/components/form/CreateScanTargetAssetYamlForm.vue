@@ -24,7 +24,7 @@
         color="primary"
         variant="elevated"
         :disabled="selectedScanner === null"
-        @click="next"
+        @click="continueToNextStep(next)"
       >
         <v-icon start>
           mdi-skip-next-outline
@@ -45,6 +45,9 @@
 </template>
 
 <script lang="ts">
+import _ from 'lodash'
+import { parse as yamlParse } from 'yaml'
+
 interface Data {
   loading: boolean
   targetAssets: string | null
@@ -60,8 +63,8 @@ kind: targetGroup
 name: master_scan
 assets:
   androidStore:
-      - package_name: "com.example.test"
-      `
+    - package_name: "com.example.test"
+    `
 
 export default defineComponent({
   name: 'CreateScanTargetAssetYamlForm',
@@ -71,6 +74,7 @@ export default defineComponent({
       default: 1
     }
   },
+  emits: ['update:assets'],
   data(): Data {
     return {
       loading: false,
@@ -88,7 +92,7 @@ export default defineComponent({
   },
   computed: {
     isFormValid(): boolean {
-      return this.targetAssets !== null && this.agentGroupInput?.trim() !== ''
+      return this.targetAssets !== null && this.targetAssets?.trim() !== ''
     }
   },
   methods: {
@@ -100,8 +104,27 @@ export default defineComponent({
     },
     /**
      * Create assets.
+     * @param nextFn The `next` function from the stepper.
      */
-    createAssets(): void {}
+    continueToNextStep(nextFn: () => void): void {
+      this.$emit('update:assets', this.parseYamlToAssetInput(this.targetAssets))
+      nextFn()
+    },
+    /**
+     * Parse a yaml string to asset input type.
+     * @param yamlString The yaml string to parse.
+     */
+    parseYamlToAssetInput(yamlString: string | null): Array<{ [key: string]: any }> {
+      const parsedAssetsObject = yamlParse(yamlString || '')?.assets
+      return Object.keys(parsedAssetsObject).map((key) => ({ [key]: this.convertObjectKeysToCamelCase(parsedAssetsObject[key][0]) }))
+    },
+    /**
+     * Convert all the keys of an object to camel case.
+     * @param object The object whose keys to convert to camel case.
+     */
+    convertObjectKeysToCamelCase(object: { [key: string]: any }): { [key: string]: any } {
+      return _.mapKeys(object, (_value, objKey) => _.camelCase(objKey))
+    }
   }
 })
 </script>

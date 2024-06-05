@@ -109,11 +109,15 @@
           v-model:scan-target-step-title="scanTargetStepTitle"
           v-model:scan-target-step-subtitle="scanTargetStepSubtitle"
           v-model:is-step-valid="isStepValid"
+          v-model:assets="assets"
+          v-model:agent-group-id="agentGroupId"
+          ::create-scan-loading="createScanLoading"
           :selected-scanner="selectedScanner"
           :asset-type="assetType"
           :step="4"
           :asset-platform-type="assetPlatformType"
-          @reset="stepNumber = 1"
+          @reset="resetForm"
+          @create-scan="createScan"
         />
       </template>
     </v-stepper-vertical>
@@ -121,6 +125,7 @@
 </template>
 
 <script lang="ts">
+import { mapActions } from 'pinia'
 import type { Scanner } from '~/project/types'
 import { AssetEnum, type Group } from '~/scan/types'
 import AssetTypeSelector from '~/scan/components/AssetTypeSelector.vue'
@@ -131,6 +136,8 @@ import CreateNetworkScanForm from '~/scan/components/form/CreateNetworkScanForm.
 import CreateMobileScanFileForm from '~/scan/components/form/CreateMobileScanFileForm.vue'
 import CreateScanYamlForm from '~/scan/components/form/CreateScanYamlForm.vue'
 import ScannerSelect from '~/scan/components/ScannerSelect.vue'
+import AssetsService from '~/project/assets/services/assets.service'
+import { useNotificationsStore } from '~/stores/notifications'
 
 interface Data {
   isStepValid: boolean
@@ -142,6 +149,10 @@ interface Data {
   scanTargetStepTitle: string | null
   scanTargetStepSubtitle: string | null
   selectedScanner: Scanner | null
+  assets: unknown
+  agentGroupId: number | null
+  createScanLoading: boolean
+  assetsService: AssetsService
 }
 
 export default defineComponent({
@@ -157,6 +168,10 @@ export default defineComponent({
   },
   data(): Data {
     return {
+      assetsService: new AssetsService(this.$axios),
+      createScanLoading: false,
+      agentGroupId: null,
+      assets: null,
       scanTitle: null,
       selectedScanner: null,
       scanTargetStepTitle: null,
@@ -288,6 +303,36 @@ export default defineComponent({
         default:
           return null
       }
+    }
+  },
+  watch: {
+    assetPlatformType() {
+      this.assets = []
+    }
+  },
+  methods: {
+    ...mapActions(useNotificationsStore, ['reportError']),
+    async createScan(): Promise<void> {
+      await this.createAssets()
+    },
+    async createAssets(): Promise<void> {
+      if (this.selectedScanner === null) {
+        this.reportError('No scanner selected')
+        return
+      }
+      if (this.assets === null) {
+        this.reportError('No assets were added')
+        return
+      }
+      try {
+        this.assetsService.createAssets(this.selectedScanner, this.assets)
+      } catch (e: any) {
+        this.reportError(e?.message || 'Error creating assets')
+      }
+    },
+    resetForm() {
+      this.stepNumber = 1
+      this.assets = []
     }
   }
 })

@@ -1,5 +1,6 @@
 <template>
   <CreateScanTargetAssetYamlForm
+    v-model:assets="assets"
     :value="step"
   />
   <v-stepper-vertical-item
@@ -94,7 +95,7 @@
       <v-btn
         color="success"
         variant="elevated"
-        :loading="loading"
+        :loading="createScanLoading"
         @click="createScan"
       >
         <v-icon start>
@@ -135,7 +136,6 @@ import type { Scanner } from '~/project/types'
 import { useNotificationsStore } from '~/stores/notifications'
 
 interface Data {
-  loading: boolean
   selectedAgentGroup: {
     key: string
     description: string
@@ -153,6 +153,7 @@ interface Data {
     agentGroup: string
   }>
   agentGroupService: AgentGroupService
+  assets: Array<unknown>
 }
 
 const AGENT_GROUP_EXAMPLE = `
@@ -178,12 +179,16 @@ export default defineComponent({
     selectedScanner: {
       type: Object as () => Scanner,
       required: true
+    },
+    createScanLoading: {
+      type: Boolean,
+      default: false
     }
   },
-  emits: ['reset'],
+  emits: ['reset', 'update:assets', 'update:agent-group-id', 'createScan'],
   data(): Data {
     return {
-      loading: false,
+      assets: [],
       agentGroupService: new AgentGroupService(this.$axios),
       selectedAgentGroup: null,
       agentGroupInput: AGENT_GROUP_EXAMPLE,
@@ -203,6 +208,14 @@ export default defineComponent({
   computed: {
     isFormValid(): boolean {
       return this.agentGroupInput !== null && this.agentGroupInput?.trim() !== ''
+    }
+  },
+  watch: {
+    assets: {
+      deep: true,
+      handler(newVal) {
+        this.$emit('update:assets', newVal)
+      }
     }
   },
   async created() {
@@ -232,13 +245,11 @@ export default defineComponent({
      */
     async createScan(): Promise<void> {
       try {
-        this.loading = true
         const agentGroupId = await this.getAgentGroupId()
-        console.log({ agentGroupId })
+        this.$emit('update:agent-group-id', agentGroupId)
+        this.$emit('createScan')
       } catch (e: unknown) {
         this.reportError(e?.message || 'Error creating scan')
-      } finally {
-        this.loading = false
       }
     },
     /**

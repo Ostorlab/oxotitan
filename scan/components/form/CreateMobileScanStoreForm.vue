@@ -45,9 +45,12 @@
     </template>
   </v-stepper-vertical-item>
   <AgentGroupSelect
+    v-model:model-value="selectedAgentGroup"
+    :create-scan-loading="createScanLoading"
     :step="step + 1"
     :selected-scanner="selectedScanner"
     @reset="$emit('reset')"
+    @create-scan="$emit('createScan')"
   />
 </template>
 
@@ -55,11 +58,13 @@
 import LoadingDialog from '~/common/components/LoadingDialog.vue'
 import type { Scanner } from '~/project/types'
 import AgentGroupSelect from '~/scan/components/AgentGroupSelect.vue'
+import { AssetEnum } from '~/scan/types'
 
 interface Data {
   packageName: string | null
   loadingDialog: boolean
   isFormValid: boolean
+  selectedAgentGroup: unknown
   rules: {
     required: (value: string | null) => boolean | string
   }
@@ -79,11 +84,20 @@ export default defineComponent({
     selectedScanner: {
       type: Object as () => Scanner,
       required: true
+    },
+    assetPlatformType: {
+      type: String as () => AssetEnum,
+      required: true
+    },
+    createScanLoading: {
+      type: Boolean,
+      default: false
     }
   },
-  emits: ['reset'],
+  emits: ['reset', 'update:assets', 'update:agent-group-id', 'createScan'],
   data(): Data {
     return {
+      selectedAgentGroup: null,
       isFormValid: false,
       packageName: null,
       loadingDialog: false,
@@ -93,6 +107,15 @@ export default defineComponent({
     }
   },
   computed: {
+    /**
+     * The selected asset type.
+     */
+    assetTypeData(): { type: 'androidStore' | 'iosStore', identifier: 'packageName' | 'bundleId' } {
+      if (this.assetPlatformType === AssetEnum.ANDROID_PLAYSTORE) {
+        return { type: 'androidStore', identifier: 'packageName' }
+      }
+      return { type: 'iosStore', identifier: 'bundleId' }
+    },
     stepHasErrors(): boolean {
       return this.packageName !== null && this.isFormValid === false
     },
@@ -100,11 +123,21 @@ export default defineComponent({
       return this.packageName === null || this.packageName?.trim() === '' || this.stepHasErrors === true
     }
   },
+  watch: {
+    packageName(newVal) {
+      this.$emit('update:assets', [{ [this.assetTypeData.type]: { [this.assetTypeData.identifier]: newVal, applicationName: newVal } }])
+    },
+    selectedAgentGroup: {
+      deep: true,
+      handler(newVal) {
+        this.$emit('update:agent-group-id', newVal?.id)
+      }
+    }
+  },
   methods: {
     clear(): void {
       this.packageName = null
-    },
-    createScan() {}
+    }
   }
 })
 </script>

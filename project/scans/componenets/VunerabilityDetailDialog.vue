@@ -66,7 +66,6 @@ export default defineComponent({
     modelValue: {
       immediate: true,
       handler(val: boolean): void {
-        console.log({ vuln: this.vuln })
         this.dialog = val
       }
     },

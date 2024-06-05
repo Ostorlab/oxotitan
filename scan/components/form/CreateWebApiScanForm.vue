@@ -48,9 +48,12 @@
     </template>
   </v-stepper-vertical-item>
   <AgentGroupSelect
+    v-model:model-value="selectedAgentGroup"
+    :create-scan-loading="createScanLoading"
     :step="step + 1"
     :selected-scanner="selectedScanner"
     @reset="$emit('reset')"
+    @create-scan="$emit('createScan')"
   />
 </template>
 
@@ -64,6 +67,7 @@ interface Data {
   rawUrls: string | null
   loadingDialog: boolean
   isFormValid: boolean
+  selectedAgentGroup: unknown
 }
 
 export default defineComponent({
@@ -80,14 +84,19 @@ export default defineComponent({
     selectedScanner: {
       type: Object as () => Scanner,
       required: true
+    },
+    createScanLoading: {
+      type: Boolean,
+      default: false
     }
   },
-  emits: ['reset'],
+  emits: ['reset', 'update:assets', 'update:agent-group-id', 'createScan'],
   data(): Data {
     return {
       isFormValid: false,
       rawUrls: null,
-      loadingDialog: false
+      loadingDialog: false,
+      selectedAgentGroup: null
     }
   },
   computed: {
@@ -111,6 +120,21 @@ export default defineComponent({
     },
     isContinueDisabled(): boolean {
       return this.rawUrlsErrorMessages.length > 0 || this.rawUrls === null || this.rawUrls?.trim() === ''
+    }
+  },
+  watch: {
+    userUrls: {
+      deep: true,
+      immediate: false,
+      handler(newVal) {
+        this.$emit('update:assets', [{ url: { links: newVal } }])
+      }
+    },
+    selectedAgentGroup: {
+      deep: true,
+      handler(newVal) {
+        this.$emit('update:agent-group-id', newVal?.id)
+      }
     }
   },
   methods: {

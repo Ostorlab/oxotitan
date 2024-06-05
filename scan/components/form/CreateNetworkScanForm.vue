@@ -50,9 +50,12 @@
     </template>
   </v-stepper-vertical-item>
   <AgentGroupSelect
+    v-model:model-value="selectedAgentGroup"
+    :create-scan-loading="createScanLoading"
     :step="step + 1"
     :selected-scanner="selectedScanner"
     @reset="$emit('reset')"
+    @create-scan="$emit('createScan')"
   />
 </template>
 
@@ -66,6 +69,7 @@ interface Data {
   ip: string | null
   userIps: Array<string>
   loadingDialog: boolean
+  selectedAgentGroup: unknown
 }
 
 export default defineComponent({
@@ -82,14 +86,19 @@ export default defineComponent({
     selectedScanner: {
       type: Object as () => Scanner,
       required: true
+    },
+    createScanLoading: {
+      type: Boolean,
+      default: false
     }
   },
-  emits: ['reset'],
+  emits: ['reset', 'update:assets', 'update:agent-group-id', 'createScan'],
   data(): Data {
     return {
       ip: null,
       userIps: [],
-      loadingDialog: false
+      loadingDialog: false,
+      selectedAgentGroup: null
     }
   },
   computed: {
@@ -116,6 +125,21 @@ export default defineComponent({
         return
       }
       return this.userIps?.length > 0 && this.ipErrorMessages.length === 0
+    }
+  },
+  watch: {
+    userIps: {
+      deep: true,
+      immediate: false,
+      handler(newVal) {
+        this.$emit('update:assets', [{ network: { networks: newVal } }])
+      }
+    },
+    selectedAgentGroup: {
+      deep: true,
+      handler(newVal) {
+        this.$emit('update:agent-group-id', newVal?.id)
+      }
     }
   },
   methods: {
