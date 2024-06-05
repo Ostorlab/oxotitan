@@ -49,11 +49,17 @@ const STOP_SCAN_MUTATION = gql`mutation stopScan($scanId: Int!) {
   }
 }`
 
+const IMPORT_SCAN_MUTATION = gql`mutation ImportScan($file: Upload!, $scanId: Int) {
+  importScan(file: $file, scanId: $scanId) {
+    message
+  }
+}`
+
 export default class ScansService {
-  private readonly requestAggregator: RequestHandler
+  private readonly requestor: RequestHandler
   totalScans: number
   constructor(axios: AxiosInstance) {
-    this.requestAggregator = new RequestHandler(axios)
+    this.requestor = new RequestHandler(axios)
     this.totalScans = 0
   }
 
@@ -68,7 +74,7 @@ export default class ScansService {
       queryScansArgs.numberElements = undefined
       queryScansArgs.page = undefined
     }
-    const response = await this.requestAggregator.post(
+    const response = await this.requestor.post(
       scanner,
       {
         query: SCANS_QUERY,
@@ -97,7 +103,7 @@ export default class ScansService {
    * @param scanId
    */
   async stopScan(scanner: Scanner, scanId: number): Promise<void> {
-    const response = await this.requestAggregator.post(
+    const response = await this.requestor.post(
       scanner,
       {
         query: STOP_SCAN_MUTATION,
@@ -114,7 +120,7 @@ export default class ScansService {
    * @param scanId
    */
   async deleteScan(scanner: Scanner, scanId: number): Promise<boolean> {
-    const response = await this.requestAggregator.post(
+    const response = await this.requestor.post(
       scanner,
       {
         query: DELETE_SCAN_MUTATION,
@@ -123,5 +129,49 @@ export default class ScansService {
         }
       })
     return response?.data?.deleteScan?.result || false
+  }
+
+  /**
+   * Import scan from file with optionally defined scan id.
+   * @param scanner
+   * @param file
+   * @param scanId
+   */
+  async importScan(scanner: Scanner, file: File, scanId?: number | null): Promise<boolean> {
+    const formData = new FormData()
+
+    const query = IMPORT_SCAN_MUTATION
+    const variables = {
+      scanId: scanId,
+      file: null
+    }
+
+    formData.append(
+      'operations',
+      JSON.stringify({
+        query,
+        variables,
+        app: file,
+        maps: {
+          app: ['variables.file']
+        }
+      })
+    )
+    formData.append('0', file)
+    formData.append(
+      'map',
+      JSON.stringify({
+        0: ['variables.file']
+      })
+    )
+
+    const response = await this.requestor.$axios.post(scanner.endpoint, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        'X-Api-Key': scanner.apiKey
+      }
+    })
+
+    return response?.data?.importScan?.result || false
   }
 }
