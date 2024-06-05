@@ -35,7 +35,7 @@ export default class RequestHandler {
      * @param data
      */
   async post(scanner: Scanner, data: NonNullable<unknown>) {
-    if (scanner !== null) {
+    if (scanner !== null && scanner !== undefined) {
       return await this.$axios.post(scanner.endpoint, data, {
         headers: this._createAuthorizationHeader(scanner)
       })

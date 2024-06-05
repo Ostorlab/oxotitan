@@ -30,6 +30,13 @@
       :scan-id="scanId"
     />
 
+    <DfBreadcrumbs
+      :scan-id="scanId"
+      :breadcrumbs="breadcrumbs"
+      :scanner="scanner"
+      class="mb-5"
+    />
+
     <v-card
       class="d-flex pl-3 py-3 mt-3"
       variant="outlined"
@@ -158,6 +165,7 @@ import VunerabilityDetailDialog from '~/project/scans/componenets/VunerabilityDe
 import { useNotificationsStore } from '~/stores/notifications'
 import { useScannersStore } from '~/stores/scanners'
 import DfScanProgress from '~/dragonfly/components/Tags/DfScanProgress/DfScanProgress.vue'
+import { DfBreadcrumbs } from '~/dragonfly/components/Sections/DfBreadcrumbs'
 import type {
   Maybe,
   OxoAggregatedKnowledgeBaseVulnerabilityType,
@@ -165,11 +173,14 @@ import type {
   OxoVulnerabilitiesType
 } from '~/graphql/types'
 import type { Scanner, FormattedVulnz } from '~/project/types'
+import type { VulnerabilityDetailBreadcrumbsType } from '~/dragonfly/components/Sections/DfBreadcrumbs/types'
 
 definePageMeta({
   layout: 'default',
   title: 'scan'
 })
+
+const BREADCRUMBS_SCANS_INDEX = 2
 
 interface Data {
   vulnDetailsDialog: boolean
@@ -190,6 +201,7 @@ interface Data {
   deleteScanDialog: boolean
   archiveBtnLoading: boolean
   stopScanDialog: boolean
+  breadcrumbs: VulnerabilityDetailBreadcrumbsType
 }
 export default defineComponent ({
   name: 'Index',
@@ -197,7 +209,8 @@ export default defineComponent ({
     DfScanProgress,
     DfConfirmationModal,
     VulnzTable,
-    VunerabilityDetailDialog
+    VunerabilityDetailDialog,
+    DfBreadcrumbs
   },
   data(): Data {
     return {
@@ -223,7 +236,27 @@ export default defineComponent ({
       stopBtnLoading: false,
       deleteScanDialog: false,
       archiveBtnLoading: false,
-      stopScanDialog: false
+      stopScanDialog: false,
+      breadcrumbs: [
+        {
+          text: 'scanning',
+          disabled: true,
+          exact: true
+        },
+        {
+          text: 'scans',
+          disabled: false,
+          to: '/scan/list',
+          exact: true
+        },
+        {
+          text: 'Scan',
+          disabled: false,
+          to: `/scan/${this.$route.params.scan}`,
+          exact: true,
+          scans: []
+        }
+      ]
     }
   },
   computed: {
@@ -251,7 +284,11 @@ export default defineComponent ({
       })
     } else {
       this.scanner = scanner
-      await this.fetchKBVulnerabilities()
+      await Promise.allSettled([
+        this.fetchKBVulnerabilities(),
+        this.fetchScans()
+      ])
+      this.updateBreadcrumbs()
     }
   },
   methods: {
@@ -308,6 +345,27 @@ export default defineComponent ({
     goToDetailNewTab(vuln: FormattedVulnz): void {
       const routeData = this.$router.resolve(`/scan/${crc32(this.scanner.endpoint)}/${this.scanId}/vuln/${vuln.key ?? vuln.kb.id}`)
       window.open(routeData.href, '_blank')
+    },
+    /**
+     * Fetch the most recent scans.
+     */
+    async fetchScans(): Promise<void> {
+      this.breadcrumbs[BREADCRUMBS_SCANS_INDEX].scans = await this.scanService.getScans(
+        this.scanner,
+        {
+          page: 1,
+          numberElements: 20
+        }
+      )
+    },
+    /**
+     * Updates the list of scans in the breadcrumbs with the current scan.
+     */
+    updateBreadcrumbs(): void {
+      const currentScanInBreadcrumbs = (this.breadcrumbs[BREADCRUMBS_SCANS_INDEX]?.scans || [])?.find((scan) => scan.id === this.kb?.id)
+      if (currentScanInBreadcrumbs === undefined) {
+        this.breadcrumbs[BREADCRUMBS_SCANS_INDEX].scans = [...this.breadcrumbs[BREADCRUMBS_SCANS_INDEX]?.scans || [], this.kb]
+      }
     },
     /**
      * Stop the scan

@@ -21,6 +21,19 @@ const SCANS_QUERY = gql`query scans($scanIds: [Int], $page: Int, $numberElements
 }
 `
 
+const GET_SCAN_QUERY = gql`
+query Scan($scanId: Int!) {
+  scan(scanId: $scanId) {
+      id
+      title
+      asset
+      createdTime
+      messageStatus
+      progress
+  }
+}
+`
+
 const DELETE_SCAN_MUTATION = gql`mutation deleteScan($scanId: Int!) {
   deleteScan(scanId: $scanId) {
     result
@@ -70,6 +83,18 @@ export default class ScansService {
     const scans = response?.data?.data.scans.scans || []
     this.totalScans = response?.data?.data?.scans?.pageInfo?.count || scans.length
     return scans
+  }
+
+  /**
+   * Fetches a single scan.
+   * @param scanId The ID of the scan to fetch.
+   */
+  async getScan(scanner: Scanner, scanId: number | string): Promise<OxoScanType> {
+    const res = await this.requestAggregator.post(scanner, {
+      query: GET_SCAN_QUERY,
+      variables: { scanId }
+    })
+    return res?.data?.data?.scan || {}
   }
 
   /**

@@ -1,5 +1,9 @@
 <template>
-  <v-container class="ga-2">
+  <div>
+    <DfBreadcrumbs
+      :breadcrumbs="breadcrumbs"
+      class="mb-5"
+    />
     <v-card
       variant="outlined"
       class="my-4"
@@ -52,13 +56,15 @@
         </v-btn>
       </v-card-actions>
     </v-card>
-  </v-container>
+  </div>
 </template>
 
 <script setup lang="ts">
 import ScanService from '~/project/scans/services/ScanService'
 import type { Scanner } from '~/project/types'
 import ScannerSelect from '~/scan/components/ScannerSelect.vue'
+import { DfBreadcrumbs } from '~/dragonfly/components/Sections/DfBreadcrumbs'
+import type { VulnerabilityDetailBreadcrumbsType } from '~/dragonfly/components/Sections/DfBreadcrumbs/types'
 
 const nuxt = useNuxtApp()
 const notificationsStore = useNotificationsStore()
@@ -67,6 +73,24 @@ const scanner = ref<Scanner | null>(null)
 const scanId = ref<number | null>(null)
 const configFile = ref<File | null>(null)
 const loading = ref<boolean>(false)
+const breadcrumbs: VulnerabilityDetailBreadcrumbsType = [
+  {
+    text: 'Scanning',
+    disabled: true,
+    exact: true
+  },
+  {
+    text: 'Scan',
+    disabled: true,
+    exact: true
+  },
+  {
+    text: 'Import',
+    disabled: true,
+    to: '/scan/import',
+    exact: true
+  }
+]
 
 /**
  * Clear all fields.
