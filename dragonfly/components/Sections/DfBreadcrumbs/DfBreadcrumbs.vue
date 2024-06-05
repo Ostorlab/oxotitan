@@ -195,14 +195,14 @@ export default defineComponent({
      */
     filteredBreadcrumbs(): VulnerabilityDetailBreadcrumbsType {
       return (this.breadcrumbs || []).map((item) => {
-        if (Object.keys(item).includes('scans')) {
+        if (Object.keys(item).includes('scans') === true) {
           const currentScanIndex = (item?.scans || []).findIndex((scan) => scan.id === this.scanId)
           if (currentScanIndex !== 0 && currentScanIndex !== -1) {
             const currentScan = (item?.scans || []).splice(currentScanIndex, 1)[0];
             (item?.scans || []).unshift(currentScan)
           }
         }
-        if (Object.keys(item).includes('kbvulnerabilities')) {
+        if (Object.keys(item).includes('kbvulnerabilities') === true) {
           const currentVulnIndex = (item?.kbvulnerabilities || []).findIndex((vuln) => vuln?.key === this.vulnTitle || vuln?.kb?.id === this.vulnTitle)
           if (currentVulnIndex !== 0 && currentVulnIndex !== -1) {
             const currentScan = (item?.kbvulnerabilities || []).splice(currentVulnIndex, 1)[0];
