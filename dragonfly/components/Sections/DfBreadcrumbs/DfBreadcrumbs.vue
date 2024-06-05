@@ -33,7 +33,7 @@
                 </v-icon>
               </v-btn>
             </template>
-            <v-list dense>
+            <v-list density="compact">
               <v-list-item-group color="primary">
                 <div
                   v-for="(subitem, i) in item.scans"
@@ -122,7 +122,7 @@
                 </v-icon>
               </v-btn>
             </template>
-            <v-list dense>
+            <v-list density="compact">
               <v-list-item-group color="primary">
                 <div
                   v-for="(subitem, i) in item.kbvulnerabilities"

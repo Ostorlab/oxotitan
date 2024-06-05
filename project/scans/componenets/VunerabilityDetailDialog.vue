@@ -16,7 +16,7 @@
         style="min-height: 100vh"
       >
         <VulnerabilityDetail
-          :vuln-title="vuln.key"
+          :vuln-title="vulnKey"
           :scan-id="scanId"
         />
       </v-card>
@@ -57,10 +57,16 @@ export default defineComponent({
       dialog: false
     }
   },
+  computed: {
+    vulnKey() {
+      return this.vuln?.key
+    }
+  },
   watch: {
     modelValue: {
       immediate: true,
       handler(val: boolean): void {
+        console.log({ vuln: this.vuln })
         this.dialog = val
       }
     },
