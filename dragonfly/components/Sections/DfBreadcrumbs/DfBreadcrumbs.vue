@@ -19,7 +19,6 @@
             <template #activator="{ props }">
               <v-btn
                 color="primary"
-                dark
                 v-bind="props"
                 variant="text"
                 active-class="no-active"
@@ -27,7 +26,6 @@
                 {{ item.text }}
                 <v-icon
                   end
-                  dark
                 >
                   mdi-menu-down
                 </v-icon>
@@ -109,14 +107,12 @@
             <template #activator="{ props }">
               <v-btn
                 color="primary"
-                dark
                 v-bind="props"
                 variant="text"
                 active-class="no-active"
               >
                 {{ item.text }}<v-icon
                   end
-                  dark
                 >
                   mdi-menu-down
                 </v-icon>
@@ -153,7 +149,6 @@
           <v-btn
             v-else
             color="primary"
-            dark
             variant="text"
             :to="item.to"
             active-class="no-active"
@@ -182,11 +177,11 @@ export default defineComponent({
       default: () => []
     },
     scanId: {
-      type: String,
+      type: String as () => string | null,
       default: null
     },
     vulnTitle: {
-      type: String,
+      type: String as () => string | null,
       default: null
     },
     scanner: {
@@ -195,6 +190,9 @@ export default defineComponent({
     }
   },
   computed: {
+    /**
+     * Updated breadcrumbs list depending on whether scans or vulnerabilities are present or not.
+     */
     filteredBreadcrumbs(): VulnerabilityDetailBreadcrumbsType {
       return (this.breadcrumbs || []).map((item) => {
         if (Object.keys(item).includes('scans')) {
