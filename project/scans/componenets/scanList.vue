@@ -66,10 +66,14 @@
                   :key="`item-${i}`"
                   density="compact"
                   :disabled="p.disabled ? p.disabled(item) : false"
-                  :prepend-icon="p.icon"
                   @click="p.action && p.action(item)"
                 >
-                  <v-list-item-title>{{ p.title }}</v-list-item-title>
+                  <div class="d-flex align-center">
+                    <v-icon start>
+                      {{ p.icon }}
+                    </v-icon>
+                    <v-list-item-title>{{ p.title }}</v-list-item-title>
+                  </div>
                 </v-list-item>
               </template>
             </v-list>

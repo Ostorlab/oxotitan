@@ -275,7 +275,7 @@ export default defineComponent ({
       return this.vulns?.length || 0
     }
   },
-  async created() {
+  async mounted() {
     const scanner = this.scanners.find((_scanner) => crc32(_scanner.endpoint) === this.$route.params.scanner)
     if (scanner === undefined) {
       this.reportError('Scanner not found')

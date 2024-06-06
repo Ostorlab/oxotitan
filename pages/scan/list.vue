@@ -5,7 +5,8 @@
       class="mb-5"
     />
     <v-row justify="center">
-      <template v-if="scanners.length>0">
+      <SvgLoader v-if="loading === true" />
+      <template v-else-if="loading === false && scanners.length > 0">
         <v-col
           v-for="scanner in scanners"
           :key="scanner.endpoint"
@@ -15,7 +16,7 @@
         </v-col>
       </template>
       <v-col
-        v-else-if="scanners.length===0"
+        v-else-if="loading === false && scanners.length === 0"
         content="center"
         cols="6"
         align-self="center"
@@ -41,6 +42,7 @@
 import { mapState } from 'pinia'
 import ScanList from '~/project/scans/componenets/scanList.vue'
 import { DfBreadcrumbs } from '~/dragonfly/components/Sections/DfBreadcrumbs'
+import SvgLoader from '~/common/components/SvgLoader.vue'
 import type { VulnerabilityDetailBreadcrumbsType } from '~/dragonfly/components/Sections/DfBreadcrumbs/types'
 
 definePageMeta({
@@ -50,15 +52,18 @@ definePageMeta({
 
 interface Data {
   breadcrumbs: VulnerabilityDetailBreadcrumbsType
+  loading: boolean
 }
 
 export default defineComponent({
   components: {
     ScanList,
-    DfBreadcrumbs
+    DfBreadcrumbs,
+    SvgLoader
   },
   data(): Data {
     return {
+      loading: true,
       breadcrumbs: [
         {
           text: 'Scanning',
@@ -75,6 +80,9 @@ export default defineComponent({
   },
   computed: {
     ...mapState(useScannersStore, ['scanners'])
+  },
+  mounted() {
+    this.loading = false
   }
 })
 </script>

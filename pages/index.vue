@@ -1,9 +1,10 @@
 <template>
-  <div>OXO</div>
+  <SvgLoader />
 </template>
 
 <script setup lang="ts">
 import { useScannersStore } from '~/stores/scanners'
+import SvgLoader from '~/common/components/SvgLoader.vue'
 
 const scannersStore = useScannersStore()
 const scanners = scannersStore.scanners

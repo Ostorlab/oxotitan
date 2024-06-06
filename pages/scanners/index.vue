@@ -24,8 +24,9 @@
         />
       </v-card-text>
     </v-card>
+    <SvgLoader v-if="loading === true" />
     <v-card
-      v-if="scanners.length>0"
+      v-else-if="loading === false && scanners.length > 0"
       variant="outlined"
     >
       <v-card-text>
@@ -36,6 +37,7 @@
 </template>
 
 <script setup lang="ts">
+import SvgLoader from '~/common/components/SvgLoader.vue'
 import { DfBreadcrumbs } from '~/dragonfly/components/Sections/DfBreadcrumbs'
 import type { VulnerabilityDetailBreadcrumbsType } from '~/dragonfly/components/Sections/DfBreadcrumbs/types'
 import type { Scanner } from '~/project/types'
@@ -43,7 +45,7 @@ import type { Scanner } from '~/project/types'
 const scannersStore = useScannersStore()
 
 const scanners = computed(() => scannersStore.scanners)
-
+const loading = ref(true)
 const showForm = ref(false)
 
 const currentScanner = ref<Scanner | null>(null)
@@ -61,6 +63,10 @@ const breadcrumbs: VulnerabilityDetailBreadcrumbsType = [
     exact: true
   }
 ]
+
+onMounted(() => {
+  loading.value = false
+})
 
 /**
  * Handle the update-scanner event.
