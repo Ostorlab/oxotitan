@@ -52,9 +52,12 @@
     </template>
   </v-stepper-vertical-item>
   <AgentGroupSelect
+    v-model:model-value="selectedAgentGroup"
+    :create-scan-loading="createScanLoading"
     :step="step + 1"
     :selected-scanner="selectedScanner"
     @reset="$emit('reset')"
+    @create-scan="$emit('createScan')"
   />
 </template>
 
@@ -65,6 +68,7 @@ import LoadingDialog from '~/common/components/LoadingDialog.vue'
 import UploadFile from '~/scan/components/UploadFile.vue'
 import AgentGroupSelect from '~/scan/components/AgentGroupSelect.vue'
 import type { Scanner } from '~/project/types'
+import { AssetEnum } from '~/scan/types'
 
 const MAX_FILE_SIZE = 600000000 // 600 MB
 
@@ -78,6 +82,7 @@ interface Data {
   application: File | null
   maxFileSize: typeof MAX_FILE_SIZE
   loadingDialog: boolean
+  selectedAgentGroup: unknown
 }
 
 export default defineComponent({
@@ -95,9 +100,17 @@ export default defineComponent({
     selectedScanner: {
       type: Object as () => Scanner,
       required: true
+    },
+    createScanLoading: {
+      type: Boolean,
+      default: false
+    },
+    assetPlatformType: {
+      type: String as () => AssetEnum,
+      required: true
     }
   },
-  emits: ['reset'],
+  emits: ['reset', 'update:assets', 'update:agent-group-id', 'createScan'],
   setup() {
     return {
       v$: useVuelidate()
@@ -112,6 +125,7 @@ export default defineComponent({
   },
   data(): Data {
     return {
+      selectedAgentGroup: null,
       maxFileSize: MAX_FILE_SIZE,
       application: null,
       loadingDialog: false
@@ -120,6 +134,33 @@ export default defineComponent({
   computed: {
     isStepValid() {
       return this.application !== null && this.application !== undefined && this.v$.application?.$invalid === false
+    },
+    /**
+     * The selected asset type.
+     */
+    assetTypeData(): { type: 'androidFile' | 'iosFile', identifier: 'packageName' | 'bundleId' } {
+      if (this.assetPlatformType === AssetEnum.ANDROID_APK) {
+        return { type: 'androidFile', identifier: 'packageName' }
+      }
+      return { type: 'iosFile', identifier: 'bundleId' }
+    }
+  },
+  watch: {
+    application: {
+      deep: true,
+      handler(newVal) {
+        if (newVal === undefined) {
+          this.$emit('update:assets', [])
+        } else {
+          this.$emit('update:assets', [{ [this.assetTypeData.type]: { [this.assetTypeData.identifier]: null, file: newVal } }])
+        }
+      }
+    },
+    selectedAgentGroup: {
+      deep: true,
+      handler(newVal) {
+        this.$emit('update:agent-group-id', newVal?.id)
+      }
     }
   },
   methods: {

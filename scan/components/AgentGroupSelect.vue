@@ -12,9 +12,10 @@
       item-title="key"
       density="compact"
       clearable
+      return-object
       label="Select an agent group"
       placeholder="Select an agent group to use for the scan"
-      @update:model-value="$emit('update:model-value', $event)"
+      @update:model-value="$emit('update:model-value', $event);"
     >
       <template #item="{ item, index, props }">
         <v-list-item
@@ -31,7 +32,7 @@
       <v-btn
         color="success"
         variant="elevated"
-        :loading="loading"
+        :loading="createScanLoading"
         @click="$emit('createScan')"
       >
         <v-icon start>
@@ -83,9 +84,13 @@ export default defineComponent({
     selectedScanner: {
       type: Object as () => Scanner,
       required: true
+    },
+    createScanLoading: {
+      type: Boolean,
+      default: false
     }
   },
-  emits: ['reset', 'createScan', 'update:model-value'],
+  emits: ['reset', 'createScan', 'update:model-value', 'update:agent-group-id'],
   data(): Data {
     return {
       agentGroupService: new AgentGroupService(this.$axios),
