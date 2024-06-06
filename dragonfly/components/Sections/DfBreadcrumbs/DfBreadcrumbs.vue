@@ -32,71 +32,63 @@
               </v-btn>
             </template>
             <v-list density="compact">
-              <v-list-item-group color="primary">
-                <div
-                  v-for="(subitem, i) in item.scans"
-                  :key="`scan-${i}`"
-                >
-                  <v-list-item :to="constructScanDetailLink(subitem)">
-                    <!-- TODO (Rabson) Update to add support for assets -->
+              <div
+                v-for="(subitem, i) in item.scans"
+                :key="`scan-${i}`"
+              >
+                <v-list-item :to="constructScanDetailLink(subitem)">
+                  <!-- TODO (Rabson) Update to add support for assets -->
+                  <v-list-item-title>
+                    <code>{{ getScanTitle(subitem) }}</code>
+                  </v-list-item-title>
+                  <template
+                    v-if="
+                      subitem.assetType === 'android'
+                        || subitem.assetType === 'ios'
+                    "
+                  >
+                    <v-img
+                      v-if="subitem.b64Icon !== undefined && subitem.b64Icon.length > 0"
+                      :src="`data:image/png;base64,${subitem.b64Icon}`"
+                      alt="Icon"
+                    />
                     <v-list-item-title>
                       <code>{{ getScanTitle(subitem) }}</code>
                     </v-list-item-title>
-                    <template
-                      v-if="
-                        subitem.assetType === 'android'
-                          || subitem.assetType === 'ios'
-                      "
-                    >
-                      <v-list-item-avatar v-if="subitem.b64Icon !== undefined && subitem.b64Icon.length > 0">
-                        <v-img
-                          :src="`data:image/png;base64,${subitem.b64Icon}`"
-                          alt="Icon"
-                        />
-                      </v-list-item-avatar>
-                      <v-list-item-title>
-                        <code>{{ getScanTitle(subitem) }}</code>
-                      </v-list-item-title>
-                    </template>
-                    <template
-                      v-else-if="
-                        subitem.assetType === 'android_store'
-                          || subitem.assetType === 'ios_store'
-                      "
-                    >
-                      <v-list-item-avatar v-if="subitem.b64Icon !== undefined && subitem.b64Icon.length > 0">
-                        <v-img
-                          :src="`data:image/png;base64,${subitem.b64Icon}`"
-                          alt="Icon"
-                        />
-                      </v-list-item-avatar>
-                      <v-list-item-title>
-                        <code>{{ getScanTitle(subitem) }}</code>
-                      </v-list-item-title>
-                    </template>
-                    <template v-else-if="subitem.assetType === 'web'">
-                      <v-list-item-avatar>
-                        <v-icon>mdi-web</v-icon>
-                      </v-list-item-avatar>
-                      <v-list-item-title>
-                        <code>{{ subitem.asset.urls.join(',') }}</code>
-                      </v-list-item-title>
-                    </template>
-                    <template v-else-if="subitem.assetType === 'network'">
-                      <v-list-item-avatar>
-                        <v-icon>mdi-ip</v-icon>
-                      </v-list-item-avatar>
-                      <v-list-item-title>
-                        <code>{{ subitem.asset.networks.join(',') }}</code>
-                      </v-list-item-title>
-                    </template>
-                  </v-list-item>
-                  <v-divider
-                    v-if="i === 0"
-                    class="mb-2"
-                  />
-                </div>
-              </v-list-item-group>
+                  </template>
+                  <template
+                    v-else-if="
+                      subitem.assetType === 'android_store'
+                        || subitem.assetType === 'ios_store'
+                    "
+                  >
+                    <v-img
+                      v-if="subitem.b64Icon !== undefined && subitem.b64Icon.length > 0"
+                      :src="`data:image/png;base64,${subitem.b64Icon}`"
+                      alt="Icon"
+                    />
+                    <v-list-item-title>
+                      <code>{{ getScanTitle(subitem) }}</code>
+                    </v-list-item-title>
+                  </template>
+                  <template v-else-if="subitem.assetType === 'web'">
+                    <v-icon>mdi-web</v-icon>
+                    <v-list-item-title>
+                      <code>{{ subitem.asset.urls.join(',') }}</code>
+                    </v-list-item-title>
+                  </template>
+                  <template v-else-if="subitem.assetType === 'network'">
+                    <v-icon>mdi-ip</v-icon>
+                    <v-list-item-title>
+                      <code>{{ subitem.asset.networks.join(',') }}</code>
+                    </v-list-item-title>
+                  </template>
+                </v-list-item>
+                <v-divider
+                  v-if="i === 0 && (item.scans || []).length > 1"
+                  class="mb-2"
+                />
+              </div>
             </v-list>
           </v-menu>
           <v-menu
@@ -119,31 +111,29 @@
               </v-btn>
             </template>
             <v-list density="compact">
-              <v-list-item-group color="primary">
-                <div
-                  v-for="(subitem, i) in item.kbvulnerabilities"
-                  :key="`vuln-${i}`"
+              <div
+                v-for="(subitem, i) in item.kbvulnerabilities"
+                :key="`vuln-${i}`"
+              >
+                <v-list-item
+                  :key="i"
+                  :to="constructVulnDetailLink(subitem)"
                 >
-                  <v-list-item
-                    :key="i"
-                    :to="constructVulnDetailLink(subitem)"
-                  >
-                    <div class="d-flex align-center">
-                      <DfRisk
-                        :risk="subitem.risk"
-                        small
-                      />
-                      <v-list-item-title class="ml-2">
-                        {{ subitem.title }}
-                      </v-list-item-title>
-                    </div>
-                  </v-list-item>
-                  <v-divider
-                    v-if="i === 0"
-                    class="mb-2"
-                  />
-                </div>
-              </v-list-item-group>
+                  <div class="d-flex align-center">
+                    <DfRisk
+                      :risk="subitem.risk"
+                      small
+                    />
+                    <v-list-item-title class="ml-2">
+                      {{ subitem.title }}
+                    </v-list-item-title>
+                  </div>
+                </v-list-item>
+                <v-divider
+                  v-if="i === 0"
+                  class="mb-2"
+                />
+              </div>
             </v-list>
           </v-menu>
           <v-btn
