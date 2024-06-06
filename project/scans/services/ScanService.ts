@@ -185,6 +185,11 @@ export default class ScansService {
     return response?.data?.importScan?.result || false
   }
 
+  /**
+   * Run a scan.
+   * @param scanner The scanner on which to run the scan.
+   * @param mutationArgs The arguments to use to create the scan.
+   */
   async runScan(scanner: Scanner, mutationArgs: { title?: string, assetIds: Array<number>, agentGroupId: number }): Promise<number> {
     const response = await this.requestor.post(
       scanner,
