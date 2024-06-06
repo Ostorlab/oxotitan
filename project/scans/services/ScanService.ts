@@ -55,6 +55,16 @@ const IMPORT_SCAN_MUTATION = gql`mutation ImportScan($file: Upload!, $scanId: In
   }
 }`
 
+const RUN_SCAN_MUTATION = gql`
+  mutation RunScan ($scan: OxoAgentScanInputType!) {
+    runScan (scan: $scan) {
+      scan {
+        id
+      }
+    }
+  }
+`
+
 export default class ScansService {
   private readonly requestor: RequestHandler
   totalScans: number
@@ -173,5 +183,27 @@ export default class ScansService {
     })
 
     return response?.data?.importScan?.result || false
+  }
+
+  /**
+   * Run a scan.
+   * @param scanner The scanner on which to run the scan.
+   * @param mutationArgs The arguments to use to create the scan.
+   */
+  async runScan(scanner: Scanner, mutationArgs: { title?: string, assetIds: Array<number>, agentGroupId: number }): Promise<number> {
+    const response = await this.requestor.post(
+      scanner,
+      {
+        query: RUN_SCAN_MUTATION,
+        variables: { scan: mutationArgs }
+      }
+    )
+    if (response?.data?.runScan === null || response?.data?.runScan === undefined) {
+      throw new Error('An error occurred while creating the scan')
+    }
+    if ((response?.data?.errors || []).length > 0) {
+      throw new Error(response?.data?.errors[0]?.message)
+    }
+    return response?.data?.runScan?.scan?.id
   }
 }

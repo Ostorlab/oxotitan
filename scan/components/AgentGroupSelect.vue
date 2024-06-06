@@ -33,6 +33,7 @@
         color="success"
         variant="elevated"
         :loading="createScanLoading"
+        :disabled="selectedAgentGroup === null"
         @click="$emit('createScan')"
       >
         <v-icon start>

@@ -111,7 +111,7 @@
           v-model:is-step-valid="isStepValid"
           v-model:assets="assets"
           v-model:agent-group-id="agentGroupId"
-          ::create-scan-loading="createScanLoading"
+          :create-scan-loading="createScanLoading"
           :selected-scanner="selectedScanner"
           :asset-type="assetType"
           :step="4"
@@ -137,6 +137,7 @@ import CreateMobileScanFileForm from '~/scan/components/form/CreateMobileScanFil
 import CreateScanYamlForm from '~/scan/components/form/CreateScanYamlForm.vue'
 import ScannerSelect from '~/scan/components/ScannerSelect.vue'
 import AssetsService from '~/project/assets/services/assets.service'
+import ScansService from '~/project/scans/services/ScanService'
 import { useNotificationsStore } from '~/stores/notifications'
 
 interface Data {
@@ -153,6 +154,7 @@ interface Data {
   agentGroupId: number | null
   createScanLoading: boolean
   assetsService: AssetsService
+  scansService: ScansService
 }
 
 export default defineComponent({
@@ -168,6 +170,7 @@ export default defineComponent({
   },
   data(): Data {
     return {
+      scansService: new ScansService(this.$axios),
       assetsService: new AssetsService(this.$axios),
       createScanLoading: false,
       agentGroupId: null,
@@ -311,17 +314,38 @@ export default defineComponent({
     }
   },
   methods: {
-    ...mapActions(useNotificationsStore, ['reportError']),
+    ...mapActions(useNotificationsStore, ['reportError', 'reportSuccess']),
     /**
      * Create scan.
      */
-    async createScan(): Promise<void> {
-      await this.createAssets()
+    async createScan(): Promise<undefined> {
+      if (this.selectedScanner === null || this.agentGroupId === null) {
+        this.reportError('No scanner selected')
+        return
+      }
+      try {
+        this.createScanLoading = true
+        const assets = await this.createAssets() || []
+        await this.scansService.runScan(
+          this.selectedScanner,
+          {
+            title: this.scanTitle || undefined,
+            agentGroupId: this.agentGroupId,
+            assetIds: assets.map((asset) => parseInt(asset.id))
+          }
+        )
+        this.reportSuccess('Scan created successfully')
+        this.resetForm()
+      } catch (e: any) {
+        this.reportError(e?.message || 'An error occured while creating the scan')
+      } finally {
+        this.createScanLoading = false
+      }
     },
     /**
      * Create assets.
      */
-    async createAssets(): Promise<void> {
+    async createAssets(): Promise<Array<{ id: string }> | undefined> {
       if (this.selectedScanner === null) {
         this.reportError('No scanner selected')
         return
@@ -331,7 +355,7 @@ export default defineComponent({
         return
       }
       try {
-        this.assetsService.createAssets(this.selectedScanner, this.assets)
+        return await this.assetsService.createAssets(this.selectedScanner, this.assets)
       } catch (e: any) {
         this.reportError(e?.message || 'Error creating assets')
       }
@@ -342,6 +366,8 @@ export default defineComponent({
     resetForm(): void {
       this.stepNumber = 1
       this.assets = []
+      this.agentGroupId = null
+      this.selectedScanner = null
     }
   }
 })
