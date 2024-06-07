@@ -45,11 +45,6 @@ import { DfBreadcrumbs } from '~/dragonfly/components/Sections/DfBreadcrumbs'
 import SvgLoader from '~/common/components/SvgLoader.vue'
 import type { VulnerabilityDetailBreadcrumbsType } from '~/dragonfly/components/Sections/DfBreadcrumbs/types'
 
-definePageMeta({
-  title: 'Scans',
-  layout: 'default'
-})
-
 interface Data {
   breadcrumbs: VulnerabilityDetailBreadcrumbsType
   loading: boolean
