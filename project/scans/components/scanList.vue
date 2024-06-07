@@ -80,7 +80,11 @@
           </v-menu>
         </template>
         <template #[`item.asset`]="{ item }">
-          <DfTag :name="item.asset||''" />
+          <!--          TODO: Adding component to show asset in the next PR -->
+          {{ item.assets || '-' }}
+        </template>
+        <template #[`item.title`]="{ item }">
+          {{ item.title || '-' }}
         </template>
       </v-data-table-server>
     </v-card>
@@ -94,7 +98,6 @@ import ScanService from '~/project/scans/services/ScanService'
 import { DfScanProgress } from '~/dragonfly/components/Tags/DfScanProgress'
 import { DfConfirmationModal } from '~/dragonfly/components/Modals/DfConfirmationModal'
 import type { OxoScanType } from '~/graphql/types'
-import { DfTag } from '~/dragonfly/components/Tags/DfTag'
 import { useScannersStore } from '~/stores/scanners'
 import type { Scanner } from '~/project/types'
 import { useNotificationsStore } from '~/stores/notifications'
@@ -157,7 +160,6 @@ type ActionsType = {
 
 export default defineComponent({
   components: {
-    DfTag,
     DfScanProgress,
     DfConfirmationModal
   },

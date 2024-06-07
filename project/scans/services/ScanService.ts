@@ -4,16 +4,51 @@ import RequestHandler from '~/utils/requestHandler'
 import type { Scanner } from '~/project/types'
 
 const SCANS_QUERY = gql`query scans($scanIds: [Int], $page: Int, $numberElements: Int, $orderBy: OxoScanOrderByEnum, $sort: SortEnum) {
-
   scans(scanIds: $scanIds, page: $page, numberElements: $numberElements, orderBy: $orderBy, sort: $sort) {
-    pageInfo{
+    pageInfo {
       count
       numPages
     }
     scans {
       id
       title
-      asset
+      assets {
+        __typename
+        ... on OxoAndroidFileAssetType {
+          id
+          type
+          scanId
+          packageName
+          path
+        }
+        ... on OxoIOSFileAssetType {
+          id
+          type
+          bundleId
+          path
+        }
+        ... on OxoAndroidStoreAssetType {
+          id
+          type
+          applicationName
+        }
+        ... on OxoIOSStoreAssetType {
+          id
+          type
+          bundleId
+          applicationName
+        }
+        ... on OxoUrlAssetType {
+          id
+          type
+          links
+        }
+        ... on OxoNetworkAssetType {
+          id
+          type
+          networks
+        }
+      }
       createdTime
       progress
     }
@@ -26,7 +61,6 @@ query Scan($scanId: Int!) {
   scan(scanId: $scanId) {
       id
       title
-      asset
       createdTime
       messageStatus
       progress
@@ -97,10 +131,11 @@ export default class ScansService {
 
   /**
    * Fetches a single scan.
+   * @param scanner
    * @param scanId The ID of the scan to fetch.
    */
   async getScan(scanner: Scanner, scanId: number | string): Promise<OxoScanType> {
-    const res = await this.requestAggregator.post(scanner, {
+    const res = await this.requestor.post(scanner, {
       query: GET_SCAN_QUERY,
       variables: { scanId }
     })
