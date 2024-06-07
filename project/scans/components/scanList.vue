@@ -142,6 +142,7 @@ interface Data {
     itemsPerPage: number
     sortDesc: boolean[]
     sortBy: Array<{ key: string, order: string }>
+    page: number
   }
   onActionScan: OxoScanType | null
   stopDialog: boolean
@@ -176,6 +177,7 @@ export default defineComponent({
       loading: true,
       options: {
         itemsPerPage: 15,
+        page: 1,
         sortDesc: [true],
         sortBy: [
           {
@@ -252,7 +254,7 @@ export default defineComponent({
       if (this.onActionScan === null || this.onActionScan === undefined) {
         return
       }
-      await this.service.stopScan(this.onActionScan)
+      await this.service.stopScan(this.scanner, parseInt(this.onActionScan.id))
       this.onActionScan = null
       await this.fetchScans()
     },
