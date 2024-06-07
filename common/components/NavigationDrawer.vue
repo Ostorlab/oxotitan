@@ -32,6 +32,8 @@
         :key="drawerItem.to"
         :value="drawerItem.value"
         :to="drawerItem.to"
+        color="primary"
+        style="color: black;"
       >
         <div class="d-flex align-center">
           <v-icon>

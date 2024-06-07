@@ -41,7 +41,7 @@
             activator="parent"
             location="bottom"
           >
-            {{ link.title }}
+            {{ link.tooltip }}
           </v-tooltip>
         </v-btn>
       </div>
@@ -54,22 +54,22 @@ import { useNavigationStore } from '~/stores/navigation'
 
 const navigationStore = useNavigationStore()
 const menuLinks: Array<{
-  title: string
+  tooltip: string
   icon: string
   to: string
 }> = [
   {
-    title: 'New Scan',
+    tooltip: 'New Scan',
     icon: 'mdi-shield-plus-outline',
     to: '/scan/new'
   },
   {
-    title: 'Scans',
+    tooltip: 'Scans',
     icon: 'mdi-shield-outline',
     to: '/scan/list'
   },
   {
-    title: 'Scanners',
+    tooltip: 'Scanners',
     icon: 'mdi-engine-outline',
     to: '/scanners'
   }
