@@ -1,8 +1,8 @@
 <template>
   <v-stepper-vertical-item
-    title="Target IPs"
+    title="Target URLs / domains"
     subtitle="required"
-    :error="ipErrorMessages.length > 0"
+    :error="rawUrlsErrorMessages.length > 0"
     :value="step"
   >
     <LoadingDialog
@@ -11,26 +11,24 @@
     />
     <v-form v-model="isFormValid">
       <p class="subtitle-1 mb-3">
-        Please specify the target IPs:
+        Please specify the target URLs / domains:
       </p>
       <v-textarea
-        v-model="ip"
-        :error-messages="ipErrorMessages"
+        v-model="rawUrls"
+        :error-messages="rawUrlsErrorMessages"
         variant="outlined"
         density="compact"
         clearable
-        label="IP (IPv4 or IPv6)"
-        placeholder="Add IPs each on a separate line"
-        prepend-icon="mdi-ip-network-outline"
-        @input="addToTargetIps"
-        @keyup.enter="addToTargetIps"
+        label="URLs / domains"
+        placeholder="Add URLs and domains each on a separate line"
+        prepend-icon="mdi-web"
       />
     </v-form>
     <template #next="{ next }">
       <v-btn
         color="primary"
         variant="elevated"
-        :disabled="isFormValid === false"
+        :disabled="isContinueDisabled"
         @click="next"
       >
         <v-icon start>
@@ -61,19 +59,19 @@
 
 <script lang="ts">
 import validator from 'validator'
-import LoadingDialog from '~/common/components/LoadingDialog.vue'
+import LoadingDialog from '~/project/common/components/LoadingDialog.vue'
 import type { Scanner } from '~/project/types'
-import AgentGroupSelect from '~/scan/components/AgentGroupSelect.vue'
+import AgentGroupSelect from '~/project/scans/components/AgentGroupSelect.vue'
 
 interface Data {
-  ip: string | null
-  userIps: Array<string>
+  rawUrls: string | null
   loadingDialog: boolean
+  isFormValid: boolean
   selectedAgentGroup: unknown
 }
 
 export default defineComponent({
-  name: 'CreateNetworkScanForm',
+  name: 'CreateWebScanForm',
   components: {
     LoadingDialog,
     AgentGroupSelect
@@ -95,44 +93,41 @@ export default defineComponent({
   emits: ['reset', 'update:assets', 'update:agent-group-id', 'createScan'],
   data(): Data {
     return {
-      ip: null,
-      userIps: [],
+      isFormValid: false,
+      rawUrls: null,
       loadingDialog: false,
       selectedAgentGroup: null
     }
   },
   computed: {
     /**
-     * The errors for the IP messages.
+     * The formatted user URLs.
      */
-    ipErrorMessages(): Array<string> {
+    userUrls(): Array<string> {
+      return this.rawUrls?.split('\n').filter(Boolean) || []
+    },
+    /**
+     * The error messages for the user URLs.
+     */
+    rawUrlsErrorMessages(): Array<string> {
       const errors: Array<string> = []
-      if (this.userIps === undefined) {
-        return errors
-      }
-      for (const userIp of this.userIps) {
-        if (this.isValidIpOrIpRange(userIp) === false) {
-          errors.push(`IP or IP Range is invalid: ${userIp}`)
+      for (const url of this.userUrls) {
+        if (validator.isURL(url) === false) {
+          errors.push(`URL ${url} is invalid`)
         }
       }
       return errors
     },
-    /**
-     * Whether the form is valid or not.
-     */
-    isFormValid(): boolean | undefined {
-      if (this.userIps === undefined) {
-        return
-      }
-      return this.userIps?.length > 0 && this.ipErrorMessages.length === 0
+    isContinueDisabled(): boolean {
+      return this.rawUrlsErrorMessages.length > 0 || this.rawUrls === null || this.rawUrls?.trim() === ''
     }
   },
   watch: {
-    userIps: {
+    userUrls: {
       deep: true,
       immediate: false,
       handler(newVal) {
-        this.$emit('update:assets', [{ network: { networks: newVal } }])
+        this.$emit('update:assets', [{ url: { links: newVal } }])
       }
     },
     selectedAgentGroup: {
@@ -144,43 +139,15 @@ export default defineComponent({
   },
   methods: {
     /**
-     * Check if an IP or IP range is valid.
-     * @param lastAddedIp
-     */
-    isValidIpOrIpRange(lastAddedIp: string): boolean | undefined {
-      if (this.ip === null || this.ip === undefined) {
-        return
-      }
-      if (validator.isIP(lastAddedIp) === true || validator.isIPRange(lastAddedIp) === true) {
-        return true
-      }
-      return false
-    },
-    /**
-     * Add an IP to a list of IPs.
-     */
-    addToTargetIps(): void {
-      this.userIps = this.ip?.split('\n').filter(Boolean) || []
-      if (this.userIps === undefined) {
-        this.userIps = []
-        return
-      }
-      const lastAddedIp = this.userIps[this.userIps?.length - 1]
-      if (lastAddedIp !== undefined && this.isValidIpOrIpRange(lastAddedIp) === true) {
-        this.userIps.push(lastAddedIp)
-      }
-    },
-    /**
-     * Clear the user input.
+     * Clear the input.
      */
     clear(): void {
-      this.ip = null
-      this.userIps = []
+      this.rawUrls = null
     },
     /**
      * Create a scan.
      */
-    createScan(): void {}
+    createScan() {}
   }
 })
 </script>

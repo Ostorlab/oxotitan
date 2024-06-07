@@ -11,7 +11,7 @@
 <script lang="ts">
 import { DfBreadcrumbs } from '~/dragonfly/components/Sections/DfBreadcrumbs'
 import type { VulnerabilityDetailBreadcrumbsType } from '~/dragonfly/components/Sections/DfBreadcrumbs/types'
-import CreateScanForm from '~/scan/components/form/CreateScanForm.vue'
+import CreateScanForm from '~/project/scans/components/form/CreateScanForm.vue'
 
 interface Data {
   breadcrumbs: VulnerabilityDetailBreadcrumbsType

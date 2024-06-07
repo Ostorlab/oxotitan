@@ -11,6 +11,6 @@
 </template>
 
 <script setup lang="ts">
-import NavigationDrawer from '~/common/components/NavigationDrawer.vue'
-import NavigationAppBar from '~/common/components/NavigationAppBar.vue'
+import NavigationDrawer from '~/project/common/components/NavigationDrawer.vue'
+import NavigationAppBar from '~/project/common/components/NavigationAppBar.vue'
 </script>

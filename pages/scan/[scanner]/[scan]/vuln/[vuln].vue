@@ -10,7 +10,7 @@
 import { mapActions, mapState } from 'pinia'
 import crc32 from 'crc32/lib/crc32'
 import { useScannersStore } from '~/stores/scanners'
-import VulnerabilityDetail from '~/scan/components/vulnz/VulnerabilityDetail.vue'
+import VulnerabilityDetail from '~/project/scans/components/vulnz/VulnerabilityDetail.vue'
 import type { Scanner } from '~/project/types'
 
 interface Data {

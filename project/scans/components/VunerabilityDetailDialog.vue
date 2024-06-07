@@ -26,7 +26,7 @@
 
 <script lang="ts">
 import type { OxoAggregatedKnowledgeBaseVulnerabilityType } from '~/graphql/types'
-import VulnerabilityDetail from '~/scan/components/vulnz/VulnerabilityDetail.vue'
+import VulnerabilityDetail from '~/project/scans/components/vulnz/VulnerabilityDetail.vue'
 
 interface Data {
   dialog: boolean

@@ -41,7 +41,8 @@
 </template>
 
 <script setup lang="ts">
-import { type Scanner } from '@/stores/scanners'
+import type { Scanner } from '~/project/types'
+import ScannerForm from '~/project/scanners/components/ScannerForm.vue'
 
 /**
  * Props

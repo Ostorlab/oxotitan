@@ -64,11 +64,11 @@
 <script lang="ts">
 import { useVuelidate } from '@vuelidate/core'
 import { helpers } from '@vuelidate/validators'
-import LoadingDialog from '~/common/components/LoadingDialog.vue'
-import UploadFile from '~/scan/components/UploadFile.vue'
-import AgentGroupSelect from '~/scan/components/AgentGroupSelect.vue'
+import LoadingDialog from '~/project/common/components/LoadingDialog.vue'
+import UploadFile from '~/project/scans/components/UploadFile.vue'
+import AgentGroupSelect from '~/project/scans/components/AgentGroupSelect.vue'
 import type { Scanner } from '~/project/types'
-import { AssetEnum } from '~/scan/types'
+import { AssetEnum } from '~/project/types'
 
 const MAX_FILE_SIZE = 600000000 // 600 MB
 

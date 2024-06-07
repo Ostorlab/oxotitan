@@ -1,8 +1,8 @@
 <template>
   <v-stepper-vertical-item
-    title="Package Name"
+    title="Target Web APIs"
     subtitle="required"
-    :error="stepHasErrors"
+    :error="rawUrlsErrorMessages.length > 0"
     :value="step"
   >
     <LoadingDialog
@@ -10,15 +10,18 @@
       message="Please stand by while creating scan"
     />
     <v-form v-model="isFormValid">
-      <v-text-field
-        v-model="packageName"
-        :rules="[rules.required]"
+      <p class="subtitle-1 mb-3">
+        Please specify the target Web APIs:
+      </p>
+      <v-textarea
+        v-model="rawUrls"
+        :error-messages="rawUrlsErrorMessages"
         variant="outlined"
         density="compact"
         clearable
-        label="Package Name"
-        placeholder="Enter the package name"
-        prepend-icon="mdi-storefront"
+        label="Web APIs"
+        placeholder="Add Web APIs each on a separate line"
+        prepend-icon="mdi-api"
       />
     </v-form>
     <template #next="{ next }">
@@ -55,23 +58,20 @@
 </template>
 
 <script lang="ts">
-import LoadingDialog from '~/common/components/LoadingDialog.vue'
+import validator from 'validator'
+import LoadingDialog from '~/project/common/components/LoadingDialog.vue'
 import type { Scanner } from '~/project/types'
-import AgentGroupSelect from '~/scan/components/AgentGroupSelect.vue'
-import { AssetEnum } from '~/scan/types'
+import AgentGroupSelect from '~/project/scans/components/AgentGroupSelect.vue'
 
 interface Data {
-  packageName: string | null
+  rawUrls: string | null
   loadingDialog: boolean
   isFormValid: boolean
   selectedAgentGroup: unknown
-  rules: {
-    required: (value: string | null) => boolean | string
-  }
 }
 
 export default defineComponent({
-  name: 'CreateMobileScanStoreForm',
+  name: 'CreateWebApiScanForm',
   components: {
     LoadingDialog,
     AgentGroupSelect
@@ -85,10 +85,6 @@ export default defineComponent({
       type: Object as () => Scanner,
       required: true
     },
-    assetPlatformType: {
-      type: String as () => AssetEnum,
-      required: true
-    },
     createScanLoading: {
       type: Boolean,
       default: false
@@ -97,35 +93,42 @@ export default defineComponent({
   emits: ['reset', 'update:assets', 'update:agent-group-id', 'createScan'],
   data(): Data {
     return {
-      selectedAgentGroup: null,
       isFormValid: false,
-      packageName: null,
+      rawUrls: null,
       loadingDialog: false,
-      rules: {
-        required: (value: string | null) => !!value || 'Package Name is required'
-      }
+      selectedAgentGroup: null
     }
   },
   computed: {
     /**
-     * The selected asset type.
+     * The formatted user URLs.
      */
-    assetTypeData(): { type: 'androidStore' | 'iosStore', identifier: 'packageName' | 'bundleId' } {
-      if (this.assetPlatformType === AssetEnum.ANDROID_PLAYSTORE) {
-        return { type: 'androidStore', identifier: 'packageName' }
-      }
-      return { type: 'iosStore', identifier: 'bundleId' }
+    userUrls(): Array<string> {
+      return this.rawUrls?.split('\n').filter(Boolean) || []
     },
-    stepHasErrors(): boolean {
-      return this.packageName !== null && this.isFormValid === false
+    /**
+     * The error messages for the user URLs.
+     */
+    rawUrlsErrorMessages(): Array<string> {
+      const errors: Array<string> = []
+      for (const url of this.userUrls) {
+        if (validator.isURL(url) === false) {
+          errors.push(`URL ${url} is invalid`)
+        }
+      }
+      return errors
     },
     isContinueDisabled(): boolean {
-      return this.packageName === null || this.packageName?.trim() === '' || this.stepHasErrors === true
+      return this.rawUrlsErrorMessages.length > 0 || this.rawUrls === null || this.rawUrls?.trim() === ''
     }
   },
   watch: {
-    packageName(newVal) {
-      this.$emit('update:assets', [{ [this.assetTypeData.type]: { [this.assetTypeData.identifier]: newVal, applicationName: newVal } }])
+    userUrls: {
+      deep: true,
+      immediate: false,
+      handler(newVal) {
+        this.$emit('update:assets', [{ url: { links: newVal } }])
+      }
     },
     selectedAgentGroup: {
       deep: true,
@@ -135,15 +138,16 @@ export default defineComponent({
     }
   },
   methods: {
+    /**
+     * Clear the input.
+     */
     clear(): void {
-      this.packageName = null
-    }
+      this.rawUrls = null
+    },
+    /**
+     * Create a scan.
+     */
+    createScan(): void {}
   }
 })
 </script>
-
-  <style>
-  .fill-width.v-input--selection-controls .v-input__control {
-    width: 100% !important;
-  }
-  </style>

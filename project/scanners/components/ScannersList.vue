@@ -10,7 +10,8 @@
 </template>
 
 <script setup lang="ts">
-import type { Scanner } from '~/stores/scanners'
+import type { Scanner } from '~/project/types'
+import ScannerItem from '~/project/scanners/components/ScannerItem.vue'
 
 const scannersStore = useScannersStore()
 
