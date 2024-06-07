@@ -5,13 +5,15 @@ schema {
     mutation: Mutations
 }
 
+union OxoAssetType = OxoAndroidFileAssetType | OxoAndroidStoreAssetType | OxoIOSFileAssetType | OxoIOSStoreAssetType | OxoNetworkAssetType | OxoUrlAssetType
+
 "Graphene object type for a list of agent arguments."
 type AgentArgumentType {
     description: String
     id: ID!
     name: String
     type: String
-    value: String
+    value: Bytes
 }
 
 "Graphene object type for a list of agent arguments."
@@ -46,6 +48,16 @@ type AgentsType {
     agents: [AgentType]!
 }
 
+"Create asset mutation."
+type CreateAssetsMutation {
+    assets: [OxoAssetType]
+}
+
+"Delete agent group mutation."
+type DeleteAgentGroupMutation {
+    result: Boolean
+}
+
 "Delete Scan & its information mutation."
 type DeleteScanMutation {
     result: Boolean
@@ -57,10 +69,18 @@ type ImportScanMutation {
 }
 
 type Mutations {
+    "Create an asset."
+    createAssets(assets: [OxoAssetInputType]!): CreateAssetsMutation
+    "Delete agent group."
+    deleteAgentGroup(agentGroupId: Int!): DeleteAgentGroupMutation
     "Delete a scan & all its information."
     deleteScan(scanId: Int!): DeleteScanMutation
     "Import scan from file."
     importScan(file: Upload!, scanId: Int): ImportScanMutation
+    "Create agent group"
+    publishAgentGroup(agentGroup: AgentGroupCreateInputType!): PublishAgentGroupMutation
+    "Run scan"
+    runScan(scan: OxoAgentScanInputType!): RunScanMutation
     "Stops running scan, scan is marked as stopped once the engine has completed cancellation."
     stopScan(scanId: Int!): StopScanMutation
 }
@@ -75,6 +95,42 @@ type OxoAggregatedKnowledgeBaseVulnerabilityType {
     vulnerabilities(detailTitles: [String], numberElements: Int, page: Int): OxoVulnerabilitiesType
 }
 
+type OxoAndroidFileAssetType {
+    id: ID!
+    packageName: String
+    path: String
+    scanId: Int
+    scans(lastOnly: Boolean): [OxoScanType]
+    type: String
+}
+
+type OxoAndroidStoreAssetType {
+    applicationName: String
+    id: ID!
+    packageName: String
+    scanId: Int
+    scans(lastOnly: Boolean): [OxoScanType]
+    type: String
+}
+
+type OxoIOSFileAssetType {
+    bundleId: String
+    id: ID!
+    path: String
+    scanId: Int
+    scans(lastOnly: Boolean): [OxoScanType]
+    type: String
+}
+
+type OxoIOSStoreAssetType {
+    applicationName: String
+    bundleId: String
+    id: ID!
+    scanId: Int
+    scans(lastOnly: Boolean): [OxoScanType]
+    type: String
+}
+
 "SQLAlchemy object type for a knowledge base vulnerability."
 type OxoKnowledgeBaseVulnerabilityType {
     description: String
@@ -82,6 +138,14 @@ type OxoKnowledgeBaseVulnerabilityType {
     references: [OxoReferenceType]
     shortDescription: String
     title: String
+}
+
+type OxoNetworkAssetType {
+    id: ID!
+    networks: [String]
+    scanId: Int
+    scans(lastOnly: Boolean): [OxoScanType]
+    type: String
 }
 
 "Graphene object type for a reference."
@@ -92,7 +156,7 @@ type OxoReferenceType {
 
 "Scan object."
 type OxoScanType {
-    asset: String
+    assets: [OxoAssetType]
     createdTime: DateTime
     id: ID!
     "List of aggregated knowledge base vulnerabilities."
@@ -108,6 +172,14 @@ type OxoScanType {
 type OxoScansType {
     pageInfo: PageInfo
     scans: [OxoScanType]!
+}
+
+type OxoUrlAssetType {
+    id: ID!
+    links: [String]
+    scanId: Int
+    scans(lastOnly: Boolean): [OxoScanType]
+    type: String
 }
 
 "Graphene object type for a list of vulnerabilities."
@@ -135,12 +207,21 @@ type PageInfo {
     numPages: Int
 }
 
+"Create agent group."
+type PublishAgentGroupMutation {
+    agentGroup: AgentGroupType
+}
+
 type Query {
     agentGroups(agentGroupIds: [Int], numberElements: Int, orderBy: AgentGroupOrderByEnum, page: Int, search: String, sort: SortEnum): AgentGroupsType
     "Retrieve scan by id."
     scan(scanId: Int): OxoScanType
     "List of scans."
     scans(numberElements: Int, orderBy: OxoScanOrderByEnum, page: Int, scanIds: [Int], sort: SortEnum): OxoScansType
+}
+
+type RunScanMutation {
+    scan: OxoScanType
 }
 
 "Stop scan mutation."
@@ -194,6 +275,9 @@ enum SortEnum {
     Desc
 }
 
+"The `Bytes` scalar type represents binary data in a bytes format."
+scalar Bytes
+
 """
 
 The `DateTime` scalar type represents a DateTime
@@ -208,3 +292,67 @@ Create scalar that ignores normal serialization/deserialization, since
 that will be handled by the multipart request spec
 """
 scalar Upload
+
+"Input object type for an agent argument."
+input AgentArgumentInputType {
+    description: String
+    name: String!
+    type: String!
+    value: Bytes
+}
+
+"Input object type for creating an agent group agent."
+input AgentGroupAgentCreateInputType {
+    args: [AgentArgumentInputType]
+    key: String!
+}
+
+"Input object type for creating an agent group."
+input AgentGroupCreateInputType {
+    agents: [AgentGroupAgentCreateInputType]!
+    description: String!
+    name: String!
+}
+
+input OxoAgentScanInputType {
+    agentGroupId: Int!
+    assetIds: [Int]!
+    title: String
+}
+
+input OxoAndroidFileAssetInputType {
+    file: Upload
+    packageName: String
+}
+
+input OxoAndroidStoreAssetInputType {
+    applicationName: String
+    packageName: String
+}
+
+input OxoAssetInputType {
+    androidFile: OxoAndroidFileAssetInputType
+    androidStore: OxoAndroidStoreAssetInputType
+    iosFile: OxoIOSFileAssetInputType
+    iosStore: OxoIOSStoreAssetInputType
+    network: OxoNetworkAssetInputType
+    url: OxoUrlAssetInputType
+}
+
+input OxoIOSFileAssetInputType {
+    bundleId: String
+    file: Upload
+}
+
+input OxoIOSStoreAssetInputType {
+    applicationName: String
+    bundleId: String
+}
+
+input OxoNetworkAssetInputType {
+    networks: [String]
+}
+
+input OxoUrlAssetInputType {
+    links: [String]
+}
