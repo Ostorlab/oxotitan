@@ -62,7 +62,7 @@
 <script setup lang="ts">
 import ScanService from '~/project/scans/services/ScanService'
 import type { Scanner } from '~/project/types'
-import ScannerSelect from '~/scan/components/ScannerSelect.vue'
+import ScannerSelect from '~/project/scanners/components/ScannerSelect.vue'
 import { DfBreadcrumbs } from '~/dragonfly/components/Sections/DfBreadcrumbs'
 import type { VulnerabilityDetailBreadcrumbsType } from '~/dragonfly/components/Sections/DfBreadcrumbs/types'
 

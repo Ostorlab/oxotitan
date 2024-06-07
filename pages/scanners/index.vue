@@ -30,14 +30,16 @@
       variant="outlined"
     >
       <v-card-text>
-        <ScannerList @update-scanner="onUpdateScanner" />
+        <ScannersList @update-scanner="onUpdateScanner" />
       </v-card-text>
     </v-card>
   </div>
 </template>
 
 <script setup lang="ts">
-import SvgLoader from '~/common/components/SvgLoader.vue'
+import SvgLoader from '~/project/common/components/SvgLoader.vue'
+import ScannerForm from '~/project/scanners/components/ScannerForm.vue'
+import ScannersList from '~/project/scanners/components/ScannersList.vue'
 import { DfBreadcrumbs } from '~/dragonfly/components/Sections/DfBreadcrumbs'
 import type { VulnerabilityDetailBreadcrumbsType } from '~/dragonfly/components/Sections/DfBreadcrumbs/types'
 import type { Scanner } from '~/project/types'

@@ -90,7 +90,7 @@
 </template>
 
 <script lang="ts">
-import type { AssetEnum, AssetItem, Group } from '~/scan/types'
+import type { AssetEnum, AssetItem, Group } from '~/project/types'
 
 interface Data {
   selectedItem: AssetItem | string

@@ -160,8 +160,8 @@ import VulnerabilityService from '~/project/scans/services/vulnerability.service
 import ScansService from '~/project/scans/services/ScanService'
 
 import { DfConfirmationModal } from '~/dragonfly/components/Modals/DfConfirmationModal'
-import VulnzTable from '~/project/scans/componenets/VulnzTable.vue'
-import VunerabilityDetailDialog from '~/project/scans/componenets/VunerabilityDetailDialog.vue'
+import VulnzTable from '~/project/scans/components/VulnzTable.vue'
+import VunerabilityDetailDialog from '~/project/scans/components/VunerabilityDetailDialog.vue'
 import { useNotificationsStore } from '~/stores/notifications'
 import { useScannersStore } from '~/stores/scanners'
 import DfScanProgress from '~/dragonfly/components/Tags/DfScanProgress/DfScanProgress.vue'

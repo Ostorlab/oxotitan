@@ -129,8 +129,8 @@
 <script lang="ts">
 import { mapActions } from 'pinia'
 import { parse as yamlParse } from 'yaml'
-import LoadingDialog from '~/common/components/LoadingDialog.vue'
-import CreateScanTargetAssetYamlForm from '~/scan/components/form/CreateScanTargetAssetYamlForm.vue'
+import LoadingDialog from '~/project/common/components/LoadingDialog.vue'
+import CreateScanTargetAssetYamlForm from '~/project/scans/components/form/CreateScanTargetAssetYamlForm.vue'
 import AgentGroupService from '~/agents/services/agentGroup.service'
 import type { Scanner } from '~/project/types'
 import { useNotificationsStore } from '~/stores/notifications'
