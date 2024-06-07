@@ -18,6 +18,8 @@
         <VulnerabilityDetail
           :vuln-title="vulnKey"
           :scan-id="scanId"
+          :scanner="scanner"
+          :show-breadcrumbs="false"
         />
       </v-card>
     </v-dialog>
@@ -27,6 +29,7 @@
 <script lang="ts">
 import type { OxoAggregatedKnowledgeBaseVulnerabilityType } from '~/graphql/types'
 import VulnerabilityDetail from '~/project/scans/components/vulnz/VulnerabilityDetail.vue'
+import type { Scanner } from '~/project/types'
 
 interface Data {
   dialog: boolean
@@ -47,6 +50,10 @@ export default defineComponent({
     },
     scanId: {
       type: Number as () => number | undefined,
+      required: true
+    },
+    scanner: {
+      type: Object as () => Scanner,
       required: true
     }
   },
