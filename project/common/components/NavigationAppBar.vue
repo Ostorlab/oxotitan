@@ -6,6 +6,7 @@
     elevation="1"
     color="white"
     class="d-flex align-center px-3"
+    style="z-index: 1"
   >
     <v-btn
       icon="mdi-menu"

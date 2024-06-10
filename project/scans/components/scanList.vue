@@ -80,7 +80,11 @@
           </v-menu>
         </template>
         <template #[`item.asset`]="{ item }">
-          <DfTag :name="item.asset||''" />
+          <!--          TODO: Adding component to show asset in the next PR -->
+          {{ item.assets || '-' }}
+        </template>
+        <template #[`item.title`]="{ item }">
+          {{ item.title || '-' }}
         </template>
       </v-data-table-server>
     </v-card>
@@ -94,7 +98,6 @@ import ScanService from '~/project/scans/services/ScanService'
 import { DfScanProgress } from '~/dragonfly/components/Tags/DfScanProgress'
 import { DfConfirmationModal } from '~/dragonfly/components/Modals/DfConfirmationModal'
 import type { OxoScanType } from '~/graphql/types'
-import { DfTag } from '~/dragonfly/components/Tags/DfTag'
 import { useScannersStore } from '~/stores/scanners'
 import type { Scanner } from '~/project/types'
 import { useNotificationsStore } from '~/stores/notifications'
@@ -139,6 +142,7 @@ interface Data {
     itemsPerPage: number
     sortDesc: boolean[]
     sortBy: Array<{ key: string, order: string }>
+    page: number
   }
   onActionScan: OxoScanType | null
   stopDialog: boolean
@@ -157,7 +161,6 @@ type ActionsType = {
 
 export default defineComponent({
   components: {
-    DfTag,
     DfScanProgress,
     DfConfirmationModal
   },
@@ -174,6 +177,7 @@ export default defineComponent({
       loading: true,
       options: {
         itemsPerPage: 15,
+        page: 1,
         sortDesc: [true],
         sortBy: [
           {
@@ -250,7 +254,7 @@ export default defineComponent({
       if (this.onActionScan === null || this.onActionScan === undefined) {
         return
       }
-      await this.service.stopScan(this.onActionScan)
+      await this.service.stopScan(this.scanner, parseInt(this.onActionScan.id))
       this.onActionScan = null
       await this.fetchScans()
     },

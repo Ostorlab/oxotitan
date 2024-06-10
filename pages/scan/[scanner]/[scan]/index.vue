@@ -28,6 +28,7 @@
       v-model:model-value="vulnDetailsDialog"
       :vuln="selectedVulnerability"
       :scan-id="scanId"
+      :scanner="scanner"
     />
 
     <DfBreadcrumbs
