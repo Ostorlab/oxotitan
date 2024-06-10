@@ -239,6 +239,6 @@ export default class ScansService {
     if (response?.data?.data?.runScan === null || response?.data?.data?.runScan === undefined) {
       throw new Error('An error occurred while creating the scan')
     }
-    return response?.data?.runScan?.scan?.id
+    return response?.data?.data?.runScan?.scan?.id
   }
 }
