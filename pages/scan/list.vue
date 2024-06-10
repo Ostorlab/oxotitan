@@ -61,14 +61,10 @@ export default defineComponent({
       loading: true,
       breadcrumbs: [
         {
-          text: 'Scanning',
-          disabled: true,
-          exact: true
-        },
-        {
           text: 'Scans',
           to: '/scan/list',
-          exact: true
+          exact: true,
+          disabled: true
         }
       ]
     }

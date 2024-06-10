@@ -181,7 +181,7 @@ definePageMeta({
   title: 'scan'
 })
 
-const BREADCRUMBS_SCANS_INDEX = 2
+const BREADCRUMBS_SCANS_INDEX = 1
 
 interface Data {
   vulnDetailsDialog: boolean
@@ -239,11 +239,6 @@ export default defineComponent ({
       archiveBtnLoading: false,
       stopScanDialog: false,
       breadcrumbs: [
-        {
-          text: 'scanning',
-          disabled: true,
-          exact: true
-        },
         {
           text: 'scans',
           disabled: false,

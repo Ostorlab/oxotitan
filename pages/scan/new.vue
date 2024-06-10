@@ -26,11 +26,6 @@ export default defineComponent({
     return {
       breadcrumbs: [
         {
-          text: 'scanning',
-          disabled: true,
-          exact: true
-        },
-        {
           text: 'New Scan',
           disabled: true,
           to: '/scan/new',
