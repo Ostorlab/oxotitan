@@ -13,7 +13,7 @@
       @cancel="selectedScanner = null"
     />
     <v-card
-      v-if="showForm"
+      v-if="showForm === true"
       variant="outlined"
       class="pa-4 mb-4"
     >
