@@ -37,11 +37,6 @@ const showForm = ref(false)
 
 const breadcrumbs: VulnerabilityDetailBreadcrumbsType = [
   {
-    text: 'Scanning',
-    disabled: true,
-    exact: true
-  },
-  {
     text: 'Scanners',
     disabled: true,
     to: '/scanners',

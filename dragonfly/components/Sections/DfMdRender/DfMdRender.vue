@@ -37,6 +37,10 @@ defineProps({
 onMounted(() => {
   Prism.highlightAll()
 })
+
+onUpdated(() => {
+  Prism.highlightAll()
+})
 </script>
 
 <style scoped lang="scss">
