@@ -81,7 +81,6 @@ const rules = {
 }
 
 watch(props.scanner, (newVal) => {
-  console.log({ newVal })
   localScanner.value = { ...newVal } as Scanner
 }, { immediate: true, deep: true })
 
