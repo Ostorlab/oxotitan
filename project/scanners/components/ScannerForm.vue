@@ -2,20 +2,19 @@
   <v-form
     ref="form"
     v-model="isValid"
-    class="mt-4"
     @submit.prevent="onSubmit"
   >
     <v-text-field
-      v-model="endpoint"
+      v-model="localScanner.endpoint"
       variant="outlined"
       density="compact"
       label="Scanner Endpoint"
       placeholder="https://api.example.com/graphql"
-      :disabled="props.scanner !== null"
+      :disabled="isEditMode === true"
       :rules="[rules.required, rules.url]"
     />
     <v-text-field
-      v-model="name"
+      v-model="localScanner.name"
       variant="outlined"
       density="compact"
       label="Scanner Name"
@@ -23,7 +22,7 @@
       :rules="[rules.required]"
     />
     <v-text-field
-      v-model="apiKey"
+      v-model="localScanner.apiKey"
       variant="outlined"
       density="compact"
       label="API Key"
@@ -48,31 +47,43 @@
 
 <script setup lang="ts">
 import isURL from 'validator/es/lib/isURL'
+import type { PropType } from 'vue'
 import { useScannersStore } from '~/stores/scanners'
 import { useNotificationsStore } from '~/stores/notifications'
 import type { Scanner } from '~/project/types'
+
+const DEFAULT_SCANNER_VALUE = { endpoint: '', apiKey: '', name: '' }
 
 /**
  * Props
  * @property {Scanner | null} scanner - Scanner object to edit or null for a new scanner.
  */
-const props = defineProps<{
-  scanner: Scanner | null
-}>()
+const props = defineProps({
+  scanner: {
+    type: Object as PropType<Scanner>,
+    default: () => ({ endpoint: '', apiKey: '', name: '' })
+  },
+  isEditMode: {
+    type: Boolean,
+    defualt: false
+  }
+})
 
 const form = ref()
 const isValid = ref(false)
 const emit = defineEmits(['close-form'])
 const scannersStore = useScannersStore()
 const notificationsStore = useNotificationsStore()
-
-const endpoint = ref<string>(props.scanner?.endpoint || '')
-const name = ref<string>(props.scanner?.name || '')
-const apiKey = ref<string>(props.scanner?.apiKey || '')
+const localScanner = ref<Scanner>(DEFAULT_SCANNER_VALUE)
 const rules = {
   required: (value: string) => value.trim() !== '' || '',
   url: (value: string) => isURL(value) || 'Must be a valid URL'
 }
+
+watch(props.scanner, (newVal) => {
+  console.log({ newVal })
+  localScanner.value = { ...newVal } as Scanner
+}, { immediate: true, deep: true })
 
 /**
  * Handle form submission.
@@ -80,13 +91,9 @@ const rules = {
  */
 
 const onSubmit = async (): Promise<void> => {
-  if (isValid.value === true) {
+  if (isValid.value === true && localScanner.value !== null) {
     try {
-      scannersStore.addOrUpdateScanner({
-        endpoint: endpoint.value,
-        apiKey: apiKey.value,
-        name: name.value
-      })
+      scannersStore.addOrUpdateScanner(localScanner.value)
       resetForm()
       emit('close-form')
       notificationsStore.reportSuccess('Scanner saved successfully.')
@@ -100,9 +107,7 @@ const onSubmit = async (): Promise<void> => {
  * Reset the form fields.
  */
 const resetForm = (): void => {
-  endpoint.value = ''
-  name.value = ''
-  apiKey.value = ''
+  localScanner.value = DEFAULT_SCANNER_VALUE
 }
 
 /**
