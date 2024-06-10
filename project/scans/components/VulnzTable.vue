@@ -37,7 +37,7 @@
         <v-btn
           size="small"
           variant="flat"
-          icon="mdi-arrow-expand"
+          icon="mdi-magnify"
           @click="showVulnDetails(item)"
         />
       </template>

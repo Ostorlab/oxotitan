@@ -233,12 +233,12 @@ export default class ScansService {
         variables: { scan: mutationArgs }
       }
     )
-    if (response?.data?.runScan === null || response?.data?.runScan === undefined) {
-      throw new Error('An error occurred while creating the scan')
-    }
     if ((response?.data?.errors || []).length > 0) {
       throw new Error(response?.data?.errors[0]?.message)
     }
-    return response?.data?.runScan?.scan?.id
+    if (response?.data?.data?.runScan === null || response?.data?.data?.runScan === undefined) {
+      throw new Error('An error occurred while creating the scan')
+    }
+    return response?.data?.data?.runScan?.scan?.id
   }
 }

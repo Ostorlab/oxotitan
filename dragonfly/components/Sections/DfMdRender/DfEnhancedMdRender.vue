@@ -84,7 +84,7 @@ import type { Maybe } from '~/graphql/types'
 interface Data {
   enhancedMarkdown: Array<{ type: string, content: string }>
   editDescription: boolean
-  editableDescription: string
+  editableDescription: Maybe<string> | undefined
 }
 
 export default defineComponent({

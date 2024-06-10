@@ -75,11 +75,6 @@ const configFile = ref<File | null>(null)
 const loading = ref<boolean>(false)
 const breadcrumbs: VulnerabilityDetailBreadcrumbsType = [
   {
-    text: 'Scanning',
-    disabled: true,
-    exact: true
-  },
-  {
     text: 'Scan',
     disabled: true,
     exact: true
