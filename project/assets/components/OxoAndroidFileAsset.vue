@@ -16,7 +16,6 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
 import type { OxoAndroidFileAssetType } from '~/graphql/types'
 
 export default defineComponent({

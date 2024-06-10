@@ -7,7 +7,6 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
 import type { OxoAssetType } from '~/graphql/types'
 import OxoUrlAsset from '~/project/assets/components/OxoUrlAsset.vue'
 import OxoNetworkAsset from '~/project/assets/components/OxoNetworkAsset.vue'
