@@ -11,7 +11,7 @@
     >
       mdi-google-play
     </v-icon>
-    {{ appString }}
+    {{ appName }}
   </v-chip>
 </template>
 
@@ -31,7 +31,7 @@ export default defineComponent({
     /**
      * Returns the application name or package name if the application name is not available.
      */
-    appString(): string {
+    appName(): string {
       if (this.asset.applicationName !== undefined && this.asset.packageName !== undefined && this.asset.applicationName !== null && this.asset.packageName !== null) {
         return `${this.asset.applicationName} (${this.asset.packageName})`
       }

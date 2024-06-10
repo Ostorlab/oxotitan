@@ -14,7 +14,7 @@
         src="/apps.png"
       />
     </v-avatar>
-    {{ assetString }}
+    {{ appName }}
   </v-chip>
 </template>
 
@@ -34,7 +34,7 @@ export default defineComponent({
     /**
      * Returns the asset string with the application name and bundle id if available.
      */
-    assetString(): string {
+    appName(): string {
       if (this.asset.bundleId !== null && this.asset.bundleId !== undefined) {
         return `${this.asset.applicationName} (${this.asset.bundleId})`
       }
