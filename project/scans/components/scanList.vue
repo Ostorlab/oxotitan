@@ -80,8 +80,7 @@
           </v-menu>
         </template>
         <template #[`item.asset`]="{ item }">
-          <!--          TODO: Adding component to show asset in the next PR -->
-          {{ item.assets || '-' }}
+          <OXOAssets :assets="item.assets || []" />
         </template>
         <template #[`item.title`]="{ item }">
           {{ item.title || '-' }}
@@ -101,6 +100,7 @@ import type { OxoScanType } from '~/graphql/types'
 import { useScannersStore } from '~/stores/scanners'
 import type { Scanner } from '~/project/types'
 import { useNotificationsStore } from '~/stores/notifications'
+import OXOAssets from '~/project/assets/components/Assets.vue'
 
 const HEADERS = [
   {
@@ -161,6 +161,7 @@ type ActionsType = {
 
 export default defineComponent({
   components: {
+    OXOAssets,
     DfScanProgress,
     DfConfirmationModal
   },
