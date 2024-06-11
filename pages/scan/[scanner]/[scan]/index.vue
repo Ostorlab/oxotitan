@@ -96,28 +96,85 @@
           </v-card-title>
           <v-divider />
           <v-list>
-            <v-list-item v-if="title !== null && title !== ''">
-              <v-list-item-title>
-                Title:
-                <span>{{ title }}</span>
+            <v-list-item>
+              <v-list-item-title class="d-flex align-center">
+                <p class="mb-0 mr-2">
+                  Title:
+                </p>
+                <p
+                  v-if="title !== null && title !== ''"
+                  class="mb-0"
+                >
+                  {{ title }}
+                </p>
+                <div v-else>
+                  <v-chip
+                    v-if="loadingDialog === true"
+                    variant="tonal"
+                    size="small"
+                    label
+                    style="width: 80px;"
+                  />
+                  <span v-else>-</span>
+                </div>
               </v-list-item-title>
             </v-list-item>
             <v-list-item>
-              <v-list-item-title>
-                Targets:
-                <OXOAssets :assets="assets" />
+              <v-list-item-title class="d-flex align-center">
+                <p class="mb-0 mr-2">
+                  Targets:
+                </p>
+                <v-chip
+                  v-if="loadingDialog === true"
+                  variant="tonal"
+                  label
+                  style="width: 90px;"
+                />
+                <OXOAssets
+                  v-else
+                  :assets="assets"
+                />
               </v-list-item-title>
             </v-list-item>
             <v-list-item>
-              <v-list-item-title>
-                Progress: <DfScanProgress :progress="progress" />
+              <v-list-item-title class="d-flex align-center">
+                <p class="mb-0 mr-2">
+                  Progress:
+                </p>
+                <v-chip
+                  v-if="loadingDialog === true"
+                  variant="tonal"
+                  size="small"
+                  label
+                  style="width: 60px;"
+                />
+                <DfScanProgress
+                  v-else
+                  :progress="progress"
+                />
               </v-list-item-title>
             </v-list-item>
             <v-list-item>
-              <v-list-item-title
-                v-if="kb !== null"
-              >
-                Date:  <span>{{ $moment(kb.createdTime).format('MMMM Do YYYY, k:mm:ss') }}</span>
+              <v-list-item-title class="d-flex align-center">
+                <p class="mb-0 mr-2">
+                  Date:
+                </p>
+                <p
+                  v-if="loadingDialog === false && kb !== null"
+                  class="mb-0"
+                >
+                  {{ $moment(kb.createdTime).format('MMMM Do YYYY, k:mm:ss') }}
+                </p>
+                <div v-else>
+                  <v-chip
+                    v-if="loadingDialog === true"
+                    variant="tonal"
+                    size="x-small"
+                    label
+                    style="width: 180px;"
+                  />
+                  <span v-else>-</span>
+                </div>
               </v-list-item-title>
             </v-list-item>
           </v-list>
@@ -165,7 +222,7 @@ import VulnzTable from '~/project/scans/components/VulnzTable.vue'
 import VunerabilityDetailDialog from '~/project/scans/components/VunerabilityDetailDialog.vue'
 import { useNotificationsStore } from '~/stores/notifications'
 import { useScannersStore } from '~/stores/scanners'
-import DfScanProgress from '~/dragonfly/components/Tags/DfScanProgress/DfScanProgress.vue'
+import { DfScanProgress } from '~/dragonfly/components/Tags/DfScanProgress'
 import { DfBreadcrumbs } from '~/dragonfly/components/Sections/DfBreadcrumbs'
 import type {
   Maybe,
@@ -236,7 +293,7 @@ export default defineComponent ({
       title: '',
       progress: 'UNKNOWN',
       vulns: [],
-      loadingDialog: false,
+      loadingDialog: true,
       stopBtnLoading: false,
       deleteScanDialog: false,
       archiveBtnLoading: false,
