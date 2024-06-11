@@ -45,7 +45,7 @@
             hide-details
             label="Scan Title (Otpional)"
             placeholder="Enter a scan title to easily identify your scan"
-            prepend-icon="mdi-format-tile"
+            prepend-icon="mdi-format-title"
           />
           <template #next="{ next }">
             <v-btn
@@ -104,21 +104,23 @@
             </v-btn>
           </template>
         </v-stepper-vertical-item>
-        <component
-          :is="scanTargetForm"
-          v-model:scan-target-step-title="scanTargetStepTitle"
-          v-model:scan-target-step-subtitle="scanTargetStepSubtitle"
-          v-model:is-step-valid="isStepValid"
-          v-model:assets="assets"
-          v-model:agent-group-id="agentGroupId"
-          :create-scan-loading="createScanLoading"
-          :selected-scanner="selectedScanner"
-          :asset-type="assetType"
-          :step="4"
-          :asset-platform-type="assetPlatformType"
-          @reset="resetForm"
-          @create-scan="createScan"
-        />
+        <keep-alive>
+          <component
+            :is="scanTargetForm"
+            v-model:scan-target-step-title="scanTargetStepTitle"
+            v-model:scan-target-step-subtitle="scanTargetStepSubtitle"
+            v-model:is-step-valid="isStepValid"
+            v-model:assets="assets"
+            v-model:agent-group-id="agentGroupId"
+            :create-scan-loading="createScanLoading"
+            :selected-scanner="selectedScanner"
+            :asset-type="assetType"
+            :step="4"
+            :asset-platform-type="assetPlatformType"
+            @reset="resetForm"
+            @create-scan="createScan"
+          />
+        </keep-alive>
       </template>
     </v-stepper-vertical>
   </v-card>
