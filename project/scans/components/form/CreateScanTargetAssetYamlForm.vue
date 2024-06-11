@@ -7,7 +7,8 @@
   >
     <v-form v-model="isFormValid">
       <p class="subtitle-1 mb-3">
-        Please specify the target group definition:
+        Please specify the target group definition: Supported assets are
+        <code><em>{{ supportedAssetTypes.join(', ') }}</em></code>.
       </p>
       <v-card variant="outlined">
         <MonacoEditor
@@ -55,6 +56,7 @@ interface Data {
   editorOptions: {
     [key: string]: string | boolean | { [key: string]: boolean }
   }
+  supportedAssetTypes: Array<string>
 }
 
 const TARGET_GROUP_EXAMPLE = `
@@ -78,6 +80,7 @@ export default defineComponent({
   data(): Data {
     return {
       loading: false,
+      supportedAssetTypes: ['androidStore', 'iosStore', 'link', 'ip'],
       targetAssets: TARGET_GROUP_EXAMPLE,
       editorLanguage: 'yaml',
       editorOptions: {
@@ -116,7 +119,7 @@ export default defineComponent({
      */
     parseYamlToAssetInput(yamlString: string | null): Array<{ [key: string]: any }> {
       const parsedAssetsObject = yamlParse(yamlString || '')?.assets
-      return Object.keys(parsedAssetsObject).map((key) => ({ [key]: this.convertObjectKeysToCamelCase(parsedAssetsObject[key][0]) }))
+      return Object.keys(parsedAssetsObject).map((key) => ({ [key]: parsedAssetsObject[key].map((asset: { [key: string]: string }) => this.convertObjectKeysToCamelCase(asset)) }))
     },
     /**
      * Convert all the keys of an object to camel case.

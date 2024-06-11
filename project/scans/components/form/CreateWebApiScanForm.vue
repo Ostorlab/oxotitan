@@ -29,7 +29,7 @@
         color="primary"
         variant="elevated"
         :disabled="isContinueDisabled"
-        @click="next"
+        @click="proceedToNextStep(next)"
       >
         <v-icon start>
           mdi-skip-next-outline
@@ -123,13 +123,6 @@ export default defineComponent({
     }
   },
   watch: {
-    userUrls: {
-      deep: true,
-      immediate: false,
-      handler(newVal) {
-        this.$emit('update:assets', [{ url: { links: newVal } }])
-      }
-    },
     selectedAgentGroup: {
       deep: true,
       handler(newVal) {
@@ -139,15 +132,19 @@ export default defineComponent({
   },
   methods: {
     /**
+     * Proceed to the next step.
+     * @param next The 'next' function from the stepper.
+     */
+    proceedToNextStep(next: () => void) {
+      this.$emit('update:assets', [{ link: [...new Set(this.userUrls)].map((url) => ({ url })) }])
+      next()
+    },
+    /**
      * Clear the input.
      */
     clear(): void {
       this.rawUrls = null
-    },
-    /**
-     * Create a scan.
-     */
-    createScan(): void {}
+    }
   }
 })
 </script>
