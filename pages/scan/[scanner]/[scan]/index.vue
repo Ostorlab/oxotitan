@@ -104,8 +104,8 @@
             </v-list-item>
             <v-list-item>
               <v-list-item-title>
-                Target:
-                <span>{{ kb?.asset }}</span>
+                Targets:
+                <OXOAssets :assets="assets" />
               </v-list-item-title>
             </v-list-item>
             <v-list-item>
@@ -169,19 +169,20 @@ import DfScanProgress from '~/dragonfly/components/Tags/DfScanProgress/DfScanPro
 import { DfBreadcrumbs } from '~/dragonfly/components/Sections/DfBreadcrumbs'
 import type {
   Maybe,
-  OxoAggregatedKnowledgeBaseVulnerabilityType,
+  OxoAggregatedKnowledgeBaseVulnerabilityType, OxoAssetType,
   OxoScanType,
   OxoVulnerabilitiesType
 } from '~/graphql/types'
-import type { Scanner, FormattedVulnz } from '~/project/types'
+import type { FormattedVulnz, Scanner } from '~/project/types'
 import type { VulnerabilityDetailBreadcrumbsType } from '~/dragonfly/components/Sections/DfBreadcrumbs/types'
+import OXOAssets from '~/project/assets/components/Assets.vue'
 
 definePageMeta({
   layout: 'default',
   title: 'scan'
 })
 
-const BREADCRUMBS_SCANS_INDEX = 2
+const BREADCRUMBS_SCANS_INDEX = 1
 
 interface Data {
   vulnDetailsDialog: boolean
@@ -203,10 +204,12 @@ interface Data {
   archiveBtnLoading: boolean
   stopScanDialog: boolean
   breadcrumbs: VulnerabilityDetailBreadcrumbsType
+  assets: Array<OxoAssetType>
 }
 export default defineComponent ({
   name: 'Index',
   components: {
+    OXOAssets,
     DfScanProgress,
     DfConfirmationModal,
     VulnzTable,
@@ -238,12 +241,8 @@ export default defineComponent ({
       deleteScanDialog: false,
       archiveBtnLoading: false,
       stopScanDialog: false,
+      assets: [],
       breadcrumbs: [
-        {
-          text: 'scanning',
-          disabled: true,
-          exact: true
-        },
         {
           text: 'scans',
           disabled: false,
@@ -307,6 +306,7 @@ export default defineComponent ({
         this.kb = kb
         this.vulns = kb?.kbVulnerabilities || []
         this.title = kb?.title
+        this.assets = kb?.assets
         this.progress = kb?.progress
       } catch (e) {
         this.reportError(`An error was encountered while fetching the scan: ${e}`)
