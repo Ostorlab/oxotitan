@@ -18,7 +18,6 @@
       <v-col
         v-else-if="loading === false && scanners.length === 0"
         content="center"
-        cols="6"
         align-self="center"
       >
         <v-card variant="outlined">
@@ -26,7 +25,7 @@
           <v-card-actions>
             <v-btn
               variant="elevated"
-              color="primary"
+              color="accent"
               to="/scanners"
             >
               Add Scanner
