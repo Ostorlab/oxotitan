@@ -369,6 +369,7 @@ export default defineComponent({
       this.assets = []
       this.agentGroupId = null
       this.selectedScanner = null
+      this.scanTitle = null
     }
   }
 })
