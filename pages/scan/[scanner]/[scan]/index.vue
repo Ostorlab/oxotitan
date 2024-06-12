@@ -433,7 +433,7 @@ export default defineComponent ({
         this.stopBtnLoading = true
         await this.scanService.stopScan(this.scanner, this.scanId)
         await this.fetchKBVulnerabilities()
-      } catch (e) {
+      } catch (e: any) {
         this.reportError(e?.message || 'Error Stopping scan.')
       } finally {
         this.stopBtnLoading = false
