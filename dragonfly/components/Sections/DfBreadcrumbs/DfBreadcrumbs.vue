@@ -34,25 +34,30 @@
             <v-list density="compact">
               <div
                 v-for="(subitem, i) in item.scans"
-                :key="`scan-${i}`"
+                :key="`scan-${subitem.id}-${subitem.createdTime}`"
               >
                 <v-list-item :to="constructScanDetailLink(subitem)">
-                  <!-- TODO (Rabson) Update to add support for assets -->
-                  <v-list-item-title>
-                    <code>{{ getScanTitle(subitem) }}</code>
-                  </v-list-item-title>
                   <template
-                    v-if="
+                    v-if="isOxoScan(subitem) === true"
+                    #default
+                  >
+                    <v-list-item-title>
+                      <OxoAssets :assets="subitem.assets || []" />
+                    </v-list-item-title>
+                  </template>
+                  <template
+                    v-else-if="
                       subitem.assetType === 'android'
                         || subitem.assetType === 'ios'
                     "
+                    #default
                   >
-                    <v-img
-                      v-if="subitem.b64Icon !== undefined && subitem.b64Icon.length > 0"
-                      :src="`data:image/png;base64,${subitem.b64Icon}`"
-                      alt="Icon"
-                    />
                     <v-list-item-title>
+                      <v-img
+                        v-if="subitem.b64Icon !== undefined && subitem.b64Icon.length > 0"
+                        :src="`data:image/png;base64,${subitem.b64Icon}`"
+                        alt="Icon"
+                      />
                       <code>{{ getScanTitle(subitem) }}</code>
                     </v-list-item-title>
                   </template>
@@ -61,25 +66,32 @@
                       subitem.assetType === 'android_store'
                         || subitem.assetType === 'ios_store'
                     "
+                    #default
                   >
-                    <v-img
-                      v-if="subitem.b64Icon !== undefined && subitem.b64Icon.length > 0"
-                      :src="`data:image/png;base64,${subitem.b64Icon}`"
-                      alt="Icon"
-                    />
                     <v-list-item-title>
+                      <v-img
+                        v-if="subitem.b64Icon !== undefined && subitem.b64Icon.length > 0"
+                        :src="`data:image/png;base64,${subitem.b64Icon}`"
+                        alt="Icon"
+                      />
                       <code>{{ getScanTitle(subitem) }}</code>
                     </v-list-item-title>
                   </template>
-                  <template v-else-if="subitem.assetType === 'web'">
-                    <v-icon>mdi-web</v-icon>
+                  <template
+                    v-else-if="subitem.assetType === 'web'"
+                    #default
+                  >
                     <v-list-item-title>
+                      <v-icon>mdi-web</v-icon>
                       <code>{{ subitem.asset.urls.join(',') }}</code>
                     </v-list-item-title>
                   </template>
-                  <template v-else-if="subitem.assetType === 'network'">
-                    <v-icon>mdi-ip</v-icon>
+                  <template
+                    v-else-if="subitem.assetType === 'network'"
+                    #default
+                  >
                     <v-list-item-title>
+                      <v-icon>mdi-ip</v-icon>
                       <code>{{ subitem.asset.networks.join(',') }}</code>
                     </v-list-item-title>
                   </template>
@@ -153,6 +165,7 @@
 
 <script lang="ts">
 import crc32 from 'crc32/lib/crc32'
+import OxoAssets from '~/project/assets/components/Assets.vue'
 import { DfRisk } from '~/dragonfly/components/Tags/DfRisk'
 import type { VulnerabilityDetailBreadcrumbsType } from '~/dragonfly/components/Sections/DfBreadcrumbs/types'
 import type { OxoScanType } from '~/graphql/types'
@@ -160,7 +173,7 @@ import type { FormattedVulnz, Scanner } from '~/project/types'
 
 export default defineComponent({
   name: 'DfBreadcrumbs',
-  components: { DfRisk },
+  components: { DfRisk, OxoAssets },
   props: {
     breadcrumbs: {
       type: Array as () => VulnerabilityDetailBreadcrumbsType,
@@ -204,6 +217,13 @@ export default defineComponent({
     }
   },
   methods: {
+    /**
+     * Check if a scan an OXO scan.
+     * @param scan
+     */
+    isOxoScan(scan: OxoScanType): boolean {
+      return (scan.assets || []).some((asset) => asset?.__typename?.toLowerCase()?.startsWith('oxo'))
+    },
     /**
      * Construct the link for the scan page.
      * @param scan The scan whose link to construct.
