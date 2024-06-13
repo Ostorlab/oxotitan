@@ -32,6 +32,9 @@ import ScannerForm from '~/project/scanners/components/ScannerForm.vue'
 import { DfBreadcrumbs } from '~/dragonfly/components/Sections/DfBreadcrumbs'
 import type { VulnerabilityDetailBreadcrumbsType } from '~/dragonfly/components/Sections/DfBreadcrumbs/types'
 import type { Scanner } from '~/project/types'
+import { useNotificationsStore } from '~/stores/notifications'
+
+const counterStore = useNotificationsStore()
 
 const showForm = ref(false)
 const route = useRoute()
@@ -48,8 +51,11 @@ onMounted(() => {
       apiKey: apiKey.toString(),
       name
     }
+    showForm.value = true
+  } else {
+    counterStore.reportError('Invalid scanner configuration.')
+    router.push({ path: '/scanners' })
   }
-  showForm.value = true
 })
 
 const breadcrumbs: VulnerabilityDetailBreadcrumbsType = [

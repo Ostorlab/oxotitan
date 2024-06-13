@@ -13,10 +13,14 @@
           v-if="showForm === false"
           color="accent"
           prepend-icon="mdi-plus"
-          @click="router.push('/scanners/new')"
+          @click="showForm = !showForm"
         >
           New
         </v-btn>
+        <ScannerForm
+          v-else
+          @close-form="showForm = false"
+        />
       </v-card-text>
     </v-card>
     <ScannersList />
@@ -24,12 +28,13 @@
 </template>
 
 <script setup lang="ts">
+import ScannerForm from '~/project/scanners/components/ScannerForm.vue'
 import ScannersList from '~/project/scanners/components/ScannersList.vue'
 import { DfBreadcrumbs } from '~/dragonfly/components/Sections/DfBreadcrumbs'
 import type { VulnerabilityDetailBreadcrumbsType } from '~/dragonfly/components/Sections/DfBreadcrumbs/types'
 
 const showForm = ref(false)
-const router = useRouter()
+
 const breadcrumbs: VulnerabilityDetailBreadcrumbsType = [
   {
     text: 'Scanners',
