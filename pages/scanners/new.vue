@@ -44,12 +44,12 @@ const currentScanner = ref<Scanner>({ endpoint: '', apiKey: '', name: '' })
 onMounted(() => {
   const endpoint = route.query.endpoint
   const apiKey = route.query.key
-  const name = 'Local machine'
+  const name = route.query.name as string || 'Local scanner'
   if (endpoint !== undefined && endpoint !== null && apiKey !== undefined && apiKey !== null) {
     currentScanner.value = {
       endpoint: endpoint.toString(),
       apiKey: apiKey.toString(),
-      name
+      name: name
     }
     showForm.value = true
   } else {
