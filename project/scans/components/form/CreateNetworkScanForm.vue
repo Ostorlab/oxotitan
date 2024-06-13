@@ -31,7 +31,7 @@
         color="primary"
         variant="elevated"
         :disabled="isFormValid === false"
-        @click="next"
+        @click="proceedToNextStep(next)"
       >
         <v-icon start>
           mdi-skip-next-outline
@@ -64,6 +64,7 @@ import validator from 'validator'
 import LoadingDialog from '~/project/common/components/LoadingDialog.vue'
 import type { Scanner } from '~/project/types'
 import AgentGroupSelect from '~/project/scans/components/AgentGroupSelect.vue'
+import { parseIp } from '~/utils/asset'
 
 interface Data {
   ip: string | null
@@ -128,13 +129,6 @@ export default defineComponent({
     }
   },
   watch: {
-    userIps: {
-      deep: true,
-      immediate: false,
-      handler(newVal) {
-        this.$emit('update:assets', [{ network: { networks: newVal } }])
-      }
-    },
     selectedAgentGroup: {
       deep: true,
       handler(newVal) {
@@ -143,6 +137,21 @@ export default defineComponent({
     }
   },
   methods: {
+    /**
+     * Proceed to the next step.
+     * @param next The 'next' function from the stepper.
+     */
+    proceedToNextStep(next: () => void): void {
+      this.$emit('update:assets', [
+        {
+          ip: [...new Set(this.userIps)].map((ip) => {
+            const { host, mask } = parseIp(ip)
+            return { host, mask: mask || undefined }
+          })
+        }
+      ])
+      next()
+    },
     /**
      * Check if an IP or IP range is valid.
      * @param lastAddedIp
@@ -176,11 +185,7 @@ export default defineComponent({
     clear(): void {
       this.ip = null
       this.userIps = []
-    },
-    /**
-     * Create a scan.
-     */
-    createScan(): void {}
+    }
   }
 })
 </script>

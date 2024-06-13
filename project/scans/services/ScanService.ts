@@ -12,45 +12,45 @@ const SCANS_QUERY = gql`query scans($scanIds: [Int], $page: Int, $numberElements
     scans {
       id
       title
+      createdTime
+      progress
       assets {
         __typename
         ... on OxoAndroidFileAssetType {
           id
-          type
-          scanId
           packageName
           path
         }
         ... on OxoIOSFileAssetType {
           id
-          type
           bundleId
           path
         }
         ... on OxoAndroidStoreAssetType {
           id
-          type
+          packageName
           applicationName
         }
         ... on OxoIOSStoreAssetType {
           id
-          type
           bundleId
           applicationName
         }
-        ... on OxoUrlAssetType {
+        ... on OxoUrlsAssetType {
           id
-          type
-          links
+          links {
+            url
+            method
+          }
         }
         ... on OxoNetworkAssetType {
           id
-          type
-          networks
+          networks {
+            host
+            mask
+          }
         }
       }
-      createdTime
-      progress
     }
   }
 }

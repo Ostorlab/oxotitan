@@ -55,3 +55,9 @@ export enum AssetEnum {
   NETWORK = 'NETWORK',
   YAML = 'yaml'
 }
+
+export enum AssetFileTypesEnum {
+  AndroidApkFile = 'androidApkFile',
+  AndroidAabFile = 'androidAabFile',
+  IosFile = 'iosFile'
+}
