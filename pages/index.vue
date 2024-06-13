@@ -1,9 +1,5 @@
 <template>
   <div>
-    <div
-      v-if="false"
-      style="position: absolute; top: 50%; left:50%; transform: translate(-50%, -50%); background: repeating-linear-gradient(to right, #00415d 0%, #00415d 50%, #0081ba 100%); filter: blur(100px); opacity: 0.5; height: 200px; width: 500px;"
-    />
     <SvgLoader />
     <div class="oxo-loader-bar" />
   </div>
@@ -18,9 +14,9 @@ const scanners = scannersStore.scanners
 
 onMounted(() => {
   if (scanners.length === 0) {
-    // navigateTo('/scanners')
+    navigateTo('/scanners')
   } else {
-    // navigateTo('/scan/list')
+    navigateTo('/scan/list')
   }
 })
 </script>
