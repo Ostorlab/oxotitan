@@ -25,10 +25,12 @@
     />
 
     <VunerabilityDetailDialog
+      v-model:loading="vulenrabilityLoading"
       v-model:model-value="vulnDetailsDialog"
       :vuln="selectedVulnerability"
       :scan-id="scanId"
       :scanner="scanner"
+      @after-leave="selectedVulnerability = null"
     />
 
     <DfBreadcrumbs
@@ -202,7 +204,9 @@
       </v-card-title>
       <v-divider />
       <VulnzTable
+        :vulnerability-preview-loading="vulenrabilityLoading"
         :vulnz="vulns"
+        :selected-vulnerability-key="selectedVulnerability !== null ? selectedVulnerability.key : null"
         @go-to-detail="goToDetail"
         @go-to-detail-new-tab="goToDetailNewTab"
         @show-vuln-details="showVulnDetails"
@@ -262,6 +266,7 @@ interface Data {
   stopScanDialog: boolean
   breadcrumbs: VulnerabilityDetailBreadcrumbsType
   assets: Array<OxoAssetType>
+  vulenrabilityLoading: boolean
 }
 export default defineComponent ({
   name: 'Index',
@@ -281,6 +286,7 @@ export default defineComponent ({
         name: '',
         apiKey: ''
       },
+      vulenrabilityLoading: false,
       vulnDetailsDialog: false,
       selectedVulnerability: null,
       options: {
@@ -433,7 +439,7 @@ export default defineComponent ({
         this.stopBtnLoading = true
         await this.scanService.stopScan(this.scanner, this.scanId)
         await this.fetchKBVulnerabilities()
-      } catch (e) {
+      } catch (e: any) {
         this.reportError(e?.message || 'Error Stopping scan.')
       } finally {
         this.stopBtnLoading = false

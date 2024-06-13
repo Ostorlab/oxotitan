@@ -1,5 +1,5 @@
 <template>
-  <div class="vulnerability-detail-container">
+  <div id="vulnerability-detail-container">
     <v-dialog
       ref="dialogRef"
       v-model="dialog"
@@ -9,6 +9,7 @@
       max-width="50%"
       transition="slide-x-transition"
       class="ml-auto"
+      @after-leave="$emit('afterLeave')"
     >
       <v-card
         class="dialog-card pa-2"
@@ -16,6 +17,7 @@
         style="min-height: 100vh"
       >
         <VulnerabilityDetail
+          v-model:loading="loading"
           :vuln-title="vulnKey"
           :scan-id="scanId"
           :scanner="scanner"
@@ -57,7 +59,7 @@ export default defineComponent({
       required: true
     }
   },
-  emits: ['update:modelValue'],
+  emits: ['update:modelValue', 'update:loading', 'afterLeave'],
   data(): Data {
     return {
       loading: false,
@@ -78,7 +80,32 @@ export default defineComponent({
     },
     dialog(val: boolean): void {
       this.$emit('update:modelValue', val)
+    },
+    loading(newVal) {
+      this.$emit('update:loading', newVal)
+      if (this.vuln !== null && this.vuln !== undefined) {
+        if (newVal === true) {
+          this.dialog = false
+        } else {
+          this.dialog = true
+        }
+      }
     }
   }
 })
 </script>
+
+<style lang="scss">
+#vulnerability-detail-container {
+  .v-dialog {
+    display: block;
+
+    & > .v-overlay__content {
+      margin-top: 3px;
+      margin-right: 3px;
+      position: absolute;
+      right: 0
+    }
+  }
+}
+</style>
