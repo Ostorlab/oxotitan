@@ -26,11 +26,13 @@
 </template>
 
 <script lang="ts">
+import type { Maybe } from '~/graphql/types'
+
 export default defineComponent({
   name: 'DfScanProgress',
   props: {
     progress: {
-      type: String,
+      type: String as () => Maybe<string> | undefined,
       default: undefined
     },
     messageStatus: {

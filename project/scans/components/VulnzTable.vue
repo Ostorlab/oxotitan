@@ -36,7 +36,9 @@
       <template #[`item.show`]="{ item }">
         <v-btn
           size="small"
-          variant="flat"
+          variant="text"
+          :disabled="vulnerabilityPreviewLoading === true && (item.key !== selectedVulnerabilityKey)"
+          :loading="vulnerabilityPreviewLoading === true && (item.key === selectedVulnerabilityKey)"
           icon="mdi-magnify"
           @click="showVulnDetails(item)"
         />
@@ -73,6 +75,14 @@ export default defineComponent({
       type: Array as () => Array<OxoVulnerabilityType>,
       required: true,
       default: () => []
+    },
+    vulnerabilityPreviewLoading: {
+      type: Boolean,
+      default: false
+    },
+    selectedVulnerabilityKey: {
+      type: String as () => string | null,
+      required: true
     }
   },
   emits: ['goToDetail', 'goToDetailNewTab', 'showVulnDetails'],

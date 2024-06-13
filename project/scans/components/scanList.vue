@@ -12,12 +12,22 @@
       card-icon="mdi-stop-circle-outline"
       @confirm="confirmStop"
     />
+    <DfConfirmationModal
+      v-model="deleteScanDialog"
+      title="Are you sure you would like to archive this scan?"
+      cancel-button-text="Cancel"
+      confirm-button-text="Delete"
+      cancel-icon="mdi-close"
+      confirm-icon="mdi-check"
+      confirm-button-color="secondary"
+      card-icon="mdi-archive-arrow-down-outline"
+      @confirm="confirmDeleteScan"
+    />
 
     <v-card
       variant="outlined"
-      class="pa-2"
     >
-      <v-card-title class="pa-0">
+      <v-card-title class="pt-2 pl-2">
         <v-chip label>
           {{ scanner.name || scanner.endpoint }}
         </v-chip>
@@ -31,6 +41,7 @@
         :loading="loading"
         :items-per-page-options="[15, 50, 200, -1]"
         :items-per-page="options.itemsPerPage"
+        density="comfortable"
         @click:row="goToScan"
       >
         <template #[`item.Progress`]="{ item }">
@@ -148,7 +159,7 @@ interface Data {
   stopDialog: boolean
   headers: typeof HEADERS
   currentPage: number
-
+  deleteScanDialog: boolean
 }
 
 type ActionsType = {
@@ -175,6 +186,7 @@ export default defineComponent({
     return {
       service: new ScanService(this.$axios),
       scans: [],
+      deleteScanDialog: false,
       loading: true,
       options: {
         itemsPerPage: 15,
@@ -255,9 +267,14 @@ export default defineComponent({
       if (this.onActionScan === null || this.onActionScan === undefined) {
         return
       }
-      await this.service.stopScan(this.scanner, parseInt(this.onActionScan.id))
-      this.onActionScan = null
-      await this.fetchScans()
+      try {
+        await this.service.stopScan(this.scanner, parseInt(this.onActionScan.id))
+        await this.fetchScans()
+      } catch (e: any) {
+        this.reportError(e?.message || 'An error occurred while stoping the scan')
+      } finally {
+        this.onActionScan = null
+      }
     },
     /**
      * Stop the scan
@@ -271,14 +288,25 @@ export default defineComponent({
      * Delete the scan
      * @param scan
      */
-    async deleteScan(scan: OxoScanType): Promise<void> {
-      this.loading = true
+    deleteScan(scan: OxoScanType): void {
+      this.onActionScan = scan
+      this.deleteScanDialog = true
+    },
+    /**
+     * Confirm deleting the scan.
+     */
+    async confirmDeleteScan(): Promise<void> {
+      if (this.onActionScan === null || this.onActionScan === undefined) {
+        return
+      }
       try {
-        await this.service.deleteScan(this.scanner, parseInt(scan.id))
+        this.loading = true
+        await this.service.deleteScan(this.scanner, parseInt(this.onActionScan.id))
         this.reportSuccess('Scan deleted successfully')
-      } catch (e) {
-        this.reportError(`An error occurred while deleting the scan: ${e!.message}`)
+      } catch (e: any) {
+        this.reportError(`An error occurred while deleting the scan: ${e?.message}`)
       } finally {
+        this.onActionScan = null
         this.loading = false
       }
       await this.fetchScans()
