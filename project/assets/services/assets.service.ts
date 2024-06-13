@@ -25,7 +25,7 @@ const CREATE_ASSETS_MUTATION = gql`
                 ... on OxoIOSStoreAssetType {
                     id
                 }
-                ... on OxoUrlAssetType {
+                ... on OxoUrlsAssetType {
                     id
                 }
                 ... on OxoNetworkAssetType {

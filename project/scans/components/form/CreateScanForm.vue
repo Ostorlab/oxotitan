@@ -327,6 +327,11 @@ export default defineComponent({
       try {
         this.createScanLoading = true
         const assets = await this.createAssets() || []
+
+        if (assets.length === 0) {
+          throw new Error('Failed to create assets')
+        }
+
         await this.scansService.runScan(
           this.selectedScanner,
           {
@@ -346,19 +351,17 @@ export default defineComponent({
     /**
      * Create assets.
      */
-    async createAssets(): Promise<Array<{ id: string }> | undefined> {
+    async createAssets(): Promise<Array<{ id: string }>> {
       if (this.selectedScanner === null) {
-        this.reportError('No scanner selected')
-        return
+        throw new Error('No scanner selected')
       }
       if (this.assets === null) {
-        this.reportError('No assets were added')
-        return
+        throw new Error('No assets were added')
       }
       try {
         return await this.assetsService.createAssets(this.selectedScanner, this.assets)
       } catch (e: any) {
-        this.reportError(e?.message || 'Error creating assets')
+        throw new Error(e?.message || 'Error creating assets')
       }
     },
     /**
@@ -369,6 +372,7 @@ export default defineComponent({
       this.assets = []
       this.agentGroupId = null
       this.selectedScanner = null
+      this.scanTitle = null
     }
   }
 })
