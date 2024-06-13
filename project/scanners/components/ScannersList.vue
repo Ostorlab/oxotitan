@@ -41,7 +41,11 @@
           <code>{{ item.endpoint }}</code>
         </template>
         <template #[`item.actions`]="{ item }">
-          <v-btn variant="flat">
+          <v-btn
+            variant="text"
+            size="small"
+            :icon="true"
+          >
             <v-icon icon="mdi-dots-vertical" />
             <v-menu
               activator="parent"
