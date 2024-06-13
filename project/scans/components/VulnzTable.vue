@@ -92,12 +92,14 @@ export default defineComponent({
         {
           title: 'Show',
           value: 'show',
-          align: 'left'
+          align: 'left',
+          width: '4%'
         },
         {
           title: 'Risk | CVSS',
           value: 'risk',
-          align: 'left'
+          align: 'left',
+          width: '7%'
         },
         {
           title: 'Title',

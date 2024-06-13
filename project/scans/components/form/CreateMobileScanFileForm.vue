@@ -68,7 +68,7 @@ import LoadingDialog from '~/project/common/components/LoadingDialog.vue'
 import UploadFile from '~/project/scans/components/UploadFile.vue'
 import AgentGroupSelect from '~/project/scans/components/AgentGroupSelect.vue'
 import type { Scanner } from '~/project/types'
-import { AssetEnum } from '~/project/types'
+import { AssetEnum, AssetFileTypesEnum } from '~/project/types'
 
 const MAX_FILE_SIZE = 600000000 // 600 MB
 
@@ -78,11 +78,18 @@ const maxSize = (param: typeof MAX_FILE_SIZE) =>
     (value: File | null) => !helpers.req(value) || (value?.size || 0) < param
   )
 
+type AndroidFileExtensions = 'aab' | 'apk'
+
 interface Data {
   application: File | null
   maxFileSize: typeof MAX_FILE_SIZE
   loadingDialog: boolean
   selectedAgentGroup: unknown
+}
+
+const ANDROID_FILE_TYPES_MAPPING = {
+  apk: AssetFileTypesEnum.AndroidApkFile,
+  aab: AssetFileTypesEnum.AndroidAabFile
 }
 
 export default defineComponent({
@@ -138,11 +145,13 @@ export default defineComponent({
     /**
      * The selected asset type.
      */
-    assetTypeData(): { type: 'androidFile' | 'iosFile', identifier: 'packageName' | 'bundleId' } {
+    assetTypeData(): { type: AssetFileTypesEnum, identifier: 'packageName' | 'bundleId' } {
       if (this.assetPlatformType === AssetEnum.ANDROID_APK) {
-        return { type: 'androidFile', identifier: 'packageName' }
+        const fileNameParts = (this.application?.name?.split('.') || []).filter(Boolean)
+        const fileExtension: AndroidFileExtensions = fileNameParts[fileNameParts.length - 1]?.toLowerCase() as AndroidFileExtensions
+        return { type: ANDROID_FILE_TYPES_MAPPING[fileExtension], identifier: 'packageName' }
       }
-      return { type: 'iosFile', identifier: 'bundleId' }
+      return { type: AssetFileTypesEnum.IosFile, identifier: 'bundleId' }
     }
   },
   watch: {
@@ -152,7 +161,7 @@ export default defineComponent({
         if (newVal === undefined) {
           this.$emit('update:assets', [])
         } else {
-          this.$emit('update:assets', [{ [this.assetTypeData.type]: { [this.assetTypeData.identifier]: null, file: newVal } }])
+          this.$emit('update:assets', [{ [this.assetTypeData.type]: [{ [this.assetTypeData.identifier]: null, file: newVal }] }])
         }
       }
     },

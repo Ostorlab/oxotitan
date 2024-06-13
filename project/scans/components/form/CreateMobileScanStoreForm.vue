@@ -125,7 +125,7 @@ export default defineComponent({
   },
   watch: {
     packageName(newVal) {
-      this.$emit('update:assets', [{ [this.assetTypeData.type]: { [this.assetTypeData.identifier]: newVal, applicationName: newVal } }])
+      this.$emit('update:assets', [{ [this.assetTypeData.type]: [{ [this.assetTypeData.identifier]: newVal, applicationName: newVal }] }])
     },
     selectedAgentGroup: {
       deep: true,
