@@ -50,6 +50,12 @@ const SCANS_QUERY = gql`query scans($scanIds: [Int], $page: Int, $numberElements
             mask
           }
         }
+        ... on OxoDomainNameAssetsType {
+          id
+          domainNames {
+            name
+          }
+        }
       }
     }
   }

@@ -26,6 +26,9 @@ const CREATE_ASSETS_MUTATION = gql`
                 ... on OxoNetworkAssetType {
                     id
                 }
+                ... on OxoDomainNameAssetsType {
+                    id
+                }
             }
         }
     }
