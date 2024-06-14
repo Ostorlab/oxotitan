@@ -78,7 +78,7 @@ const menuLinks: Array<{
   },
   {
     tooltip: 'Scanners',
-    icon: 'mdi-engine-outline',
+    icon: 'mdi-shield-search',
     to: '/scanners'
   }
 ]

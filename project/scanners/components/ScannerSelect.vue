@@ -10,7 +10,7 @@
     return-object
     label="Select a scanner"
     placeholder="Select or create a scanner to run the scan on"
-    prepend-icon="mdi-engine-outline"
+    prepend-icon="mdi-shield-search"
   />
 </template>
 
