@@ -25,6 +25,13 @@
       alt="OXO logo"
       style="height:30px; object-fit: contain"
     >
+    <v-chip
+      size="x-small"
+      class="ml-2"
+      color="accent"
+    >
+      Aplha
+    </v-chip>
     <template #append>
       <div class="d-flex align-center ml-2">
         <v-btn
@@ -71,7 +78,7 @@ const menuLinks: Array<{
   },
   {
     tooltip: 'Scanners',
-    icon: 'mdi-engine-outline',
+    icon: 'mdi-shield-search',
     to: '/scanners'
   }
 ]

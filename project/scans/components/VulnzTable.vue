@@ -104,7 +104,8 @@ export default defineComponent({
         {
           title: 'Title',
           value: 'title',
-          align: 'left'
+          align: 'left',
+          minWidth: '350'
         },
         {
           title: 'Short description',
