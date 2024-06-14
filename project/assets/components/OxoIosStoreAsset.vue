@@ -19,7 +19,7 @@
 </template>
 
 <script lang="ts">
-import type { OxoIosStoreAssetType } from '~/graphql/types'
+import type { Maybe, OxoIosStoreAssetType } from '~/graphql/types'
 
 export default defineComponent({
   name: 'OxoIosStoreAsset',
@@ -31,13 +31,25 @@ export default defineComponent({
   },
   computed: {
     /**
+     * Whether the asset has an application name or not.
+     */
+    assetHasApplicationName(): boolean {
+      return this.asset?.applicationName !== null && this.asset?.applicationName !== undefined && this.asset?.applicationName?.trim() !== ''
+    },
+    /**
      * Returns the asset string with the application name and bundle id if available.
      */
     appName(): string {
-      if (this.asset.bundleId !== null && this.asset.bundleId !== undefined) {
-        return `${this.asset.applicationName} (${this.asset.bundleId})`
+      let appName: Maybe<string> | undefined = ''
+      if (this.assetHasApplicationName === true) {
+        appName = this.asset?.applicationName
       }
-      return this.asset.applicationName as string
+      if (this.assetHasApplicationName === true && (this.asset?.bundleId || '').trim() !== '') {
+        appName = `${appName} (${this.asset.bundleId})`
+      } else {
+        appName = this.asset.bundleId
+      }
+      return appName as string
     }
   }
 })

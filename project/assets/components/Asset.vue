@@ -40,7 +40,7 @@ export default defineComponent({
           return OxoIosStoreAsset
         case 'OxoNetworkAssetType':
           return OxoNetworkAsset
-        case 'OxoUrlAssetType':
+        case 'OxoUrlsAssetType':
           return OxoUrlAsset
         default:
           return null

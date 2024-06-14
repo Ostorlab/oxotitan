@@ -11,7 +11,7 @@
     >
       mdi-apple
     </v-icon>
-    {{ asset.bundleId }}
+    {{ asset.bundleId || 'IPA File' }}
   </v-chip>
 </template>
 

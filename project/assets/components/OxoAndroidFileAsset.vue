@@ -11,7 +11,7 @@
     >
       mdi-android
     </v-icon>
-    {{ asset.packageName }}
+    {{ asset.packageName || 'Android File' }}
   </v-chip>
 </template>
 
