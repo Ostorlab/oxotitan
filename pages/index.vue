@@ -1,5 +1,8 @@
 <template>
-  <SvgLoader />
+  <div>
+    <SvgLoader />
+    <div class="oxo-loader-bar" />
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -17,3 +20,29 @@ onMounted(() => {
   }
 })
 </script>
+
+<style scoped>
+.oxo-loader-bar {
+  background: repeating-linear-gradient(to right, #00415d 0%, #14506A 25%, #148BBF 50%, #4078c0 75%, #0081ba 100%);
+  background-size: 200% auto;
+  background-position: 0 0;
+  position: fixed;
+  height: 100px;
+  bottom: -50px;
+  left: -50px;
+  right: -50px;
+  filter: blur(100px);
+  animation: gradient 3s infinite;
+  animation-fill-mode: forwards;
+  animation-timing-function: linear;
+}
+
+@keyframes gradient {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+</style>

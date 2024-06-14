@@ -1,11 +1,6 @@
 import type { AxiosInstance } from 'axios'
 import RequestHandler from '~/utils/requestHandler'
-import type { Scanner } from '~/project/types'
-
-enum AssetFileTypesEnum {
-  AndroidFile = 'androidFile',
-  IosFile = 'iosFile'
-}
+import { type Scanner, AssetFileTypesEnum } from '~/project/types'
 
 const CREATE_ASSETS_MUTATION = gql`
     mutation CreateAssets ($assets: [OxoAssetInputType]!) {
@@ -25,7 +20,7 @@ const CREATE_ASSETS_MUTATION = gql`
                 ... on OxoIOSStoreAssetType {
                     id
                 }
-                ... on OxoUrlAssetType {
+                ... on OxoUrlsAssetType {
                     id
                 }
                 ... on OxoNetworkAssetType {
@@ -79,18 +74,21 @@ export default class AssetsService {
     const map: { [key: number]: Array<string> } = {}
 
     assets = assets.map((asset: { [key: string]: any }, index: number) => {
-      if (AssetFileTypesEnum.AndroidFile in asset) {
+      const assetType = Object.keys(asset)[0] as AssetFileTypesEnum
+      if (Object.values(AssetFileTypesEnum).includes(assetType)) {
         fileVariables.push({
-          path: `variables.assets.${index}.${AssetFileTypesEnum.AndroidFile}.file`,
-          file: asset[AssetFileTypesEnum.AndroidFile].file
+          path: `variables.assets.${index}.${assetType}.${index}.file`,
+          file: asset[assetType][0]?.file
         })
-        asset[AssetFileTypesEnum.AndroidFile].file = null
+        asset = {
+          [assetType]: [{ ...asset[assetType][0], file: null }]
+        }
       } else if (AssetFileTypesEnum.IosFile in asset) {
         fileVariables.push({
-          path: `variables.assets.${index}.${AssetFileTypesEnum.IosFile}.file`,
-          file: asset[AssetFileTypesEnum.IosFile].file
+          path: `variables.assets.${index}.${AssetFileTypesEnum.IosFile}.${index}.file`,
+          file: asset[AssetFileTypesEnum.IosFile][0].file
         })
-        asset[AssetFileTypesEnum.IosFile].file = null
+        asset[AssetFileTypesEnum.IosFile][0].file = null
       }
       return asset
     })
