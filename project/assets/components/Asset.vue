@@ -9,6 +9,7 @@
 <script lang="ts">
 import type { OxoAssetType } from '~/graphql/types'
 import OxoUrlAsset from '~/project/assets/components/OxoUrlAsset.vue'
+import OxoDomainAsset from '~/project/assets/components/OxoDomainAsset.vue'
 import OxoNetworkAsset from '~/project/assets/components/OxoNetworkAsset.vue'
 import OxoIosStoreAsset from '~/project/assets/components/OxoIosStoreAsset.vue'
 import OxoIosFileAsset from '~/project/assets/components/OxoIosFileAsset.vue'
@@ -42,6 +43,8 @@ export default defineComponent({
           return OxoNetworkAsset
         case 'OxoUrlsAssetType':
           return OxoUrlAsset
+        case 'OxoDomainNameAssetsType':
+          return OxoDomainAsset
         default:
           return null
       }
