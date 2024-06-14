@@ -18,13 +18,11 @@
 </template>
 
 <script lang="ts">
-import type { OxoUrlAssetType } from '~/graphql/types'
-
 export default defineComponent({
-  name: 'OxoUrlAsset',
+  name: 'OxoDomainAsset',
   props: {
     asset: {
-      type: Object as () => OxoUrlAssetType,
+      type: Object,
       default: null
     }
   }
