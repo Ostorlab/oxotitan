@@ -1,12 +1,13 @@
 <template>
-  <v-item-group
+  <div
     v-for="(asset, index) in assets"
     :key="index"
+    class="d-inline"
   >
     <OXOAsset
       :asset="asset"
     />
-  </v-item-group>
+  </div>
 </template>
 
 <script lang="ts">

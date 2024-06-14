@@ -39,7 +39,7 @@
 
 <script lang="ts">
 import { mapState } from 'pinia'
-import ScanList from '~/project/scans/components/scanList.vue'
+import ScanList from '~/project/scans/components/ScanList.vue'
 import { DfBreadcrumbs } from '~/dragonfly/components/Sections/DfBreadcrumbs'
 import SvgLoader from '~/project/common/components/SvgLoader.vue'
 import type { VulnerabilityDetailBreadcrumbsType } from '~/dragonfly/components/Sections/DfBreadcrumbs/types'

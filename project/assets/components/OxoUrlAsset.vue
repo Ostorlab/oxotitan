@@ -13,7 +13,7 @@
     >
       mdi-web
     </v-icon>
-    {{ link }}
+    {{ link.url }}
   </v-chip>
 </template>
 
@@ -30,7 +30,3 @@ export default defineComponent({
   }
 })
 </script>
-
-<style scoped>
-
-</style>
