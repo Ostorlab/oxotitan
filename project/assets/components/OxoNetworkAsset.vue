@@ -13,7 +13,10 @@
     >
       mdi-ip
     </v-icon>
-    {{ network }}
+    <span v-if="(network.mask || '').trim() !== ''">
+      {{ network.host }}/{{ network.mask }}
+    </span>
+    <span v-else>{{ network.host }}</span>
   </v-chip>
 </template>
 
@@ -30,7 +33,3 @@ export default defineComponent({
   }
 })
 </script>
-
-<style scoped>
-
-</style>
