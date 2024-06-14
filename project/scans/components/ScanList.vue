@@ -130,7 +130,8 @@ const HEADERS = [
     title: 'Created time (UTC)',
     align: 'left',
     sortable: false,
-    key: 'CreatedTime'
+    key: 'CreatedTime',
+    width: '14%'
   },
   {
     title: 'Progress',
