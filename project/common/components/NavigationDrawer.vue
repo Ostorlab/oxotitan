@@ -45,14 +45,17 @@
         </div>
       </v-list-item>
     </v-list>
+    <AppFooter />
   </v-navigation-drawer>
 </template>
 
 <script lang="ts">
 import { mapStores, mapActions } from 'pinia'
 import { useNavigationStore } from '~/stores/navigation'
+import AppFooter from '~/project/common/components/AppFooter.vue'
 
 export default defineComponent({
+  components: { AppFooter },
   data() {
     return {
       drawerItems: [
@@ -99,3 +102,21 @@ export default defineComponent({
   }
 })
 </script>
+
+<style scoped lang="scss">
+.footer {
+    position: absolute;
+    bottom: 0;
+    font-size: 14px;
+    color: #474747;
+
+    &-link {
+        color: inherit !important;
+        text-decoration: none;
+
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+}
+</style>
