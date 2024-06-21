@@ -19,6 +19,12 @@
       <v-icon :size="20">
         mdi-menu
       </v-icon>
+      <v-tooltip
+        activator="parent"
+        location="right"
+      >
+        Menu
+      </v-tooltip>
     </v-btn>
     <img
       src="/logo/oxo.png"
@@ -26,14 +32,16 @@
       style="height:30px; object-fit: contain"
     >
     <v-chip
-      size="x-small"
+      size="small"
       class="ml-2"
-      color="accent"
+      color="secondary"
     >
-      Aplha
+      Alpha
     </v-chip>
     <template #append>
-      <div class="d-flex align-center ml-2">
+      <div
+        class="d-flex align-center ml-2"
+      >
         <v-btn
           v-for="(link, index) in menuLinks"
           :key="`menuLink-${link.to}-${index}`"
