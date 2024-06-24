@@ -54,7 +54,7 @@
     "typescript": "^5.4.5",
     "vite-plugin-eslint2": "^4.4.0",
     "vite-plugin-vuetify": "^2.0.3",
-    "vuetify": "^3.6.7"
+    "vuetify": "^3.6.10"
   },
   "lint-staged": {
     "*": "npm run lint:fix"
