@@ -6,6 +6,7 @@
       next-text="Continue"
       non-linear
       flat
+      editable
     >
       <template #default="{ step }">
         <v-stepper-vertical-item
