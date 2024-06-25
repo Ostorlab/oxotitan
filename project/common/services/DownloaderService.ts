@@ -13,5 +13,6 @@ export default class Downloader {
     document.body.appendChild(a)
     a.click()
     a.remove()
+    window.URL.revokeObjectURL(url)
   }
 }
