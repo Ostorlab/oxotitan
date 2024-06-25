@@ -184,11 +184,13 @@
       </v-col>
     </v-row>
     <v-card
-      class="mt-12 hover"
+      class="mt-12"
       variant="outlined"
-      @click="show = !show"
     >
-      <v-card-title>
+      <v-card-title
+        class="cursor-pointer"
+        @click="show = !show"
+      >
         <v-row
           align="center"
           justify="space-between"
@@ -213,12 +215,16 @@
         <div v-show="show">
           <v-divider />
           <v-card-text>
-            <pre>{{ AgentGroupYaml }}</pre>
+            <MonacoEditor
+              v-model="AgentGroupYaml"
+              :lang="editorLanguage"
+              :options="editorOptions"
+              style="min-height: 300px;"
+            />
           </v-card-text>
         </div>
       </v-expand-transition>
     </v-card>
-
     <v-card
       :loading="loadingDialog"
       class="mt-12"
@@ -307,6 +313,10 @@ interface Data {
   agentGroup: Maybe<AgentGroupType>
   vulenrabilityLoading: boolean
   show: boolean
+  editorLanguage: string
+  editorOptions: {
+    [key: string]: string | boolean | { [key: string]: boolean }
+  }
 }
 export default defineComponent ({
   name: 'Index',
@@ -347,6 +357,16 @@ export default defineComponent ({
       assets: [],
       agentGroup: null,
       show: false,
+      editorLanguage: 'yaml',
+      editorOptions: {
+        theme: 'vs',
+        wordWrap: 'on',
+        wordWrapColumn: 'on',
+        fontFamily: 'Fira Code',
+        automaticLayout: true,
+        minimap: { enabled: false },
+        readOnly: true
+      },
       breadcrumbs: [
         {
           text: 'scans',
