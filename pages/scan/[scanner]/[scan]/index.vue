@@ -360,8 +360,15 @@ export default defineComponent ({
     /**
      * The YAML representation of the agent group.
      */
-    AgentGroupYaml() {
-      return yaml.dump(this.agentGroup, { indent: 2 })
+    AgentGroupYaml(): string {
+      const yamlSource: string | undefined | null = this.agentGroup?.yamlSource
+
+      if (yamlSource === undefined || yamlSource === null) {
+        return 'No agent group found'
+      }
+
+      const yamlContent: string = yaml.dump(yaml.load(yamlSource), { indent: 2 })
+      return `# Agent Group ID: ${this.agentGroup?.id}\n${yamlContent}`
     },
     /**
      * The total number of vulnerabilities.
@@ -404,7 +411,6 @@ export default defineComponent ({
         this.assets = kb?.assets
         this.progress = kb?.progress
         this.agentGroup = kb?.agentGroup
-        console.log(this.agentGroup?.agents.agents)
       } catch (e) {
         this.reportError(`An error was encountered while fetching the scan: ${e}`)
       } finally {
