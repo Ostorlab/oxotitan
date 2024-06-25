@@ -223,6 +223,10 @@ export default class ScansService {
       }
     })
 
+    if ((response?.data?.errors || []).length > 0) {
+      throw new Error(response?.data?.errors[0]?.message)
+    }
+
     return response?.data?.importScan?.result || false
   }
 
