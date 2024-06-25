@@ -184,14 +184,29 @@
       </v-col>
     </v-row>
     <v-card
-      class="mt-12"
+      class="mt-12 hover"
       variant="outlined"
+      @click="show = !show"
     >
-      <v-card-title @click="show = !show">
-        <v-icon start>
-          mdi-format-list-group
-        </v-icon>
-        Agent Group
+      <v-card-title>
+        <v-row
+          align="center"
+          justify="space-between"
+          class="w-100"
+        >
+          <v-col class="d-flex align-center">
+            <v-icon start>
+              mdi-format-list-group
+            </v-icon>
+            <span>Agent Group</span>
+          </v-col>
+          <v-col class="d-flex justify-end">
+            <v-btn
+              :icon="show ? 'mdi-chevron-up' : 'mdi-chevron-down'"
+              elevation="0"
+            />
+          </v-col>
+        </v-row>
       </v-card-title>
       <v-divider />
       <v-expand-transition>
@@ -203,6 +218,7 @@
         </div>
       </v-expand-transition>
     </v-card>
+
     <v-card
       :loading="loadingDialog"
       class="mt-12"
