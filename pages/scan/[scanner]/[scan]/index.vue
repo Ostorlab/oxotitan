@@ -184,6 +184,26 @@
       </v-col>
     </v-row>
     <v-card
+      class="mt-12"
+      variant="outlined"
+    >
+      <v-card-title @click="show = !show">
+        <v-icon start>
+          mdi-format-list-group
+        </v-icon>
+        Agent Group
+      </v-card-title>
+      <v-divider />
+      <v-expand-transition>
+        <div v-show="show">
+          <v-divider />
+          <v-card-text>
+            <pre>{{ AgentGroupYaml }}</pre>
+          </v-card-text>
+        </div>
+      </v-expand-transition>
+    </v-card>
+    <v-card
       :loading="loadingDialog"
       class="mt-12"
       justify="space-around"
@@ -218,6 +238,7 @@
 <script lang="ts">
 import { mapActions, mapState } from 'pinia'
 import crc32 from 'crc32/lib/crc32'
+import yaml from 'js-yaml'
 import VulnerabilityService from '~/project/scans/services/vulnerability.service'
 import ScansService from '~/project/scans/services/ScanService'
 
@@ -229,6 +250,7 @@ import { useScannersStore } from '~/stores/scanners'
 import { DfScanProgress } from '~/dragonfly/components/Tags/DfScanProgress'
 import { DfBreadcrumbs } from '~/dragonfly/components/Sections/DfBreadcrumbs'
 import type {
+  AgentGroupType,
   Maybe,
   OxoAggregatedKnowledgeBaseVulnerabilityType, OxoAssetType,
   OxoScanType,
@@ -266,7 +288,9 @@ interface Data {
   stopScanDialog: boolean
   breadcrumbs: VulnerabilityDetailBreadcrumbsType
   assets: Array<OxoAssetType>
+  agentGroup: Maybe<AgentGroupType>
   vulenrabilityLoading: boolean
+  show: boolean
 }
 export default defineComponent ({
   name: 'Index',
@@ -305,6 +329,8 @@ export default defineComponent ({
       archiveBtnLoading: false,
       stopScanDialog: false,
       assets: [],
+      agentGroup: null,
+      show: false,
       breadcrumbs: [
         {
           text: 'scans',
@@ -330,6 +356,12 @@ export default defineComponent ({
         return 0
       }
       return parseInt(this.$route.params.scan as string)
+    },
+    /**
+     * The YAML representation of the agent group.
+     */
+    AgentGroupYaml() {
+      return yaml.dump(this.agentGroup, { indent: 2 })
     },
     /**
      * The total number of vulnerabilities.
@@ -371,6 +403,8 @@ export default defineComponent ({
         this.title = kb?.title
         this.assets = kb?.assets
         this.progress = kb?.progress
+        this.agentGroup = kb?.agentGroup
+        console.log(this.agentGroup?.agents.agents)
       } catch (e) {
         this.reportError(`An error was encountered while fetching the scan: ${e}`)
       } finally {

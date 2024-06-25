@@ -352,6 +352,7 @@ export type OxoScanType = {
   title?: Maybe<Scalars['String']['output']>;
   /** List of vulnerabilities. */
   vulnerabilities?: Maybe<OxoVulnerabilitiesType>;
+  agentGroup?: Maybe<AgentGroupType>;
 };
 
 
