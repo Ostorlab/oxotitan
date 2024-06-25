@@ -1,4 +1,6 @@
 import type { AxiosInstance } from 'axios'
+import { decode } from '@shelacek/ubjson'
+import Downloader from '~/project/common/services/DownloaderService'
 import type { OxoScanType, QueryScansArgs } from '~/graphql/types'
 import RequestHandler from '~/utils/requestHandler'
 import type { Scanner } from '~/project/types'
@@ -105,6 +107,14 @@ const RUN_SCAN_MUTATION = gql`
   }
 `
 
+const EXPORT_SCAN_MUTATION = gql`
+  mutation ExportScan($scanId: Int!) {
+    exportScan(scanId: $scanId) {
+      content
+    }
+  }
+`
+
 export default class ScansService {
   private readonly requestor: RequestHandler
   totalScans: number
@@ -180,6 +190,37 @@ export default class ScansService {
         }
       })
     return response?.data?.deleteScan?.result || false
+  }
+
+  /**
+   * Export scan to zip file.
+   * @param scanner
+   * @param scanId
+   */
+  async exportScan(scanner: Scanner, scanId: number): Promise<void> {
+    const response = await this.requestor.$axios.post(
+      scanner.endpoint,
+      {
+        query: EXPORT_SCAN_MUTATION,
+        variables: {
+          scanId: scanId
+        }
+      },
+      {
+        responseType: 'arraybuffer',
+        headers: {
+          'Accept': 'application/ubjson',
+          'X-Api-Key': scanner.apiKey
+        }
+      }
+    )
+
+    const data = decode(response?.data)
+    const content = data?.data?.exportScan?.content
+    if (content !== null && content !== undefined) {
+      const downloader = new Downloader()
+      downloader.downloadArrayBuffer('exported_scan.zip', content)
+    }
   }
 
   /**

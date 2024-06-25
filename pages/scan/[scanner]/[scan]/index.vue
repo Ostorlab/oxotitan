@@ -77,6 +77,21 @@
         </template>
         <span>Archives scan and removes all findings and artifacts.</span>
       </v-tooltip>
+      <v-tooltip bottom>
+        <template #activator="{ props }">
+          <v-btn
+            class="mr-2"
+            v-bind="props"
+            @click="exportScan"
+          >
+            <v-icon start>
+              mdi-file-export-outline
+            </v-icon>
+            Export
+          </v-btn>
+        </template>
+        <span>Exports scan to a zip file.</span>
+      </v-tooltip>
     </v-card>
     <v-row
       class="mt-4 align-stretch"
@@ -456,6 +471,21 @@ export default defineComponent ({
         this.$router.push('/scan/list')
       } catch (e) {
         this.reportError(`An error occurred while deleting the scan: ${e!.message}`)
+      } finally {
+        this.loadingDialog = false
+      }
+    },
+    /**
+     * Export the scan
+     */
+    async exportScan(): Promise<void> {
+      try {
+        this.loadingDialog = true
+        this.reportInfo('Scan export in progress, this process may take some time.')
+        await this.scanService.exportScan(this.scanner, this.scanId)
+        this.reportSuccess('Scan exported successfully')
+      } catch (e) {
+        this.reportError(e?.message || 'An error occurred while exporting the scan')
       } finally {
         this.loadingDialog = false
       }
