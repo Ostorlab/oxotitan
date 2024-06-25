@@ -110,7 +110,7 @@ const RUN_SCAN_MUTATION = gql`
 const EXPORT_SCAN_MUTATION = gql`
   mutation ExportScan($scanId: Int!) {
     exportScan(scanId: $scanId) {
-      fileBytes
+      content
     }
   }
 `
@@ -216,10 +216,10 @@ export default class ScansService {
     )
 
     const data = decode(response?.data)
-    const fileBytes = data?.data?.exportScan?.fileBytes
-    if (fileBytes !== null && fileBytes !== undefined) {
+    const content = data?.data?.exportScan?.content
+    if (content !== null && content !== undefined) {
       const downloader = new Downloader()
-      downloader.downloadArrayBuffer('exported_scan.zip', fileBytes)
+      downloader.downloadArrayBuffer('exported_scan.zip', content)
     }
   }
 
