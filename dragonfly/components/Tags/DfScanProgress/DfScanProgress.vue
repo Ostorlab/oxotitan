@@ -15,6 +15,7 @@
           size="small"
           start
           color="white"
+          class="mb-n1"
         >
           {{ iconColor.icon }}
         </v-icon>
@@ -51,7 +52,7 @@ export default defineComponent({
           case 'not_started':
             return {
               icon: 'mdi-timeline-plus-outline',
-              color: 'orange',
+              color: 'orange-darken-2',
               text: 'Queued'
             }
           case 'stopped':

@@ -47,7 +47,7 @@
       <v-tooltip bottom>
         <template #activator="{ props }">
           <v-btn
-            :disabled="progress === 'STOPPED' || progress === 'DONE' "
+            :disabled="progress === 'stopped' || progress === 'done' || loadingDialog === true "
             :loading="stopBtnLoading"
             class="mr-2"
             v-bind="props"
@@ -370,7 +370,7 @@ export default defineComponent ({
         this.vulns = kb?.kbVulnerabilities || []
         this.title = kb?.title
         this.assets = kb?.assets
-        this.progress = kb?.progress
+        this.progress = kb?.progress?.toLowerCase()
       } catch (e) {
         this.reportError(`An error was encountered while fetching the scan: ${e}`)
       } finally {

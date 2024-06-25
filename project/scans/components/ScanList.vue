@@ -124,7 +124,8 @@ const HEADERS = [
     title: 'Title',
     align: 'left',
     sortable: false,
-    key: 'title'
+    key: 'title',
+    width: '24%'
   },
   {
     title: 'Created time (UTC)',
@@ -137,13 +138,15 @@ const HEADERS = [
     title: 'Progress',
     align: 'left',
     sortable: false,
-    key: 'Progress'
+    key: 'Progress',
+    width: '8%'
   },
   {
     title: 'Actions',
     align: 'left',
     sortable: false,
-    key: 'Action'
+    key: 'Action',
+    width: '5%'
   }
 ]
 interface Data {
@@ -219,7 +222,7 @@ export default defineComponent({
           icon: 'mdi-stop',
           disabled(scan: OxoScanType) {
             return !(
-              scan.progress === 'IN_PROGRESS' || scan.progress === 'NOT_STARTED'
+              scan.progress?.toLowerCase() === 'in_progress' || scan.progress?.toLowerCase() === 'not_started'
             )
           }
         },

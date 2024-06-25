@@ -116,8 +116,8 @@ const importScan = async () => {
       scanId.value
     )
     notificationsStore.reportSuccess('Scan imported successfully.')
-  } catch {
-    notificationsStore.reportError('An error was encountered while importing scan.')
+  } catch (e: any) {
+    notificationsStore.reportError(e?.message || 'An error was encountered while importing scan.')
   } finally {
     loading.value = false
     clear()
