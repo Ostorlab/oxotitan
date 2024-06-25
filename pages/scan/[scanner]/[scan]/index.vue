@@ -485,7 +485,7 @@ export default defineComponent ({
         await this.scanService.exportScan(this.scanner, this.scanId)
         this.reportSuccess('Scan exported successfully')
       } catch (e) {
-        this.reportError(`An error occurred while exporting the scan: ${e!.message}`)
+        this.reportError(e?.message || 'An error occurred while exporting the scan')
       } finally {
         this.loadingDialog = false
       }
