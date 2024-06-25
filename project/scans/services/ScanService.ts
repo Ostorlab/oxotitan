@@ -216,9 +216,7 @@ export default class ScansService {
     )
 
     const data = decode(response?.data)
-    console.log(data)
     const fileBytes = data?.data?.exportScan?.fileBytes
-    console.log(fileBytes)
     if (fileBytes !== null && fileBytes !== undefined) {
       const downloader = new Downloader()
       downloader.downloadArrayBuffer('exported_scan.zip', fileBytes)
