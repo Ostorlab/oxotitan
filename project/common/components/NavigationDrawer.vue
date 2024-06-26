@@ -32,6 +32,7 @@
         :key="drawerItem.to"
         :value="drawerItem.value"
         :to="drawerItem.to"
+        :active="drawerItem.to === fullRoutePath"
         color="primary"
         style="color: black;"
       >
@@ -95,6 +96,9 @@ export default defineComponent({
       set(): void {
         this.toggleDrawer()
       }
+    },
+    fullRoutePath(): string {
+      return this.$route.fullPath
     }
   },
   methods: {
