@@ -199,6 +199,48 @@
       </v-col>
     </v-row>
     <v-card
+      class="mt-12"
+      variant="outlined"
+    >
+      <v-card-title
+        class="cursor-pointer"
+        @click="show = !show"
+      >
+        <v-row
+          align="center"
+          justify="space-between"
+          class="w-100"
+        >
+          <v-col class="d-flex align-center">
+            <v-icon start>
+              mdi-format-list-group
+            </v-icon>
+            <span>Agent Group</span>
+          </v-col>
+          <v-col class="d-flex justify-end">
+            <v-btn
+              :icon="show ? 'mdi-chevron-up' : 'mdi-chevron-down'"
+              elevation="0"
+            />
+          </v-col>
+        </v-row>
+      </v-card-title>
+      <v-divider />
+      <v-expand-transition>
+        <div v-show="show">
+          <v-divider />
+          <v-card-text>
+            <MonacoEditor
+              v-model="AgentGroupYaml"
+              :lang="editorLanguage"
+              :options="editorOptions"
+              style="min-height: 300px;"
+            />
+          </v-card-text>
+        </div>
+      </v-expand-transition>
+    </v-card>
+    <v-card
       :loading="loadingDialog"
       class="mt-12"
       justify="space-around"
@@ -233,6 +275,7 @@
 <script lang="ts">
 import { mapActions, mapState } from 'pinia'
 import crc32 from 'crc32/lib/crc32'
+import yaml from 'js-yaml'
 import VulnerabilityService from '~/project/scans/services/vulnerability.service'
 import ScansService from '~/project/scans/services/ScanService'
 
@@ -244,6 +287,7 @@ import { useScannersStore } from '~/stores/scanners'
 import { DfScanProgress } from '~/dragonfly/components/Tags/DfScanProgress'
 import { DfBreadcrumbs } from '~/dragonfly/components/Sections/DfBreadcrumbs'
 import type {
+  AgentGroupType,
   Maybe,
   OxoAggregatedKnowledgeBaseVulnerabilityType, OxoAssetType,
   OxoScanType,
@@ -281,7 +325,13 @@ interface Data {
   stopScanDialog: boolean
   breadcrumbs: VulnerabilityDetailBreadcrumbsType
   assets: Array<OxoAssetType>
+  agentGroup: Maybe<AgentGroupType>
   vulenrabilityLoading: boolean
+  show: boolean
+  editorLanguage: string
+  editorOptions: {
+    [key: string]: string | boolean | { [key: string]: boolean }
+  }
 }
 export default defineComponent ({
   name: 'Index',
@@ -320,6 +370,18 @@ export default defineComponent ({
       archiveBtnLoading: false,
       stopScanDialog: false,
       assets: [],
+      agentGroup: null,
+      show: false,
+      editorLanguage: 'yaml',
+      editorOptions: {
+        theme: 'vs',
+        wordWrap: 'on',
+        wordWrapColumn: 'on',
+        fontFamily: 'Fira Code',
+        automaticLayout: true,
+        minimap: { enabled: false },
+        readOnly: true
+      },
       breadcrumbs: [
         {
           text: 'scans',
@@ -345,6 +407,19 @@ export default defineComponent ({
         return 0
       }
       return parseInt(this.$route.params.scan as string)
+    },
+    /**
+     * The YAML representation of the agent group.
+     */
+    AgentGroupYaml(): string {
+      const yamlSource: string | undefined | null = this.agentGroup?.yamlSource
+
+      if (yamlSource === undefined || yamlSource === null) {
+        return 'No agent group found'
+      }
+
+      const yamlContent: string = yaml.dump(yaml.load(yamlSource), { indent: 2 })
+      return `# Agent Group ID: ${this.agentGroup?.id}\n${yamlContent}`
     },
     /**
      * The total number of vulnerabilities.
@@ -386,6 +461,7 @@ export default defineComponent ({
         this.title = kb?.title
         this.assets = kb?.assets
         this.progress = kb?.progress?.toLowerCase()
+        this.agentGroup = kb?.agentGroup
       } catch (e) {
         this.reportError(`An error was encountered while fetching the scan: ${e}`)
       } finally {

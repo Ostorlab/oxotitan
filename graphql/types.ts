@@ -80,6 +80,7 @@ export type AgentGroupType = {
   id: Scalars['ID']['output'];
   key?: Maybe<Scalars['String']['output']>;
   name?: Maybe<Scalars['String']['output']>;
+  yamlSource?: Maybe<Scalars['String']['output']>;
 };
 
 export type AgentGroupsType = {
@@ -352,6 +353,7 @@ export type OxoScanType = {
   title?: Maybe<Scalars['String']['output']>;
   /** List of vulnerabilities. */
   vulnerabilities?: Maybe<OxoVulnerabilitiesType>;
+  agentGroup?: Maybe<AgentGroupType>;
 };
 
 
