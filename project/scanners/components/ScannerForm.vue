@@ -76,7 +76,7 @@ const scannersStore = useScannersStore()
 const notificationsStore = useNotificationsStore()
 const localScanner = ref<Scanner>(DEFAULT_SCANNER_VALUE)
 const rules = {
-  required: (value: string) => value.trim() !== '' || '',
+  required: (value: string) => value?.trim() !== '' || '',
   url: (value: string) => isURL(value) || 'Must be a valid URL'
 }
 
