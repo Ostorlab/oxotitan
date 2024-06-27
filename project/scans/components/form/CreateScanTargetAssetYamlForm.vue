@@ -80,7 +80,7 @@ export default defineComponent({
   data(): Data {
     return {
       loading: false,
-      supportedAssetTypes: ['androidStore', 'iosStore', 'link', 'ip'],
+      supportedAssetTypes: ['androidStore', 'iosStore', 'link', 'domain', 'ip'],
       targetAssets: TARGET_GROUP_EXAMPLE,
       editorLanguage: 'yaml',
       editorOptions: {

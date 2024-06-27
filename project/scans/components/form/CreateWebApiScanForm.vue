@@ -49,6 +49,7 @@
   </v-stepper-vertical-item>
   <AgentGroupSelect
     v-model:model-value="selectedAgentGroup"
+    :agent-group-asset-type="agentGroupAssetType"
     :create-scan-loading="createScanLoading"
     :step="step + 1"
     :selected-scanner="selectedScanner"
@@ -62,12 +63,14 @@ import validator from 'validator'
 import LoadingDialog from '~/project/common/components/LoadingDialog.vue'
 import type { Scanner } from '~/project/types'
 import AgentGroupSelect from '~/project/scans/components/AgentGroupSelect.vue'
+import { AssetTypeEnum } from '~/graphql/types'
 
 interface Data {
   rawUrls: string | null
   loadingDialog: boolean
   isFormValid: boolean
   selectedAgentGroup: unknown
+  agentGroupAssetType: AssetTypeEnum
 }
 
 export default defineComponent({
@@ -93,6 +96,7 @@ export default defineComponent({
   emits: ['reset', 'update:assets', 'update:agent-group-id', 'createScan'],
   data(): Data {
     return {
+      agentGroupAssetType: AssetTypeEnum.Link,
       isFormValid: false,
       rawUrls: null,
       loadingDialog: false,

@@ -69,6 +69,7 @@ import { mapActions } from 'pinia'
 import AgentGroupService from '~/agents/services/agentGroup.service'
 import { useNotificationsStore } from '~/stores/notifications'
 import type { Scanner } from '~/project/types'
+import type { AssetTypeEnum } from '~/graphql/types'
 
 interface Data {
   selectedAgentGroup: unknown | null
@@ -89,6 +90,10 @@ export default defineComponent({
     createScanLoading: {
       type: Boolean,
       default: false
+    },
+    agentGroupAssetType: {
+      type: String as () => AssetTypeEnum,
+      default: undefined
     }
   },
   emits: ['reset', 'createScan', 'update:model-value', 'update:agent-group-id'],
@@ -115,8 +120,8 @@ export default defineComponent({
      */
     async getAgentGroups(scanner: Scanner): Promise<void> {
       try {
-        this.agentGroups = await this.agentGroupService.getAgentGroups(scanner)
-      } catch (e: unknown) {
+        this.agentGroups = await this.agentGroupService.getAgentGroups(scanner, this.agentGroupAssetType)
+      } catch (e: any) {
         this.reportError(e?.message || 'Error fetching agent groups')
       }
     }
