@@ -1,6 +1,6 @@
 <template>
   <v-stepper-vertical-item
-    title="Package Name"
+    :title="stepData.title"
     subtitle="required"
     :error="stepHasErrors"
     :value="step"
@@ -16,8 +16,8 @@
         variant="outlined"
         density="compact"
         clearable
-        label="Package Name"
-        placeholder="Enter the package name"
+        :label="stepData.title"
+        :placeholder="stepData.placeholder"
         prepend-icon="mdi-storefront"
       />
     </v-form>
@@ -109,6 +109,12 @@ export default defineComponent({
     }
   },
   computed: {
+    stepData(): { title: string, placeholder: string } {
+      if (this.assetPlatformType === AssetEnum.ANDROID_PLAYSTORE) {
+        return { title: 'Package Name', placeholder: 'Enter the package name' }
+      }
+      return { title: 'Bundle ID', placeholder: 'Enter the bundle ID' }
+    },
     agentGroupAssetType(): AssetTypeEnum {
       return this.assetPlatformType === AssetEnum.ANDROID_PLAYSTORE ? AssetTypeEnum.AndroidStore : AssetTypeEnum.IosStore
     },
