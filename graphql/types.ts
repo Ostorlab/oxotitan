@@ -1,11 +1,12 @@
 /* eslint-disable */
-export type Maybe<T> = T | null
-export type InputMaybe<T> = Maybe<T>
-export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] }
-export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> }
-export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> }
-export type MakeEmpty<T extends { [key: string]: unknown }, K extends keyof T> = { [_ in K]?: never }
-export type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never }
+
+export type Maybe<T> = T | null;
+export type InputMaybe<T> = Maybe<T>;
+export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
+export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
+export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
+export type MakeEmpty<T extends { [key: string]: unknown }, K extends keyof T> = { [_ in K]?: never };
+export type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: { input: string; output: string; }
@@ -28,80 +29,23 @@ export type Scalars = {
   Upload: { input: any; output: any; }
 };
 
-/** Input object type for an agent argument. */
-export type AgentArgumentInputType = {
-  description?: InputMaybe<Scalars['String']['input']>;
-  name: Scalars['String']['input'];
-  type: Scalars['String']['input'];
-  value?: InputMaybe<Scalars['Bytes']['input']>;
-};
-
-/** Graphene object type for a list of agent arguments. */
-export type AgentArgumentType = {
-  __typename?: 'AgentArgumentType';
-  description?: Maybe<Scalars['String']['output']>;
-  id: Scalars['ID']['output'];
-  name?: Maybe<Scalars['String']['output']>;
-  type?: Maybe<Scalars['String']['output']>;
-  value?: Maybe<Scalars['Bytes']['output']>;
-};
-
-/** Graphene object type for a list of agent arguments. */
-export type AgentArgumentsType = {
-  __typename?: 'AgentArgumentsType';
-  args: Array<Maybe<AgentArgumentType>>;
-};
-
-/** Input object type for creating an agent group agent. */
-export type AgentGroupAgentCreateInputType = {
-  args?: InputMaybe<Array<InputMaybe<AgentArgumentInputType>>>;
-  key: Scalars['String']['input'];
-};
-
-/** Input object type for creating an agent group. */
-export type AgentGroupCreateInputType = {
-  agents: Array<InputMaybe<AgentGroupAgentCreateInputType>>;
-  description: Scalars['String']['input'];
-  name: Scalars['String']['input'];
-};
-
 export enum AgentGroupOrderByEnum {
   AgentGroupId = 'AgentGroupId',
   CreatedTime = 'CreatedTime',
   Name = 'Name'
 }
 
-/** SQLAlchemy object type for an agent group. */
-export type AgentGroupType = {
-  __typename?: 'AgentGroupType';
-  agents: AgentsType;
-  createdTime?: Maybe<Scalars['DateTime']['output']>;
-  description?: Maybe<Scalars['String']['output']>;
-  id: Scalars['ID']['output'];
-  key?: Maybe<Scalars['String']['output']>;
-  name?: Maybe<Scalars['String']['output']>;
-  yamlSource?: Maybe<Scalars['String']['output']>;
-};
-
-export type AgentGroupsType = {
-  __typename?: 'AgentGroupsType';
-  agentGroups: Array<Maybe<AgentGroupType>>;
-  pageInfo?: Maybe<PageInfo>;
-};
-
-/** SQLAlchemy object type for an agent. */
-export type AgentType = {
-  __typename?: 'AgentType';
-  args: AgentArgumentsType;
-  id: Scalars['ID']['output'];
-  key?: Maybe<Scalars['String']['output']>;
-};
-
-/** Graphene object type for a list of agents. */
-export type AgentsType = {
-  __typename?: 'AgentsType';
-  agents: Array<Maybe<AgentType>>;
-};
+/** Enum for the asset types. */
+export enum AssetTypeEnum {
+  AndroidFile = 'ANDROID_FILE',
+  AndroidStore = 'ANDROID_STORE',
+  Domain = 'DOMAIN',
+  File = 'FILE',
+  IosFile = 'IOS_FILE',
+  IosStore = 'IOS_STORE',
+  Ip = 'IP',
+  Link = 'LINK'
+}
 
 /** Create asset mutation. */
 export type CreateAssetsMutation = {
@@ -168,7 +112,7 @@ export type MutationsImportScanArgs = {
 
 
 export type MutationsPublishAgentGroupArgs = {
-  agentGroup: AgentGroupCreateInputType;
+  agentGroup: OxoAgentGroupCreateInputType;
 };
 
 
@@ -181,10 +125,88 @@ export type MutationsStopScanArgs = {
   scanId: Scalars['Int']['input'];
 };
 
+/** Input object type for an agent argument. */
+export type OxoAgentArgumentInputType = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  name: Scalars['String']['input'];
+  type: Scalars['String']['input'];
+  value?: InputMaybe<Scalars['Bytes']['input']>;
+};
+
+/** Graphene object type for a list of agent arguments. */
+export type OxoAgentArgumentType = {
+  __typename?: 'OxoAgentArgumentType';
+  description?: Maybe<Scalars['String']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
+  type?: Maybe<Scalars['String']['output']>;
+  value?: Maybe<Scalars['Bytes']['output']>;
+};
+
+/** Graphene object type for a list of agent arguments. */
+export type OxoAgentArgumentsType = {
+  __typename?: 'OxoAgentArgumentsType';
+  args: Array<Maybe<OxoAgentArgumentType>>;
+};
+
+/** Input object type for creating an agent group agent. */
+export type OxoAgentGroupAgentCreateInputType = {
+  args?: InputMaybe<Array<InputMaybe<OxoAgentArgumentInputType>>>;
+  key: Scalars['String']['input'];
+};
+
+/** Input object type for creating an agent group. */
+export type OxoAgentGroupCreateInputType = {
+  agents: Array<InputMaybe<OxoAgentGroupAgentCreateInputType>>;
+  assetTypes?: InputMaybe<Array<InputMaybe<AssetTypeEnum>>>;
+  description: Scalars['String']['input'];
+  name?: InputMaybe<Scalars['String']['input']>;
+};
+
+/** SQLAlchemy object type for an agent group. */
+export type OxoAgentGroupType = {
+  __typename?: 'OxoAgentGroupType';
+  agents: OxoAgentsType;
+  assetTypes?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
+  createdTime?: Maybe<Scalars['DateTime']['output']>;
+  description?: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  key?: Maybe<Scalars['String']['output']>;
+  name?: Maybe<Scalars['String']['output']>;
+  yamlSource?: Maybe<Scalars['String']['output']>;
+};
+
+
+/** SQLAlchemy object type for an agent group. */
+export type OxoAgentGroupTypeAgentsArgs = {
+  numberElements?: InputMaybe<Scalars['Int']['input']>;
+  page?: InputMaybe<Scalars['Int']['input']>;
+};
+
+export type OxoAgentGroupsType = {
+  __typename?: 'OxoAgentGroupsType';
+  agentGroups: Array<Maybe<OxoAgentGroupType>>;
+  pageInfo?: Maybe<PageInfo>;
+};
+
+/** Input object type for scan */
 export type OxoAgentScanInputType = {
   agentGroupId: Scalars['Int']['input'];
   assetIds: Array<InputMaybe<Scalars['Int']['input']>>;
   title?: InputMaybe<Scalars['String']['input']>;
+};
+
+/** SQLAlchemy object type for an agent. */
+export type OxoAgentType = {
+  __typename?: 'OxoAgentType';
+  args: OxoAgentArgumentsType;
+  key?: Maybe<Scalars['String']['output']>;
+};
+
+/** Graphene object type for a list of agents. */
+export type OxoAgentsType = {
+  __typename?: 'OxoAgentsType';
+  agents: Array<Maybe<OxoAgentType>>;
+  pageInfo?: Maybe<PageInfo>;
 };
 
 /** Graphene object type for an aggregated knowledge base vulnerability. */
@@ -192,7 +214,7 @@ export type OxoAggregatedKnowledgeBaseVulnerabilityType = {
   __typename?: 'OxoAggregatedKnowledgeBaseVulnerabilityType';
   highestCvssV3BaseScore?: Maybe<Scalars['Float']['output']>;
   highestCvssV3Vector?: Maybe<Scalars['String']['output']>;
-  highestRiskRating?: Maybe<RiskRatingEnum>;
+  highestRiskRating?: Maybe<OxoRiskRating>;
   kb?: Maybe<OxoKnowledgeBaseVulnerabilityType>;
   /** List of vulnerabilities. */
   vulnerabilities?: Maybe<OxoVulnerabilitiesType>;
@@ -216,14 +238,6 @@ export type OxoAndroidFileAssetType = {
   id: Scalars['ID']['output'];
   packageName?: Maybe<Scalars['String']['output']>;
   path?: Maybe<Scalars['String']['output']>;
-  scanId?: Maybe<Scalars['Int']['output']>;
-  scans?: Maybe<Array<Maybe<OxoScanType>>>;
-  type?: Maybe<Scalars['String']['output']>;
-};
-
-
-export type OxoAndroidFileAssetTypeScansArgs = {
-  lastOnly?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 export type OxoAndroidStoreAssetInputType = {
@@ -236,26 +250,35 @@ export type OxoAndroidStoreAssetType = {
   applicationName?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   packageName?: Maybe<Scalars['String']['output']>;
-  scanId?: Maybe<Scalars['Int']['output']>;
-  scans?: Maybe<Array<Maybe<OxoScanType>>>;
-  type?: Maybe<Scalars['String']['output']>;
-};
-
-
-export type OxoAndroidStoreAssetTypeScansArgs = {
-  lastOnly?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 export type OxoAssetInputType = {
-  androidFile?: InputMaybe<OxoAndroidFileAssetInputType>;
-  androidStore?: InputMaybe<OxoAndroidStoreAssetInputType>;
-  iosFile?: InputMaybe<OxoIosFileAssetInputType>;
-  iosStore?: InputMaybe<OxoIosStoreAssetInputType>;
-  network?: InputMaybe<OxoNetworkAssetInputType>;
-  url?: InputMaybe<OxoUrlAssetInputType>;
+  androidAabFile?: InputMaybe<Array<InputMaybe<OxoAndroidFileAssetInputType>>>;
+  androidApkFile?: InputMaybe<Array<InputMaybe<OxoAndroidFileAssetInputType>>>;
+  androidStore?: InputMaybe<Array<InputMaybe<OxoAndroidStoreAssetInputType>>>;
+  domain?: InputMaybe<Array<InputMaybe<OxoDomainNameInputType>>>;
+  iosFile?: InputMaybe<Array<InputMaybe<OxoIosFileAssetInputType>>>;
+  iosStore?: InputMaybe<Array<InputMaybe<OxoIosStoreAssetInputType>>>;
+  ip?: InputMaybe<Array<InputMaybe<OxoIpRangeInputType>>>;
+  link?: InputMaybe<Array<InputMaybe<OxoLinkInputType>>>;
 };
 
-export type OxoAssetType = OxoAndroidFileAssetType | OxoAndroidStoreAssetType | OxoIosFileAssetType | OxoIosStoreAssetType | OxoNetworkAssetType | OxoUrlAssetType;
+export type OxoAssetType = OxoAndroidFileAssetType | OxoAndroidStoreAssetType | OxoDomainNameAssetsType | OxoIosFileAssetType | OxoIosStoreAssetType | OxoNetworkAssetType | OxoUrlsAssetType;
+
+export type OxoDomainNameAssetType = {
+  __typename?: 'OxoDomainNameAssetType';
+  name?: Maybe<Scalars['String']['output']>;
+};
+
+export type OxoDomainNameAssetsType = {
+  __typename?: 'OxoDomainNameAssetsType';
+  domainNames?: Maybe<Array<Maybe<OxoDomainNameAssetType>>>;
+  id: Scalars['ID']['output'];
+};
+
+export type OxoDomainNameInputType = {
+  name: Scalars['String']['input'];
+};
 
 export type OxoIosFileAssetInputType = {
   bundleId?: InputMaybe<Scalars['String']['input']>;
@@ -267,14 +290,6 @@ export type OxoIosFileAssetType = {
   bundleId?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   path?: Maybe<Scalars['String']['output']>;
-  scanId?: Maybe<Scalars['Int']['output']>;
-  scans?: Maybe<Array<Maybe<OxoScanType>>>;
-  type?: Maybe<Scalars['String']['output']>;
-};
-
-
-export type OxoIosFileAssetTypeScansArgs = {
-  lastOnly?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 export type OxoIosStoreAssetInputType = {
@@ -287,14 +302,17 @@ export type OxoIosStoreAssetType = {
   applicationName?: Maybe<Scalars['String']['output']>;
   bundleId?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
-  scanId?: Maybe<Scalars['Int']['output']>;
-  scans?: Maybe<Array<Maybe<OxoScanType>>>;
-  type?: Maybe<Scalars['String']['output']>;
 };
 
+export type OxoIpRangeAssetType = {
+  __typename?: 'OxoIPRangeAssetType';
+  host?: Maybe<Scalars['String']['output']>;
+  mask?: Maybe<Scalars['String']['output']>;
+};
 
-export type OxoIosStoreAssetTypeScansArgs = {
-  lastOnly?: InputMaybe<Scalars['Boolean']['input']>;
+export type OxoIpRangeInputType = {
+  host: Scalars['String']['input'];
+  mask?: InputMaybe<Scalars['String']['input']>;
 };
 
 /** SQLAlchemy object type for a knowledge base vulnerability. */
@@ -307,22 +325,21 @@ export type OxoKnowledgeBaseVulnerabilityType = {
   title?: Maybe<Scalars['String']['output']>;
 };
 
-export type OxoNetworkAssetInputType = {
-  networks?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+export type OxoLinkAssetType = {
+  __typename?: 'OxoLinkAssetType';
+  method?: Maybe<Scalars['String']['output']>;
+  url?: Maybe<Scalars['String']['output']>;
+};
+
+export type OxoLinkInputType = {
+  method?: InputMaybe<Scalars['String']['input']>;
+  url: Scalars['String']['input'];
 };
 
 export type OxoNetworkAssetType = {
   __typename?: 'OxoNetworkAssetType';
   id: Scalars['ID']['output'];
-  networks?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
-  scanId?: Maybe<Scalars['Int']['output']>;
-  scans?: Maybe<Array<Maybe<OxoScanType>>>;
-  type?: Maybe<Scalars['String']['output']>;
-};
-
-
-export type OxoNetworkAssetTypeScansArgs = {
-  lastOnly?: InputMaybe<Scalars['Boolean']['input']>;
+  networks?: Maybe<Array<Maybe<OxoIpRangeAssetType>>>;
 };
 
 /** Graphene object type for a reference. */
@@ -331,6 +348,18 @@ export type OxoReferenceType = {
   title?: Maybe<Scalars['String']['output']>;
   url?: Maybe<Scalars['String']['output']>;
 };
+
+export enum OxoRiskRating {
+  Critical = 'CRITICAL',
+  Hardening = 'HARDENING',
+  High = 'HIGH',
+  Important = 'IMPORTANT',
+  Info = 'INFO',
+  Low = 'LOW',
+  Medium = 'MEDIUM',
+  Potentially = 'POTENTIALLY',
+  Secure = 'SECURE'
+}
 
 /** Enum for the elements to order a scan by. */
 export enum OxoScanOrderByEnum {
@@ -343,6 +372,7 @@ export enum OxoScanOrderByEnum {
 /** Scan object. */
 export type OxoScanType = {
   __typename?: 'OxoScanType';
+  agentGroup?: Maybe<OxoAgentGroupType>;
   assets?: Maybe<Array<Maybe<OxoAssetType>>>;
   createdTime?: Maybe<Scalars['DateTime']['output']>;
   id: Scalars['ID']['output'];
@@ -353,7 +383,6 @@ export type OxoScanType = {
   title?: Maybe<Scalars['String']['output']>;
   /** List of vulnerabilities. */
   vulnerabilities?: Maybe<OxoVulnerabilitiesType>;
-  agentGroup?: Maybe<AgentGroupType>;
 };
 
 
@@ -378,22 +407,10 @@ export type OxoScansType = {
   scans: Array<Maybe<OxoScanType>>;
 };
 
-export type OxoUrlAssetInputType = {
-  links?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
-};
-
-export type OxoUrlAssetType = {
-  __typename?: 'OxoUrlAssetType';
+export type OxoUrlsAssetType = {
+  __typename?: 'OxoUrlsAssetType';
   id: Scalars['ID']['output'];
-  links?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
-  scanId?: Maybe<Scalars['Int']['output']>;
-  scans?: Maybe<Array<Maybe<OxoScanType>>>;
-  type?: Maybe<Scalars['String']['output']>;
-};
-
-
-export type OxoUrlAssetTypeScansArgs = {
-  lastOnly?: InputMaybe<Scalars['Boolean']['input']>;
+  links?: Maybe<Array<Maybe<OxoLinkAssetType>>>;
 };
 
 /** Graphene object type for a list of vulnerabilities. */
@@ -411,7 +428,7 @@ export type OxoVulnerabilityType = {
   detail?: Maybe<OxoKnowledgeBaseVulnerabilityType>;
   dna?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
-  riskRating?: Maybe<RiskRating>;
+  riskRating?: Maybe<OxoRiskRating>;
   technicalDetail?: Maybe<Scalars['String']['output']>;
 };
 
@@ -427,12 +444,12 @@ export type PageInfo = {
 /** Create agent group. */
 export type PublishAgentGroupMutation = {
   __typename?: 'PublishAgentGroupMutation';
-  agentGroup?: Maybe<AgentGroupType>;
+  agentGroup?: Maybe<OxoAgentGroupType>;
 };
 
 export type Query = {
   __typename?: 'Query';
-  agentGroups?: Maybe<AgentGroupsType>;
+  agentGroups?: Maybe<OxoAgentGroupsType>;
   /** Retrieve scan by id. */
   scan?: Maybe<OxoScanType>;
   /** List of scans. */
@@ -442,6 +459,7 @@ export type Query = {
 
 export type QueryAgentGroupsArgs = {
   agentGroupIds?: InputMaybe<Array<InputMaybe<Scalars['Int']['input']>>>;
+  assetType?: InputMaybe<AssetTypeEnum>;
   numberElements?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<AgentGroupOrderByEnum>;
   page?: InputMaybe<Scalars['Int']['input']>;
@@ -462,32 +480,6 @@ export type QueryScansArgs = {
   scanIds?: InputMaybe<Array<InputMaybe<Scalars['Int']['input']>>>;
   sort?: InputMaybe<SortEnum>;
 };
-
-/** Enumeration of the risk rating of a scan. */
-export enum RiskRating {
-  Critical = 'CRITICAL',
-  Hardening = 'HARDENING',
-  High = 'HIGH',
-  Important = 'IMPORTANT',
-  Info = 'INFO',
-  Low = 'LOW',
-  Medium = 'MEDIUM',
-  Potentially = 'POTENTIALLY',
-  Secure = 'SECURE'
-}
-
-/** Enum for the risk rating of a scan. */
-export enum RiskRatingEnum {
-  Critical = 'CRITICAL',
-  Hardening = 'HARDENING',
-  High = 'HIGH',
-  Important = 'IMPORTANT',
-  Info = 'INFO',
-  Low = 'LOW',
-  Medium = 'MEDIUM',
-  Potentially = 'POTENTIALLY',
-  Secure = 'SECURE'
-}
 
 export type RunScanMutation = {
   __typename?: 'RunScanMutation';
