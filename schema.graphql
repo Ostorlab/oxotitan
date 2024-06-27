@@ -5,48 +5,7 @@ schema {
     mutation: Mutations
 }
 
-union OxoAssetType = OxoAndroidFileAssetType | OxoAndroidStoreAssetType | OxoIOSFileAssetType | OxoIOSStoreAssetType | OxoNetworkAssetType | OxoUrlAssetType
-
-"Graphene object type for a list of agent arguments."
-type AgentArgumentType {
-    description: String
-    id: ID!
-    name: String
-    type: String
-    value: Bytes
-}
-
-"Graphene object type for a list of agent arguments."
-type AgentArgumentsType {
-    args: [AgentArgumentType]!
-}
-
-"SQLAlchemy object type for an agent group."
-type AgentGroupType {
-    agents: AgentsType!
-    createdTime: DateTime
-    description: String
-    id: ID!
-    key: String
-    name: String
-}
-
-type AgentGroupsType {
-    agentGroups: [AgentGroupType]!
-    pageInfo: PageInfo
-}
-
-"SQLAlchemy object type for an agent."
-type AgentType {
-    args: AgentArgumentsType!
-    id: ID!
-    key: String
-}
-
-"Graphene object type for a list of agents."
-type AgentsType {
-    agents: [AgentType]!
-}
+union OxoAssetType = OxoAndroidFileAssetType | OxoAndroidStoreAssetType | OxoDomainNameAssetsType | OxoIOSFileAssetType | OxoIOSStoreAssetType | OxoNetworkAssetType | OxoUrlsAssetType
 
 "Create asset mutation."
 type CreateAssetsMutation {
@@ -78,18 +37,60 @@ type Mutations {
     "Import scan from file."
     importScan(file: Upload!, scanId: Int): ImportScanMutation
     "Create agent group"
-    publishAgentGroup(agentGroup: AgentGroupCreateInputType!): PublishAgentGroupMutation
+    publishAgentGroup(agentGroup: OxoAgentGroupCreateInputType!): PublishAgentGroupMutation
     "Run scan"
     runScan(scan: OxoAgentScanInputType!): RunScanMutation
     "Stops running scan, scan is marked as stopped once the engine has completed cancellation."
     stopScan(scanId: Int!): StopScanMutation
 }
 
+"Graphene object type for a list of agent arguments."
+type OxoAgentArgumentType {
+    description: String
+    name: String
+    type: String
+    value: Bytes
+}
+
+"Graphene object type for a list of agent arguments."
+type OxoAgentArgumentsType {
+    args: [OxoAgentArgumentType]!
+}
+
+"SQLAlchemy object type for an agent group."
+type OxoAgentGroupType {
+    agents(numberElements: Int, page: Int): OxoAgentsType!
+    assetTypes: [String]
+    createdTime: DateTime
+    description: String
+    id: ID!
+    key: String
+    name: String
+    yamlSource: String
+}
+
+type OxoAgentGroupsType {
+    agentGroups: [OxoAgentGroupType]!
+    pageInfo: PageInfo
+}
+
+"SQLAlchemy object type for an agent."
+type OxoAgentType {
+    args: OxoAgentArgumentsType!
+    key: String
+}
+
+"Graphene object type for a list of agents."
+type OxoAgentsType {
+    agents: [OxoAgentType]!
+    pageInfo: PageInfo
+}
+
 "Graphene object type for an aggregated knowledge base vulnerability."
 type OxoAggregatedKnowledgeBaseVulnerabilityType {
     highestCvssV3BaseScore: Float
     highestCvssV3Vector: String
-    highestRiskRating: RiskRatingEnum
+    highestRiskRating: OxoRiskRating
     kb: OxoKnowledgeBaseVulnerabilityType
     "List of vulnerabilities."
     vulnerabilities(detailTitles: [String], numberElements: Int, page: Int): OxoVulnerabilitiesType
@@ -99,36 +100,38 @@ type OxoAndroidFileAssetType {
     id: ID!
     packageName: String
     path: String
-    scanId: Int
-    scans(lastOnly: Boolean): [OxoScanType]
-    type: String
 }
 
 type OxoAndroidStoreAssetType {
     applicationName: String
     id: ID!
     packageName: String
-    scanId: Int
-    scans(lastOnly: Boolean): [OxoScanType]
-    type: String
+}
+
+type OxoDomainNameAssetType {
+    name: String
+}
+
+type OxoDomainNameAssetsType {
+    domainNames: [OxoDomainNameAssetType]
+    id: ID!
 }
 
 type OxoIOSFileAssetType {
     bundleId: String
     id: ID!
     path: String
-    scanId: Int
-    scans(lastOnly: Boolean): [OxoScanType]
-    type: String
 }
 
 type OxoIOSStoreAssetType {
     applicationName: String
     bundleId: String
     id: ID!
-    scanId: Int
-    scans(lastOnly: Boolean): [OxoScanType]
-    type: String
+}
+
+type OxoIPRangeAssetType {
+    host: String
+    mask: String
 }
 
 "SQLAlchemy object type for a knowledge base vulnerability."
@@ -140,12 +143,14 @@ type OxoKnowledgeBaseVulnerabilityType {
     title: String
 }
 
+type OxoLinkAssetType {
+    method: String
+    url: String
+}
+
 type OxoNetworkAssetType {
     id: ID!
-    networks: [String]
-    scanId: Int
-    scans(lastOnly: Boolean): [OxoScanType]
-    type: String
+    networks: [OxoIPRangeAssetType]
 }
 
 "Graphene object type for a reference."
@@ -156,6 +161,7 @@ type OxoReferenceType {
 
 "Scan object."
 type OxoScanType {
+    agentGroup: OxoAgentGroupType
     assets: [OxoAssetType]
     createdTime: DateTime
     id: ID!
@@ -174,12 +180,9 @@ type OxoScansType {
     scans: [OxoScanType]!
 }
 
-type OxoUrlAssetType {
+type OxoUrlsAssetType {
     id: ID!
-    links: [String]
-    scanId: Int
-    scans(lastOnly: Boolean): [OxoScanType]
-    type: String
+    links: [OxoLinkAssetType]
 }
 
 "Graphene object type for a list of vulnerabilities."
@@ -195,7 +198,7 @@ type OxoVulnerabilityType {
     detail: OxoKnowledgeBaseVulnerabilityType
     dna: String
     id: ID!
-    riskRating: RiskRating
+    riskRating: OxoRiskRating
     technicalDetail: String
 }
 
@@ -209,11 +212,11 @@ type PageInfo {
 
 "Create agent group."
 type PublishAgentGroupMutation {
-    agentGroup: AgentGroupType
+    agentGroup: OxoAgentGroupType
 }
 
 type Query {
-    agentGroups(agentGroupIds: [Int], numberElements: Int, orderBy: AgentGroupOrderByEnum, page: Int, search: String, sort: SortEnum): AgentGroupsType
+    agentGroups(agentGroupIds: [Int], assetType: AssetTypeEnum, numberElements: Int, orderBy: AgentGroupOrderByEnum, page: Int, search: String, sort: SortEnum): OxoAgentGroupsType
     "Retrieve scan by id."
     scan(scanId: Int): OxoScanType
     "List of scans."
@@ -235,38 +238,36 @@ enum AgentGroupOrderByEnum {
     Name
 }
 
+"Enum for the asset types."
+enum AssetTypeEnum {
+    ANDROID_FILE
+    ANDROID_STORE
+    DOMAIN
+    FILE
+    IOS_FILE
+    IOS_STORE
+    IP
+    LINK
+}
+
+enum OxoRiskRating {
+    CRITICAL
+    HARDENING
+    HIGH
+    IMPORTANT
+    INFO
+    LOW
+    MEDIUM
+    POTENTIALLY
+    SECURE
+}
+
 "Enum for the elements to order a scan by."
 enum OxoScanOrderByEnum {
     CreatedTime
     Progress
     ScanId
     Title
-}
-
-"Enumeration of the risk rating of a scan."
-enum RiskRating {
-    CRITICAL
-    HARDENING
-    HIGH
-    IMPORTANT
-    INFO
-    LOW
-    MEDIUM
-    POTENTIALLY
-    SECURE
-}
-
-"Enum for the risk rating of a scan."
-enum RiskRatingEnum {
-    CRITICAL
-    HARDENING
-    HIGH
-    IMPORTANT
-    INFO
-    LOW
-    MEDIUM
-    POTENTIALLY
-    SECURE
 }
 
 "Sort enum, for the sorting order of the results."
@@ -294,7 +295,7 @@ that will be handled by the multipart request spec
 scalar Upload
 
 "Input object type for an agent argument."
-input AgentArgumentInputType {
+input OxoAgentArgumentInputType {
     description: String
     name: String!
     type: String!
@@ -302,18 +303,20 @@ input AgentArgumentInputType {
 }
 
 "Input object type for creating an agent group agent."
-input AgentGroupAgentCreateInputType {
-    args: [AgentArgumentInputType]
+input OxoAgentGroupAgentCreateInputType {
+    args: [OxoAgentArgumentInputType] = []
     key: String!
 }
 
 "Input object type for creating an agent group."
-input AgentGroupCreateInputType {
-    agents: [AgentGroupAgentCreateInputType]!
+input OxoAgentGroupCreateInputType {
+    agents: [OxoAgentGroupAgentCreateInputType]!
+    assetTypes: [AssetTypeEnum] = []
     description: String!
-    name: String!
+    name: String
 }
 
+"Input object type for scan"
 input OxoAgentScanInputType {
     agentGroupId: Int!
     assetIds: [Int]!
@@ -331,12 +334,18 @@ input OxoAndroidStoreAssetInputType {
 }
 
 input OxoAssetInputType {
-    androidFile: OxoAndroidFileAssetInputType
-    androidStore: OxoAndroidStoreAssetInputType
-    iosFile: OxoIOSFileAssetInputType
-    iosStore: OxoIOSStoreAssetInputType
-    network: OxoNetworkAssetInputType
-    url: OxoUrlAssetInputType
+    androidAabFile: [OxoAndroidFileAssetInputType]
+    androidApkFile: [OxoAndroidFileAssetInputType]
+    androidStore: [OxoAndroidStoreAssetInputType]
+    domain: [OxoDomainNameInputType]
+    iosFile: [OxoIOSFileAssetInputType]
+    iosStore: [OxoIOSStoreAssetInputType]
+    ip: [OxoIPRangeInputType]
+    link: [OxoLinkInputType]
+}
+
+input OxoDomainNameInputType {
+    name: String!
 }
 
 input OxoIOSFileAssetInputType {
@@ -349,10 +358,12 @@ input OxoIOSStoreAssetInputType {
     bundleId: String
 }
 
-input OxoNetworkAssetInputType {
-    networks: [String]
+input OxoIPRangeInputType {
+    host: String!
+    mask: String
 }
 
-input OxoUrlAssetInputType {
-    links: [String]
+input OxoLinkInputType {
+    method: String = "GET"
+    url: String!
 }
