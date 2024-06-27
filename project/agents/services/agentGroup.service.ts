@@ -17,7 +17,7 @@ query AgentGroups ($assetType: AssetTypeEnum) {
 `
 
 const CREATE_AGENT_GROUP_MUTATION = gql`
-mutation PublishAgentGroup ($agentGroup: AgentGroupCreateInputType!) {
+mutation PublishAgentGroup ($agentGroup: OxoAgentGroupCreateInputType!) {
     publishAgentGroup (agentGroup: $agentGroup) {
       agentGroup {
         id

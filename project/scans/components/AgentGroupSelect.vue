@@ -66,7 +66,7 @@
 
 <script lang="ts">
 import { mapActions } from 'pinia'
-import AgentGroupService from '~/agents/services/agentGroup.service'
+import AgentGroupService from '~/project/agents/services/agentGroup.service'
 import { useNotificationsStore } from '~/stores/notifications'
 import type { Scanner } from '~/project/types'
 import type { AssetTypeEnum } from '~/graphql/types'

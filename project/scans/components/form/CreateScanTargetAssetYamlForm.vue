@@ -60,6 +60,7 @@ interface Data {
 }
 
 const TARGET_GROUP_EXAMPLE = `
+# Target Group example
 description: Target group definition
 kind: targetGroup
 name: master_scan
