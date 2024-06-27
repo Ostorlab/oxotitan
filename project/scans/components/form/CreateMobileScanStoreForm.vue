@@ -46,6 +46,7 @@
   </v-stepper-vertical-item>
   <AgentGroupSelect
     v-model:model-value="selectedAgentGroup"
+    :agent-group-asset-type="agentGroupAssetType"
     :create-scan-loading="createScanLoading"
     :step="step + 1"
     :selected-scanner="selectedScanner"
@@ -59,6 +60,7 @@ import LoadingDialog from '~/project/common/components/LoadingDialog.vue'
 import type { Scanner } from '~/project/types'
 import AgentGroupSelect from '~/project/scans/components/AgentGroupSelect.vue'
 import { AssetEnum } from '~/project/types'
+import { AssetTypeEnum } from '~/graphql/types'
 
 interface Data {
   packageName: string | null
@@ -107,6 +109,9 @@ export default defineComponent({
     }
   },
   computed: {
+    agentGroupAssetType(): AssetTypeEnum {
+      return this.assetPlatformType === AssetEnum.ANDROID_PLAYSTORE ? AssetTypeEnum.AndroidStore : AssetTypeEnum.IosStore
+    },
     /**
      * The selected asset type.
      */

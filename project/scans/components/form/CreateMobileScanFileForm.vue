@@ -53,6 +53,7 @@
   </v-stepper-vertical-item>
   <AgentGroupSelect
     v-model:model-value="selectedAgentGroup"
+    :agent-group-asset-type="agentGroupAssetType"
     :create-scan-loading="createScanLoading"
     :step="step + 1"
     :selected-scanner="selectedScanner"
@@ -69,6 +70,7 @@ import UploadFile from '~/project/scans/components/UploadFile.vue'
 import AgentGroupSelect from '~/project/scans/components/AgentGroupSelect.vue'
 import type { Scanner } from '~/project/types'
 import { AssetEnum, AssetFileTypesEnum } from '~/project/types'
+import { AssetTypeEnum } from '~/graphql/types'
 
 const MAX_FILE_SIZE = 600000000 // 600 MB
 
@@ -139,6 +141,9 @@ export default defineComponent({
     }
   },
   computed: {
+    agentGroupAssetType(): AssetTypeEnum {
+      return this.assetPlatformType === AssetEnum.ANDROID_APK ? AssetTypeEnum.AndroidFile : AssetTypeEnum.IosFile
+    },
     isStepValid() {
       return this.application !== null && this.application !== undefined && this.v$.application?.$invalid === false
     },
