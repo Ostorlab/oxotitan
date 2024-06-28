@@ -129,6 +129,7 @@
 
 <script lang="ts">
 import { mapActions } from 'pinia'
+import { push } from 'notivue'
 import { AssetEnum, type Group, type Scanner } from '~/project/types'
 import AssetTypeSelector from '~/project/scans/components/AssetTypeSelector.vue'
 import CreateMobileScanStoreForm from '~/project/scans/components/form/CreateMobileScanStoreForm.vue'
@@ -316,7 +317,7 @@ export default defineComponent({
     }
   },
   methods: {
-    ...mapActions(useNotificationsStore, ['reportError', 'reportSuccess']),
+    ...mapActions(useNotificationsStore, ['reportError', 'reportSuccess', 'reportInfo']),
     /**
      * Create scan.
      */
@@ -326,7 +327,7 @@ export default defineComponent({
         return
       }
       try {
-        this.createScanLoading = true
+        this.reportInfo('You scan will be created in the background.')
         const assets = await this.createAssets() || []
 
         if (assets.length === 0) {
@@ -341,12 +342,12 @@ export default defineComponent({
             assetIds: assets.map((asset) => parseInt(asset.id))
           }
         )
+        push.clearAll()
         this.reportSuccess('Scan created successfully')
         this.resetForm()
       } catch (e: any) {
+        push.clearAll()
         this.reportError(e?.message || 'An error occured while creating the scan')
-      } finally {
-        this.createScanLoading = false
       }
     },
     /**
