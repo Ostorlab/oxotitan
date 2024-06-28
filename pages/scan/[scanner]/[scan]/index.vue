@@ -194,6 +194,19 @@
                 </div>
               </v-list-item-title>
             </v-list-item>
+            <v-list-item>
+              <v-list-item-title class="d-flex align-center">
+                <p class="mb-0 mr-2">
+                  Scanner:
+                </p>
+                <div>
+                  <p v-if="(scanner.name || '').trim() !== ''">
+                    {{ scanner.name }} (<code>{{ scanner.endpoint }}</code>)
+                  </p>
+                  <code v-else>{{ scanner.endpoint }}</code>
+                </div>
+              </v-list-item-title>
+            </v-list-item>
           </v-list>
         </v-card>
       </v-col>
