@@ -275,7 +275,7 @@
 <script lang="ts">
 import { mapActions, mapState } from 'pinia'
 import crc32 from 'crc32/lib/crc32'
-import yaml from 'js-yaml'
+import Yaml from 'yaml'
 import VulnerabilityService from '~/project/scans/services/vulnerability.service'
 import ScansService from '~/project/scans/services/ScanService'
 
@@ -418,8 +418,7 @@ export default defineComponent ({
         return 'No agent group found'
       }
 
-      const yamlContent: string = yaml.dump(yaml.load(yamlSource), { indent: 2 })
-      return `# Agent Group ID: ${this.agentGroup?.id}\n${yamlContent}`
+      return `# Agent Group ID: ${this.agentGroup?.id}\n${Yaml.stringify(Yaml.parse(yamlSource))}`
     },
     /**
      * The total number of vulnerabilities.
