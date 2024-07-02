@@ -1,4 +1,4 @@
-import type { Maybe, RiskRating } from '~/graphql/types'
+import type { Maybe, OxoRiskRating } from '~/graphql/types'
 
 /**
  * Represents a Scanner object.
@@ -9,6 +9,27 @@ export interface Scanner {
   name: string
 }
 
+export enum Platform {
+  Android = 'android',
+  Ios = 'ios',
+  IosIpad = 'ios_ipad'
+}
+/**
+ * Represents a Device object.
+ */
+export interface Device {
+  name: string
+  deviceId: string
+  platform: Platform
+  version: string
+  available: boolean
+  rooted: boolean
+  xcodeOrgId: string
+  xcodeSigningId: string
+  // provision_profile: string
+  location: string
+}
+
 export enum TextFormats {
   Html = 'HTML',
   Markdown = 'MARKDOWN'
@@ -17,7 +38,7 @@ export enum TextFormats {
 export type FormattedVulnz = {
   key: string
   goToVulnId: boolean
-  risk: Maybe<any | RiskRating> | undefined
+  risk: Maybe<any | OxoRiskRating> | undefined
   title: string
   securityIssue: boolean
   privacyIssue: boolean
