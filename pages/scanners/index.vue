@@ -15,7 +15,7 @@
           prepend-icon="mdi-plus"
           @click="showForm = !showForm"
         >
-          New
+          New Scanner
         </v-btn>
         <ScannerForm
           v-else
