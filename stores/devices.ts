@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import type { Device } from '~/project/types'
+import type { Device, DeviceInput } from '~/project/types'
 
 interface DevicesState {
   devices: Device[]
@@ -13,7 +13,7 @@ interface DevicesActions {
    * Adds a new device or updates an existing device.
    * @param device - The device to be added or updated.
    */
-  addOrUpdateDevice(device: Device): void
+  addOrUpdateDevice(device: Device | DeviceInput): void
 
   /**
    * Deletes a device by its endpoint.

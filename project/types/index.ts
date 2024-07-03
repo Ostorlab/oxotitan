@@ -26,8 +26,33 @@ export interface Device {
   rooted: boolean
   xcodeOrgId: string
   xcodeSigningId: string
-  // provision_profile: string
+  provisionProfile: File
   location: string
+  relay: {
+    ip: string
+    username: string
+    password: string
+    port: number
+  }
+}
+
+export type DeviceInput = {
+  name: string | null
+  deviceId: string | null
+  platform: Platform
+  version: string | null
+  available: boolean
+  rooted: boolean
+  xcodeOrgId: string | null
+  xcodeSigningId: string | null
+  provisionProfile: string | null
+  location: string | null
+  relay: {
+    ip: string | null
+    username: string | null
+    password: string | null
+    port: number | null
+  }
 }
 
 export enum TextFormats {

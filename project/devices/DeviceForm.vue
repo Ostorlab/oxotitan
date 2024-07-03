@@ -4,10 +4,11 @@
     v-model="isValid"
     @submit.prevent="onSubmit"
   >
-    <v-row>
+    <v-row no-gutters>
       <v-col
+        class="pa-2"
         cols="12"
-        md="12"
+        md="6"
       >
         <v-select
           v-model="localDevice.platform"
@@ -34,7 +35,8 @@
       </v-col>
       <v-col
         cols="12"
-        md="12"
+        md="6"
+        class="pa-2"
       >
         <v-text-field
           v-model="localDevice.name"
@@ -42,19 +44,20 @@
           density="compact"
           label="Device name"
           placeholder="Android A3"
-          :disabled="isEditMode === true"
           :rules="[rules.required]"
           hide-details
         />
       </v-col>
     </v-row>
-    <v-row>
+    <v-row no-gutters>
       <v-col
         cols="12"
-        md="12"
+        md="6"
+        class="pa-2"
       >
         <v-text-field
           v-model="localDevice.deviceId"
+          :disabled="isEditMode === true"
           variant="outlined"
           density="compact"
           label="Device ID"
@@ -64,8 +67,9 @@
         />
       </v-col>
       <v-col
+        class="pa-2"
         cols="12"
-        md="12"
+        md="6"
       >
         <v-text-field
           v-model="localDevice.version"
@@ -78,10 +82,14 @@
         />
       </v-col>
     </v-row>
-    <v-row v-if="isIos === true">
+    <v-row
+      v-if="isIos === true"
+      no-gutters
+    >
       <v-col
+        class="pa-2"
         cols="12"
-        md="12"
+        md="4"
       >
         <v-text-field
           v-model="localDevice.xcodeOrgId"
@@ -89,13 +97,13 @@
           density="compact"
           label="xcode organisation ID"
           placeholder="xcode organisation ID"
-          :rules="[rules.required]"
           hide-details
         />
       </v-col>
       <v-col
         cols="12"
-        md="12"
+        md="4"
+        class="pa-2"
       >
         <v-text-field
           v-model="localDevice.xcodeSigningId"
@@ -103,12 +111,26 @@
           density="compact"
           label="xcode Signing ID"
           placeholder="xcode Signing ID"
-          :rules="[rules.required]"
+          hide-details
+        />
+      </v-col>
+      <v-col
+        cols="12"
+        md="4"
+        class="pa-2"
+      >
+        <v-file-input
+          v-model="localDevice.provisionProfile"
+          variant="outlined"
+          density="compact"
+          label="Provision Profile"
+          placeholder="Provision Profile"
           hide-details
         />
       </v-col>
     </v-row>
-    <v-row>
+
+    <v-row no-gutters>
       <v-col
         cols="12"
       >
@@ -128,6 +150,69 @@
         />
       </v-col>
     </v-row>
+    <v-row no-gutters>
+      <v-col
+        cols="12"
+        md="6"
+        class="pa-2"
+      >
+        <v-text-field
+          v-model="localDevice.relay.ip"
+          variant="outlined"
+          density="compact"
+          label="IP Address"
+          placeholder="0.0.0.0"
+          :rules="[rules.required, rules.ip]"
+        />
+      </v-col>
+      <v-col
+        class="pa-2"
+        cols="12"
+        md="6"
+      >
+        <v-text-field
+          v-model="localDevice.relay.port"
+          variant="outlined"
+          density="compact"
+          label="Port"
+          placeholder="22"
+          :rules="[rules.required, rules.port]"
+        />
+      </v-col>
+    </v-row>
+    <v-row no-gutters>
+      <v-col
+        md="6"
+        cols="12"
+        class="pa-2"
+      >
+        <v-text-field
+          v-model="localDevice.relay.username"
+          variant="outlined"
+          density="compact"
+          label="Username"
+          placeholder="root"
+          :rules="[rules.required]"
+          hide-details
+        />
+      </v-col>
+      <v-col
+        md="6"
+        cols="12"
+        class="pa-2"
+      >
+        <v-text-field
+          v-model="localDevice.relay.password"
+          variant="outlined"
+          density="compact"
+          label="Password"
+          type="password"
+          placeholder="Password"
+          :rules="[rules.required]"
+          hide-details
+        />
+      </v-col>
+    </v-row>
     <v-row>
       <v-col>
         <v-btn
@@ -136,7 +221,7 @@
           color="success"
           text="Save"
           prepend-icon="mdi-check"
-          :disabled="!isValid"
+          :disabled="isValid === false"
         />
         <v-btn
           text="Cancel"
@@ -150,22 +235,29 @@
 
 <script setup lang="ts">
 import type { PropType } from 'vue'
+import { isIP, isPort } from 'validator'
 import { useDevicesStore } from '~/stores/devices'
 import { useNotificationsStore } from '~/stores/notifications'
-import { type Device, Platform } from '~/project/types'
+import { type Device, type DeviceInput, Platform } from '~/project/types'
 import DevicePlatform from '~/project/devices/DevicePlatform.vue'
 
-const DEFAULT_DEVICE_VALUE = {
-  name: 'string',
-  deviceId: 'string',
+const DEFAULT_DEVICE_VALUE: DeviceInput = {
+  name: null,
+  deviceId: null,
   platform: Platform.Android,
-  version: '16.0.0',
-  available: true,
+  version: '0.0',
+  available: false,
   rooted: false,
-  xcodeOrgId: 'string',
-  xcodeSigningId: 'string',
-  // provision_profile: string,
-  location: 'string'
+  xcodeOrgId: null,
+  xcodeSigningId: null,
+  provisionProfile: null,
+  location: null,
+  relay: {
+    ip: null,
+    username: null,
+    password: null,
+    port: null
+  }
 }
 
 /**
@@ -175,12 +267,12 @@ const DEFAULT_DEVICE_VALUE = {
 const props = defineProps({
   device: {
     type: Object as PropType<Device>,
-    default: () => ({ endpoint: '', apiKey: '', name: '' }),
+    default: () => ({ }),
     required: false
   },
   isEditMode: {
     type: Boolean,
-    defualt: false
+    default: false
   }
 })
 
@@ -189,13 +281,17 @@ const isValid = ref(false)
 const emit = defineEmits(['close-form'])
 const devicesStore = useDevicesStore()
 const notificationsStore = useNotificationsStore()
-const localDevice = ref<Device>(DEFAULT_DEVICE_VALUE)
+const localDevice = ref<Device | DeviceInput>(DEFAULT_DEVICE_VALUE)
 const rules = {
-  required: (value: string) => value?.trim() !== '' || ''
+  required: (value: string) => !!value || 'Required.',
+  ip: (value: string) => isIP(value) || 'Must be a valid IP',
+  port: (value: string) => isPort(value) || 'Must be a valid Port'
 }
 
 watch(props.device, (newVal) => {
-  localDevice.value = { ...newVal } as Device
+  if ((newVal !== null && newVal !== undefined)) {
+    localDevice.value = { ...newVal } as Device
+  }
 }, { immediate: true, deep: true })
 
 /**
@@ -206,7 +302,7 @@ watch(props.device, (newVal) => {
 const onSubmit = async (): Promise<void> => {
   if (isValid.value === true && localDevice.value !== null) {
     try {
-      devicesStore.addOrUpdateDevice(localDevice.value)
+      devicesStore.addOrUpdateDevice(localDevice.value as Device)
       resetForm()
       emit('close-form')
       notificationsStore.reportSuccess('Device saved successfully.')
@@ -231,7 +327,7 @@ const closeForm = (): void => {
   emit('close-form')
 }
 /**
- * Compute if selected platform is ios
+ * Compute if a selected platform is ios
  */
 const isIos = computed((): boolean => {
   return [Platform.Ios, Platform.IosIpad].includes(localDevice.value.platform)
