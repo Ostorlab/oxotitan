@@ -83,6 +83,12 @@ export default defineComponent({
           to: '/scan/list',
           icon: 'mdi-shield-outline',
           value: 'scans'
+        },
+        {
+          title: 'Devices',
+          to: '/devices',
+          icon: 'mdi-cellphone-link',
+          value: 'devices'
         }
       ]
     }

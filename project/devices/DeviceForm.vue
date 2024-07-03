@@ -4,90 +4,156 @@
     v-model="isValid"
     @submit.prevent="onSubmit"
   >
-    localDevice: {{ localDevice }}
-    <v-text-field
-      v-model="localDevice.name"
-      variant="outlined"
-      density="compact"
-      label="Device name"
-      placeholder="Android A3"
-      :disabled="isEditMode === true"
-      :rules="[rules.required]"
-    />
-    <v-text-field
-      v-model="localDevice.deviceId"
-      variant="outlined"
-      density="compact"
-      label="Device ID"
-      placeholder="Device ID"
-      :rules="[rules.required]"
-    />
-    <v-text-field
-      v-model="localDevice.version"
-      variant="outlined"
-      density="compact"
-      label="Device version"
-      placeholder="Device ID"
-      :rules="[rules.required]"
-    />
-    <v-text-field
-      v-model="localDevice.xcodeOrgId"
-      variant="outlined"
-      density="compact"
-      label="xcodeOrgId"
-      placeholder="Device ID"
-      :rules="[rules.required]"
-    />
-    <v-text-field
-      v-model="localDevice.xcodeSigningId"
-      variant="outlined"
-      density="compact"
-      label="xcodeSigningId"
-      placeholder="xcodeSigningId"
-      :rules="[rules.required]"
-    />
-    <v-select
-      v-model="localDevice.platform"
-      variant="outlined"
-      density="compact"
-      label="Platform"
-      :items="Object.values(Platform)"
-      :rules="[rules.required]"
-    />
-    <v-checkbox
-      v-model="localDevice.available"
-      variant="outlined"
-      density="compact"
-      label="Available"
-    />
-    <v-checkbox
-      v-model="localDevice.rooted"
-      variant="outlined"
-      density="compact"
-      label="Rooted"
-    />
-    <v-btn
-      class="me-2"
-      type="submit"
-      color="success"
-      text="Save"
-      prepend-icon="mdi-check"
-      :disabled="!isValid"
-    />
-    <v-btn
-      text="Cancel"
-      prepend-icon="mdi-close"
-      @click="closeForm"
-    />
+    <v-row>
+      <v-col
+        cols="12"
+        md="6"
+      >
+        <v-select
+          v-model="localDevice.platform"
+          variant="outlined"
+          density="compact"
+          label="Platform"
+          :items="Object.values(Platform)"
+          :rules="[rules.required]"
+          hide-details
+        >
+          <template #item="{ props: item_props, item }">
+            <v-list-item
+              density="compact"
+              v-bind="item_props"
+              title=""
+            >
+              <DevicePlatform :platform="item.value" />
+            </v-list-item>
+          </template>
+          <template #selection="{ item }">
+            <DevicePlatform :platform="item.value" />
+          </template>
+        </v-select>
+      </v-col>
+      <v-col
+        cols="12"
+        md="6"
+      >
+        <v-text-field
+          v-model="localDevice.name"
+          variant="outlined"
+          density="compact"
+          label="Device name"
+          placeholder="Android A3"
+          :disabled="isEditMode === true"
+          :rules="[rules.required]"
+          hide-details
+        />
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col
+        cols="12"
+        md="6"
+      >
+        <v-text-field
+          v-model="localDevice.deviceId"
+          variant="outlined"
+          density="compact"
+          label="Device ID"
+          placeholder="Device ID"
+          :rules="[rules.required]"
+          hide-details
+        />
+      </v-col>
+      <v-col
+        cols="12"
+        md="6"
+      >
+        <v-text-field
+          v-model="localDevice.version"
+          variant="outlined"
+          density="compact"
+          label="Device version"
+          placeholder="Device ID"
+          :rules="[rules.required]"
+          hide-details
+        />
+      </v-col>
+    </v-row>
+    <v-row v-if="isIos === true">
+      <v-col
+        cols="12"
+        md="6"
+      >
+        <v-text-field
+          v-model="localDevice.xcodeOrgId"
+          variant="outlined"
+          density="compact"
+          label="xcode organisation ID"
+          placeholder="xcode organisation ID"
+          :rules="[rules.required]"
+          hide-details
+        />
+      </v-col>
+      <v-col
+        cols="12"
+        md="6"
+      >
+        <v-text-field
+          v-model="localDevice.xcodeSigningId"
+          variant="outlined"
+          density="compact"
+          label="xcode Signing ID"
+          placeholder="xcode Signing ID"
+          :rules="[rules.required]"
+          hide-details
+        />
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col
+        cols="12"
+      >
+        <v-checkbox
+          v-model="localDevice.available"
+          hide-details
+          variant="outlined"
+          density="compact"
+          label="Available"
+        />
+        <v-checkbox
+          v-model="localDevice.rooted"
+          hide-details
+          variant="outlined"
+          density="compact"
+          label="Rooted / Jail Broken?"
+        />
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col>
+        <v-btn
+          class="me-2"
+          type="submit"
+          color="success"
+          text="Save"
+          prepend-icon="mdi-check"
+          :disabled="!isValid"
+        />
+        <v-btn
+          text="Cancel"
+          prepend-icon="mdi-close"
+          @click="closeForm"
+        />
+      </v-col>
+    </v-row>
   </v-form>
 </template>
 
 <script setup lang="ts">
-import isURL from 'validator/es/lib/isURL'
 import type { PropType } from 'vue'
 import { useDevicesStore } from '~/stores/devices'
 import { useNotificationsStore } from '~/stores/notifications'
 import { type Device, Platform } from '~/project/types'
+import DevicePlatform from '~/project/devices/DevicePlatform.vue'
 
 const DEFAULT_DEVICE_VALUE = {
   name: 'string',
@@ -125,8 +191,7 @@ const devicesStore = useDevicesStore()
 const notificationsStore = useNotificationsStore()
 const localDevice = ref<Device>(DEFAULT_DEVICE_VALUE)
 const rules = {
-  required: (value: string) => value?.trim() !== '' || '',
-  url: (value: string) => isURL(value) || 'Must be a valid URL'
+  required: (value: string) => value?.trim() !== '' || ''
 }
 
 watch(props.device, (newVal) => {
@@ -165,4 +230,10 @@ const closeForm = (): void => {
   resetForm()
   emit('close-form')
 }
+/**
+ * Compute if selected platform is ios
+ */
+const isIos = computed((): boolean => {
+  return [Platform.Ios, Platform.IosIpad].includes(localDevice.value.platform)
+})
 </script>

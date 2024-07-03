@@ -11,13 +11,13 @@
         class="d-flex align-center text-left mb-2"
       >
         <v-btn
-          icon="mdi-github"
+          icon="mdi-web"
           density="compact"
           variant="text"
           color="black"
-          href="https://github.com/Ostorlab/oxo"
+          href="https://ostorlab.co"
           target="blank"
-          aria-label="OXO GitHub Repository"
+          aria-label="Ostorlab Web Site"
           class="mr-2"
         />
         <v-btn
@@ -25,9 +25,9 @@
           density="compact"
           variant="text"
           color="black"
-          href="https://oxo.ostorlab.co/docs"
+          href="https://docs.ostorlab.co"
           target="blank"
-          aria-label="OXO Documentation Website"
+          aria-label="Ostorlab Documentation Website"
         />
       </v-col>
       <v-col

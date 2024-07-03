@@ -35,16 +35,16 @@
         density="compact"
       >
         <template #[`item.name`]="{ item }">
-          {{ item.name }}
+          {{ item.name || "-" }}
         </template>
         <template #[`item.deviceId`]="{ item }">
-          {{ item.deviceId }}
+          {{ item.deviceId || "-" }}
         </template>
         <template #[`item.platform`]="{ item }">
-          {{ item.platform }}
+          <DevicePlatform :platform="item.platform" />
         </template>
         <template #[`item.version`]="{ item }">
-          {{ item.version }}
+          {{ item.version || "-" }}
         </template>
         <template #[`item.available`]="{ item }">
           <v-icon :color="item.available ? 'success' : 'red'">
@@ -57,10 +57,10 @@
           </v-icon>
         </template>
         <template #[`item.xcodeOrgId`]="{ item }">
-          {{ item.xcodeOrgId }}
+          {{ item.xcodeOrgId || "-" }}
         </template>
         <template #[`item.xcodeSigningId`]="{ item }">
-          {{ item.xcodeSigningId }}
+          {{ item.xcodeSigningId || "-" }}
         </template>
         <template #[`item.actions`]="{ item }">
           <v-btn
@@ -105,6 +105,7 @@ import { type Device } from '~/project/types'
 import { DfConfirmationModal } from '~/dragonfly/components/Modals/DfConfirmationModal'
 import DeviceForm from '~/project/devices/DeviceForm.vue'
 import { useDevicesStore } from '~/stores/devices'
+import DevicePlatform from '~/project/devices/DevicePlatform.vue'
 
 const devicesStore = useDevicesStore()
 const notificationsStore = useNotificationsStore()
@@ -138,11 +139,11 @@ const headers = [
     value: 'available'
   },
   {
-    title: 'Rooted',
+    title: 'Rooted / Jail Broken?',
     value: 'rooted'
   },
   {
-    title: 'Xcode Org ID',
+    title: 'Xcode Organisation ID',
     value: 'xcodeOrgId'
   },
   {

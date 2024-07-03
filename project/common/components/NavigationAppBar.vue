@@ -27,16 +27,16 @@
       </v-tooltip>
     </v-btn>
     <img
-      src="/logo/oxo.png"
+      src="/logo/logo-text.png"
       alt="OXO logo"
-      style="height:30px; object-fit: contain"
+      style="height:40px; object-fit: contain"
     >
     <v-chip
       size="small"
       class="ml-2"
-      color="secondary"
+      color="success"
     >
-      Alpha
+      OnPrem
     </v-chip>
     <template #append>
       <div
