@@ -48,12 +48,12 @@
         </template>
         <template #[`item.available`]="{ item }">
           <v-icon :color="item.available ? 'success' : 'red'">
-            {{ item.available ? 'mdi-check' : 'mdi-close' }}
+            {{ item.available === true ? 'mdi-check' : 'mdi-close' }}
           </v-icon>
         </template>
         <template #[`item.rooted`]="{ item }">
           <v-icon :color="item.rooted ? 'success' : 'red'">
-            {{ item.rooted ? 'mdi-check' : 'mdi-close' }}
+            {{ item.rooted === true ? 'mdi-check' : 'mdi-close' }}
           </v-icon>
         </template>
         <template #[`item.xcodeOrgId`]="{ item }">
