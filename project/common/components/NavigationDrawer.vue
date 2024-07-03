@@ -87,7 +87,7 @@ export default defineComponent({
         {
           title: 'Devices',
           to: '/devices',
-          icon: 'mdi-cellphone-link',
+          icon: 'mdi-cellphone',
           value: 'devices'
         }
       ]

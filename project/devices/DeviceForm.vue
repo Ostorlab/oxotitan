@@ -7,7 +7,7 @@
     <v-row>
       <v-col
         cols="12"
-        md="6"
+        md="12"
       >
         <v-select
           v-model="localDevice.platform"
@@ -34,7 +34,7 @@
       </v-col>
       <v-col
         cols="12"
-        md="6"
+        md="12"
       >
         <v-text-field
           v-model="localDevice.name"
@@ -51,7 +51,7 @@
     <v-row>
       <v-col
         cols="12"
-        md="6"
+        md="12"
       >
         <v-text-field
           v-model="localDevice.deviceId"
@@ -65,7 +65,7 @@
       </v-col>
       <v-col
         cols="12"
-        md="6"
+        md="12"
       >
         <v-text-field
           v-model="localDevice.version"
@@ -81,7 +81,7 @@
     <v-row v-if="isIos === true">
       <v-col
         cols="12"
-        md="6"
+        md="12"
       >
         <v-text-field
           v-model="localDevice.xcodeOrgId"
@@ -95,7 +95,7 @@
       </v-col>
       <v-col
         cols="12"
-        md="6"
+        md="12"
       >
         <v-text-field
           v-model="localDevice.xcodeSigningId"
