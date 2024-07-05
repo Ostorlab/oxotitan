@@ -1,6 +1,6 @@
 <template>
   <v-stepper-vertical-item
-    title="Agent Group"
+    title="Agent Group Definition"
     subtitle="required"
     :value="step"
   >

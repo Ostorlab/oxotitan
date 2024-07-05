@@ -4,7 +4,7 @@
     :value="step"
   />
   <v-stepper-vertical-item
-    title="YAML definition file"
+    title="Agent Group Definition"
     subtitle="required"
     :error="isStepValid === false"
     :value="step+1"
