@@ -104,7 +104,7 @@ export default defineComponent({
       default: () => []
     },
     modelValue: {
-      type: String,
+      type: String as () => AssetEnum | null,
       default: null
     },
     returnObject: {
