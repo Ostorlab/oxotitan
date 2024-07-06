@@ -1,7 +1,7 @@
 import type { AxiosInstance } from 'axios'
 import RequestHandler from '~/utils/requestHandler'
 import type { Scanner } from '~/project/types'
-import type { AssetTypeEnum, type OxoAgentGroupType, type Maybe } from '~/graphql/types'
+import type { AssetTypeEnum, OxoAgentGroupType, Maybe, OxoAgentGroupCreateInputType } from '~/graphql/types'
 
 const AGENT_GROUPS_QUERY = gql`
 query AgentGroups ($assetType: AssetTypeEnum) {
@@ -11,6 +11,7 @@ query AgentGroups ($assetType: AssetTypeEnum) {
       id
       name
       description
+      yamlSource
     }
   }
 }
@@ -58,7 +59,7 @@ export default class AgentGroupService {
    * @param scanner The scanner where the agent group will be created.
    * @param agentGroup The agent group definition.
    */
-  async createAgentGroup({ scanner, agentGroup }: { scanner: Scanner, agentGroup: OxoAgentGroupType }): Promise<Maybe<OxoAgentGroupType>> {
+  async createAgentGroup({ scanner, agentGroup }: { scanner: Scanner, agentGroup: OxoAgentGroupCreateInputType }): Promise<Maybe<OxoAgentGroupType>> {
     const response = await this.requestHandler.post(scanner,
       {
         query: CREATE_AGENT_GROUP_MUTATION,

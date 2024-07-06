@@ -374,6 +374,7 @@ export default defineComponent({
       this.agentGroupId = null
       this.selectedScanner = null
       this.scanTitle = null
+      this.assetPlatformType = AssetEnum.ANDROID_PLAYSTORE
     }
   }
 })

@@ -4,7 +4,7 @@
     :value="step"
   />
   <v-stepper-vertical-item
-    title="YAML definition file"
+    title="Agent Group Definition"
     subtitle="required"
     :error="isStepValid === false"
     :value="step+1"
@@ -21,8 +21,8 @@
         >
           Run a scan with
         </p>
-        <code v-if="selectedAgentGroup !== null && selectedAgentGroup[0] !== null && selectedAgentGroup[0] !== undefined">
-          {{ selectedAgentGroup[0]?.key }}
+        <code v-if="selectedAgentGroups.length > 0">
+          {{ selectedAgentGroups[0]?.key }}
         </code>
         <p
           v-else
@@ -44,13 +44,24 @@
       >
         <div class="d-flex align-start">
           <div style="width: 30%;">
-            <div class="d-flex align-center tab-header">
-              <v-icon start>
-                mdi-hexagon-multiple-outline
-              </v-icon>
-              Existing Agent Groups
+            <div class="d-flex align-center justify-space-between tab-header">
+              <div>
+                <v-icon start>
+                  mdi-hexagon-multiple-outline
+                </v-icon>
+                Existing Agent Groups
+              </div>
+              <v-btn
+                variant="tonal"
+                @click="clear"
+              >
+                <v-icon start>
+                  mdi-plus
+                </v-icon>
+                New
+              </v-btn>
             </div>
-            <div style="border-right: 1px solid #DADADA; height: 300px">
+            <div style="border-right: 1px solid #DADADA; height: 300px; overflow-y: auto;">
               <p
                 v-if="existingAgentGroups.length === 0"
                 class="ml-4 pt-2 text-grey"
@@ -58,28 +69,34 @@
                 You have not yet created any scanners
               </p>
               <v-list
-                v-else
-                v-model:selected="selectedAgentGroup"
-                style="height: 100%; flex-grow: 1;"
-                density="compact"
+                v-model:selected="selectedAgentGroups"
+                :items="existingAgentGroups"
+                item-title="key"
+                item-value="key"
                 return-object
+                style="height: 100%; flex-grow: 1;"
               >
-                <v-list-item
-                  v-for="item in existingAgentGroups"
-                  :key="`${item.key}-${item.id}`"
-                  :value="item"
-                  :title="item.key"
-                  :subtitle="item.description"
-                />
+                <template #title="{ item }">
+                  <v-list-item-title>
+                    {{ item.key }}
+                  </v-list-item-title>
+                  <v-list-item-subtitle>
+                    {{ item.key }}
+                  </v-list-item-subtitle>
+                </template>
               </v-list>
             </div>
           </div>
           <div style="width: 70%">
-            <div class="d-flex align-center tab-header">
+            <div
+              class="d-flex align-center tab-header"
+              style="height: 63px;"
+            >
               <v-icon start>
                 mdi-code-json
               </v-icon>
-              New Agent Group
+              <span v-if="selectedAgentGroups.length > 0">Selected Agent Group</span>
+              <span v-else>New Agent Group</span>
             </div>
             <MonacoEditor
               v-model="agentGroupInput"
@@ -95,6 +112,7 @@
       <v-btn
         color="success"
         variant="elevated"
+        :disabled="isFormValid === false"
         :loading="createScanLoading"
         @click="createScan"
       >
@@ -128,43 +146,26 @@
 
 <script lang="ts">
 import { mapActions } from 'pinia'
-import { parse as yamlParse } from 'yaml'
+import Yaml from 'yaml'
 import LoadingDialog from '~/project/common/components/LoadingDialog.vue'
 import CreateScanTargetAssetYamlForm from '~/project/scans/components/form/CreateScanTargetAssetYamlForm.vue'
 import AgentGroupService from '~/project/agents/services/agentGroup.service'
 import type { Scanner } from '~/project/types'
+import type { OxoAgentGroupType, Maybe } from '~/graphql/types'
 import { useNotificationsStore } from '~/stores/notifications'
 
 interface Data {
-  selectedAgentGroup: {
-    key: string
-    description: string
-    agentGroup: string
-  } | null
+  selectedAgentGroups: Array<Maybe<OxoAgentGroupType>>
   agentGroupInput: string | null
   loadingDialog: boolean
   editorLanguage: string
   editorOptions: {
     [key: string]: string | boolean | { [key: string]: boolean }
   }
-  existingAgentGroups: Array<{
-    key: string
-    description: string
-    agentGroup: string
-  }>
+  existingAgentGroups: Array<Maybe<OxoAgentGroupType>>
   agentGroupService: AgentGroupService
   assets: Array<unknown>
 }
-
-const AGENT_GROUP_EXAMPLE = `
-# Agent Group example
-description: Agent group definition for web scan
-name: onprem_web
-agents:
-- args:
-  - { name: token, type: string, value: abcdefg }
-  key: agent/ostorlab/nuclei
-      `
 
 export default defineComponent({
   name: 'CreateScanYamlForm',
@@ -191,8 +192,8 @@ export default defineComponent({
     return {
       assets: [],
       agentGroupService: new AgentGroupService(this.$axios),
-      selectedAgentGroup: null,
-      agentGroupInput: AGENT_GROUP_EXAMPLE,
+      selectedAgentGroups: [],
+      agentGroupInput: null,
       existingAgentGroups: [],
       loadingDialog: false,
       editorLanguage: 'yaml',
@@ -208,7 +209,7 @@ export default defineComponent({
   },
   computed: {
     isFormValid(): boolean {
-      return this.agentGroupInput !== null && this.agentGroupInput?.trim() !== ''
+      return (this.agentGroupInput !== null && this.agentGroupInput?.trim() !== '') || this.selectedAgentGroups.length > 0
     }
   },
   watch: {
@@ -216,6 +217,17 @@ export default defineComponent({
       deep: true,
       handler(newVal) {
         this.$emit('update:assets', newVal)
+      }
+    },
+    selectedAgentGroups: {
+      deep: true,
+      handler(newVal: Array<Maybe<OxoAgentGroupType>>) {
+        if ((newVal || []).length > 0 && newVal[0]?.yamlSource !== undefined && newVal[0]?.yamlSource !== null) {
+          this.agentGroupInput = Yaml.stringify(Yaml.parse(newVal[0]?.yamlSource))
+        } else {
+          // Set to an empty string for Monaco editor to update the value, `null` won't work.
+          this.agentGroupInput = ''
+        }
       }
     }
   },
@@ -228,8 +240,8 @@ export default defineComponent({
      * Clear the input fields.
      */
     clear(): void {
-      this.agentGroupInput = null
-      this.selectedAgentGroup = null
+      this.agentGroupInput = ''
+      this.selectedAgentGroups = []
     },
     /**
      * Fetch agent groups.
@@ -237,7 +249,7 @@ export default defineComponent({
     async getAgentGroups(): Promise<void> {
       try {
         this.existingAgentGroups = await this.agentGroupService.getAgentGroups(this.selectedScanner)
-      } catch (e: unknown) {
+      } catch (e: any) {
         this.reportError(e?.message || 'Error fetching agent groups')
       }
     },
@@ -249,22 +261,22 @@ export default defineComponent({
         const agentGroupId = await this.getAgentGroupId()
         this.$emit('update:agent-group-id', agentGroupId)
         this.$emit('createScan')
-      } catch (e: unknown) {
+      } catch (e: any) {
         this.reportError(e?.message || 'Error creating scan')
       }
     },
     /**
      * Get the agent group ID to use for the scan.
      */
-    async getAgentGroupId(): Promise<number | undefined> {
+    async getAgentGroupId(): Promise<number | string | undefined> {
       try {
-        if ((this.selectedAgentGroup || []).length > 0) {
-          return this.selectedAgentGroup[0]?.id
+        if (this.selectedAgentGroups.length > 0) {
+          return this.selectedAgentGroups[0]?.id
         } else {
           const newAgentGroup = await this.createAgentGroup()
-          return newAgentGroup.id
+          return newAgentGroup?.id
         }
-      } catch (e: unknown) {
+      } catch (e: any) {
         this.reportError(e?.message || 'Error getting agent group')
       }
     },
@@ -274,7 +286,7 @@ export default defineComponent({
     async createAgentGroup() {
       try {
         if (this.agentGroupInput !== null) {
-          const agentGroupDefinition = yamlParse(this.agentGroupInput)
+          const agentGroupDefinition = Yaml.parse(this.agentGroupInput)
           const agentGroup = await this.agentGroupService.createAgentGroup({
             scanner: this.selectedScanner,
             agentGroup: {
@@ -286,7 +298,7 @@ export default defineComponent({
           await this.getAgentGroups()
           return agentGroup
         }
-      } catch (e: unknown) {
+      } catch (e: any) {
         this.reportError(e?.message || 'Error creating agent group')
       }
     }
