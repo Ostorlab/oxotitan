@@ -31,7 +31,7 @@ Before you begin, ensure you have met the following requirements:
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/your-username/your-nuxt3-project.git
+   git clone https://github.com/Ostorlab/oxotitan.git
    ```
 
 2. Navigate to the project directory:
