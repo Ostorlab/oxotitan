@@ -26,11 +26,15 @@
         Menu
       </v-tooltip>
     </v-btn>
-    <img
-      src="/logo/oxo.png"
-      alt="OXO logo"
-      style="height:30px; object-fit: contain"
+    <a
+      href="/"
     >
+      <img
+        src="/logo/oxo.png"
+        alt="OXO logo"
+        style="height: 30px; object-fit: contain"
+      >
+    </a>
     <v-chip
       size="small"
       class="ml-2"

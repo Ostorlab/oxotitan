@@ -39,6 +39,9 @@
         class="ml-2"
         @click="prev"
       >
+        <v-icon start>
+          mdi-skip-previous-outline
+        </v-icon>
         Previous
       </v-btn>
     </template>
@@ -67,6 +70,27 @@ name: master_scan
 assets:
   androidStore:
     - package_name: "com.example.test"
+  androidApkFile:
+    - path: /somepath/Downloads/app.apk
+  androidAabFile:
+    - path: /somepath/Downloads/app.aab
+  iosStore:
+    - bundle_id: "com.example1.test"
+    - bundle_id: "com.example2.test"
+  iosFile:
+    - path: /somepath/Downloads/ppk1.ipa
+    - url: https://somepath.com/storage/ppk2.ipa
+  link:
+    - url: "https://sketchy.com/fake"
+      method: "GET"
+    - url: "https://nasa.gov.ma/artemis"
+      method: "POST"
+  domain:
+    - name: "ostor.co"
+    - name: "seclab.dev"
+  ip:
+    - host: "10.21.11.11"
+      mask: "30"
     `
 
 export default defineComponent({

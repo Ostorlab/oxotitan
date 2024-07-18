@@ -1,6 +1,6 @@
 <template>
   <v-chip
-    v-for="(link, index) in (asset.domainNames || [])"
+    v-for="(domain, index) in truncatedDomains"
     :key="index"
     class="ma-1"
     label
@@ -13,7 +13,13 @@
     >
       mdi-web
     </v-icon>
-    {{ link.name }}
+    {{ domain.name }}
+  </v-chip>
+  <v-chip
+    v-if="showMore"
+    color="blue-lighten-1"
+  >
+    ...
   </v-chip>
 </template>
 
@@ -24,6 +30,14 @@ export default defineComponent({
     asset: {
       type: Object,
       default: null
+    }
+  },
+  computed: {
+    truncatedDomains() {
+      return (this.asset.domainNames || []).slice(0, 5)
+    },
+    showMore(): boolean {
+      return (this.asset?.networks?.length || 0) > 5
     }
   }
 })

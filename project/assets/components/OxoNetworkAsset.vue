@@ -1,6 +1,6 @@
 <template>
   <v-chip
-    v-for="(network, index) in asset.networks"
+    v-for="(network, index) in truncatedNetworks"
     :key="index"
     label
     color="grey-darken-2"
@@ -18,6 +18,12 @@
     </span>
     <span v-else>{{ network.host }}</span>
   </v-chip>
+  <v-chip
+    v-if="showMore"
+    color="grey-darken-2"
+  >
+    ...
+  </v-chip>
 </template>
 
 <script lang="ts">
@@ -29,6 +35,14 @@ export default defineComponent({
     asset: {
       type: Object as () => OxoNetworkAssetType,
       default: null
+    }
+  },
+  computed: {
+    truncatedNetworks() {
+      return (this.asset?.networks || []).slice(0, 5)
+    },
+    showMore(): boolean {
+      return (this.asset?.networks?.length || 0) > 5
     }
   }
 })

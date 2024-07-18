@@ -66,6 +66,9 @@
               variant="elevated"
               @click="prev"
             >
+              <v-icon start>
+                mdi-skip-previous-outline
+              </v-icon>
               Previous
             </v-btn>
           </template>
@@ -101,6 +104,9 @@
               variant="elevated"
               @click="prev"
             >
+              <v-icon start>
+                mdi-skip-previous-outline
+              </v-icon>
               Previous
             </v-btn>
           </template>
@@ -187,6 +193,32 @@ export default defineComponent({
       assetPlatformType: AssetEnum.ANDROID_PLAYSTORE,
       assetTypeItems: [
         {
+          group: 'Web/Network',
+          assets: [
+            {
+              value: AssetEnum.WEB_APP,
+              title: 'Web App',
+              description: 'Web Application accessible using a browser',
+              icon: 'mdi-wan',
+              color: 'accent'
+            },
+            {
+              value: AssetEnum.WEB_API,
+              title: 'Web API',
+              description: 'Web API (REST, SOAP, GraphQL ...)',
+              icon: 'mdi-api',
+              color: 'accent'
+            },
+            {
+              value: AssetEnum.NETWORK,
+              title: 'Network',
+              description: 'Scan IPv4 and IPv6 network ranges',
+              icon: 'mdi-ip-network-outline',
+              color: 'accent'
+            }
+          ]
+        },
+        {
           group: 'Mobile',
           assets: [
             {
@@ -215,37 +247,6 @@ export default defineComponent({
               description: 'Scan an iOS Application (.IPA)',
               icon: 'mdi-apple',
               color: '#797979'
-            }
-          ]
-        },
-        {
-          group: 'Web',
-          assets: [
-            {
-              value: AssetEnum.WEB_APP,
-              title: 'Web App',
-              description: 'Web Application accessible using a browser',
-              icon: 'mdi-wan',
-              color: 'accent'
-            },
-            {
-              value: AssetEnum.WEB_API,
-              title: 'Web API',
-              description: 'Web API (REST, SOAP, GraphQL ...)',
-              icon: 'mdi-api',
-              color: 'accent'
-            }
-          ]
-        },
-        {
-          group: 'Network',
-          assets: [
-            {
-              value: AssetEnum.NETWORK,
-              title: 'Network',
-              description: 'Scan IPv4 and IPv6 network ranges',
-              icon: 'mdi-ip-network-outline',
-              color: 'accent'
             }
           ]
         },
