@@ -68,6 +68,17 @@ description: Target group definition
 kind: targetGroup
 name: master_scan
 assets:
+  link:
+    - url: "https://sketchy.com/fake"
+      method: "GET"
+    - url: "https://nasa.gov.ma/artemis"
+      method: "POST"
+  domain:
+    - name: "ostor.co"
+    - name: "seclab.dev"
+  ip:
+    - host: "10.21.11.11"
+      mask: "30"
   androidStore:
     - package_name: "com.example.test"
   androidApkFile:
@@ -80,17 +91,6 @@ assets:
   iosFile:
     - path: /somepath/Downloads/ppk1.ipa
     - url: https://somepath.com/storage/ppk2.ipa
-  link:
-    - url: "https://sketchy.com/fake"
-      method: "GET"
-    - url: "https://nasa.gov.ma/artemis"
-      method: "POST"
-  domain:
-    - name: "ostor.co"
-    - name: "seclab.dev"
-  ip:
-    - host: "10.21.11.11"
-      mask: "30"
     `
 
 export default defineComponent({

@@ -190,7 +190,7 @@ export default defineComponent({
       isStepValid: true,
       stepNumber: 1,
       finished: false,
-      assetPlatformType: AssetEnum.ANDROID_PLAYSTORE,
+      assetPlatformType: AssetEnum.WEB_APP,
       assetTypeItems: [
         {
           group: 'Web/Network',
@@ -375,7 +375,7 @@ export default defineComponent({
       this.agentGroupId = null
       this.selectedScanner = null
       this.scanTitle = null
-      this.assetPlatformType = AssetEnum.ANDROID_PLAYSTORE
+      this.assetPlatformType = AssetEnum.WEB_APP
     }
   }
 })

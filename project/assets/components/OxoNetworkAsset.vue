@@ -19,7 +19,7 @@
     <span v-else>{{ network.host }}</span>
   </v-chip>
   <v-chip
-    v-if="showMore"
+    v-if="showMore === true"
     color="grey-darken-2"
   >
     ...
@@ -27,7 +27,7 @@
 </template>
 
 <script lang="ts">
-import type { OxoNetworkAssetType } from '~/graphql/types'
+import type { Maybe, OxoIpRangeAssetType, OxoNetworkAssetType } from '~/graphql/types'
 
 export default defineComponent({
   name: 'OxoNetworkAsset',
@@ -38,9 +38,17 @@ export default defineComponent({
     }
   },
   computed: {
-    truncatedNetworks() {
+    /**
+     * Truncate the networks to show only the first 5.
+     * @returns {Array<Maybe<OxoIpRangeAssetType>>}
+     */
+    truncatedNetworks(): Array<Maybe<OxoIpRangeAssetType>> {
       return (this.asset?.networks || []).slice(0, 5)
     },
+    /**
+     * Determine if there are more networks than the truncated networks.
+     * @returns {boolean}
+     */
     showMore(): boolean {
       return (this.asset?.networks?.length || 0) > 5
     }

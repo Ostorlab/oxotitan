@@ -16,7 +16,7 @@
     {{ domain.name }}
   </v-chip>
   <v-chip
-    v-if="showMore"
+    v-if="showMore === true"
     color="blue-lighten-1"
   >
     ...
@@ -33,9 +33,17 @@ export default defineComponent({
     }
   },
   computed: {
-    truncatedDomains() {
+    /**
+     * Truncate the domains to show only the first 5.
+     * @returns {Array<{ name: string }>}
+     */
+    truncatedDomains(): Array<{ name: string }> {
       return (this.asset.domainNames || []).slice(0, 5)
     },
+    /**
+     * Determine if there are more domains than the truncated domains.
+     * @returns {boolean}
+     */
     showMore(): boolean {
       return (this.asset?.networks?.length || 0) > 5
     }
