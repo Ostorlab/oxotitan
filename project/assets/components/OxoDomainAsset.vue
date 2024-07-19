@@ -15,12 +15,22 @@
     </v-icon>
     {{ domain.name }}
   </v-chip>
-  <v-chip
-    v-if="showMore === true"
-    color="blue-lighten-1"
-  >
-    ...
-  </v-chip>
+  <v-tooltip v-if="showMore === true">
+    <div
+      v-for="(domain, index) in asset?.domainNames || []"
+      :key="index"
+    >
+      {{ domain.name }}
+    </div>
+    <template #activator="{ props }">
+      <v-chip
+        v-bind="props"
+        color="blue-lighten-1"
+      >
+        ...
+      </v-chip>
+    </template>
+  </v-tooltip>
 </template>
 
 <script lang="ts">
@@ -38,14 +48,14 @@ export default defineComponent({
      * @returns {Array<{ name: string }>}
      */
     truncatedDomains(): Array<{ name: string }> {
-      return (this.asset.domainNames || []).slice(0, 5)
+      return (this.asset?.domainNames || []).slice(0, 5)
     },
     /**
      * Determine if there are more domains than the truncated domains.
      * @returns {boolean}
      */
     showMore(): boolean {
-      return (this.asset?.networks?.length || 0) > 5
+      return (this.asset?.domainNames?.length || 0) > 5
     }
   }
 })

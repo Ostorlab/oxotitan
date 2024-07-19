@@ -15,12 +15,22 @@
     </v-icon>
     {{ link.url }}
   </v-chip>
-  <v-chip
-    v-if="showMore === true"
-    color="blue-lighten-1"
-  >
-    ...
-  </v-chip>
+  <v-tooltip v-if="showMore === true">
+    <div
+      v-for="(link, index) in asset?.links || []"
+      :key="index"
+    >
+      {{ link.url }}
+    </div>
+    <template #activator="{ props }">
+      <v-chip
+        v-bind="props"
+        color="blue-lighten-1"
+      >
+        ...
+      </v-chip>
+    </template>
+  </v-tooltip>
 </template>
 
 <script lang="ts">

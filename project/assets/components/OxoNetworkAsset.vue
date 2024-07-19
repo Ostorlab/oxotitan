@@ -18,12 +18,28 @@
     </span>
     <span v-else>{{ network.host }}</span>
   </v-chip>
-  <v-chip
-    v-if="showMore === true"
-    color="grey-darken-2"
-  >
-    ...
-  </v-chip>
+
+  <v-tooltip v-if="showMore === true">
+    <div
+      v-for="(network, index) in asset?.networks || []"
+      :key="index"
+    >
+      <span v-if="(network.mask || '').trim() !== ''">
+        {{ network.host }}/{{ network.mask }}
+      </span>
+      <span v-else>
+        {{ network.host }}
+      </span>
+    </div>
+    <template #activator="{ props }">
+      <v-chip
+        v-bind="props"
+        color="grey-darken-2"
+      >
+        ...
+      </v-chip>
+    </template>
+  </v-tooltip>
 </template>
 
 <script lang="ts">
