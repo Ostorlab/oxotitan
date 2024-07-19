@@ -45,6 +45,9 @@
         class="ml-2"
         @click="prev"
       >
+        <v-icon start>
+          mdi-skip-previous-outline
+        </v-icon>
         Previous
       </v-btn>
     </template>
@@ -55,7 +58,7 @@
     :create-scan-loading="createScanLoading"
     :step="step + 1"
     :selected-scanner="selectedScanner"
-    @reset="$emit('reset')"
+    @reset="clear"
     @create-scan="$emit('createScan')"
   />
 </template>
@@ -189,6 +192,7 @@ export default defineComponent({
     clear(): void {
       this.ip = null
       this.userIps = []
+      this.$emit('reset')
     }
   }
 })

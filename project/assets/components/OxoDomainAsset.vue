@@ -1,6 +1,6 @@
 <template>
   <v-chip
-    v-for="(link, index) in (asset.domainNames || [])"
+    v-for="(domain, index) in truncatedDomains"
     :key="index"
     class="ma-1"
     label
@@ -13,8 +13,24 @@
     >
       mdi-web
     </v-icon>
-    {{ link.name }}
+    {{ domain.name }}
   </v-chip>
+  <v-tooltip v-if="showMore === true">
+    <div
+      v-for="(domain, index) in asset?.domainNames || []"
+      :key="index"
+    >
+      {{ domain.name }}
+    </div>
+    <template #activator="{ props }">
+      <v-chip
+        v-bind="props"
+        color="blue-lighten-1"
+      >
+        ...
+      </v-chip>
+    </template>
+  </v-tooltip>
 </template>
 
 <script lang="ts">
@@ -24,6 +40,22 @@ export default defineComponent({
     asset: {
       type: Object,
       default: null
+    }
+  },
+  computed: {
+    /**
+     * Truncate the domains to show only the first 5.
+     * @returns {Array<{ name: string }>}
+     */
+    truncatedDomains(): Array<{ name: string }> {
+      return (this.asset?.domainNames || []).slice(0, 5)
+    },
+    /**
+     * Determine if there are more domains than the truncated domains.
+     * @returns {boolean}
+     */
+    showMore(): boolean {
+      return (this.asset?.domainNames?.length || 0) > 5
     }
   }
 })

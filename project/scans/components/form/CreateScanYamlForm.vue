@@ -128,6 +128,9 @@
         class="ml-2"
         @click="prev"
       >
+        <v-icon start>
+          mdi-skip-previous-outline
+        </v-icon>
         Previous
       </v-btn>
       <v-btn
