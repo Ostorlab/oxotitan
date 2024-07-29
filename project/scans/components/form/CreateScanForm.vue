@@ -15,7 +15,7 @@
           subtitle="Select or create a scanner to run the scan on"
           :value="1"
         >
-          <ScannerSelect v-model:model-value="selectedScanner" />
+          <ScannerSelect v-model:selected-scanner="selectedScanner" />
           <template #next="{ next }">
             <v-btn
               color="primary"

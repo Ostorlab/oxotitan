@@ -19,7 +19,6 @@
       density="compact"
       label="Scanner Name"
       placeholder="Scanner Name"
-      :rules="[rules.required]"
     />
     <v-text-field
       v-model="localScanner.apiKey"
@@ -76,7 +75,7 @@ const scannersStore = useScannersStore()
 const notificationsStore = useNotificationsStore()
 const localScanner = ref<Scanner>(DEFAULT_SCANNER_VALUE)
 const rules = {
-  required: (value: string) => value?.trim() !== '' || '',
+  required: (value: string) => value.trim() !== '' || 'This field is required',
   url: (value: string) => isURL(value) || 'Must be a valid URL'
 }
 
