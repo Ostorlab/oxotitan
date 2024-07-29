@@ -124,11 +124,11 @@ export default defineComponent({
 <style scoped>
 .create-scanner {
   cursor: pointer;
-  transition: background-color 0.3s ease, box-shadow 0.3s ease; /* Smooth transition */
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .create-scanner:hover {
-  background-color: #f0f0f0; /* Light gray background on hover */
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1); /* Subtle shadow on hover */
+  background-color: #f0f0f0;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 </style>
