@@ -1,7 +1,6 @@
 <template>
   <div>
     <v-select
-      v-if="scanners.length > 0"
       v-model="scanner"
       :items="scanners"
       :item-props="getScannerDetails"
@@ -27,17 +26,15 @@
           class="mb-0"
         >{{ item.raw.endpoint }}</code>
       </template>
+      <template #no-data>
+        <p
+          class="create-scanner mb-0 pl-4 py-0"
+          @click="showNewScannerForm = true"
+        >
+          Create New Scanner
+        </p>
+      </template>
     </v-select>
-    <div v-else>
-      <v-btn
-        color="primary"
-        @click="showNewScannerForm = true"
-      >
-        <v-icon start>
-          mdi-plus
-        </v-icon> New Scanner
-      </v-btn>
-    </div>
     <v-dialog
       v-model="showNewScannerForm"
       persistent
@@ -123,3 +120,15 @@ export default defineComponent({
   }
 })
 </script>
+
+<style scoped>
+.create-scanner {
+  cursor: pointer;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease; /* Smooth transition */
+}
+
+.create-scanner:hover {
+  background-color: #f0f0f0; /* Light gray background on hover */
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1); /* Subtle shadow on hover */
+}
+</style>
