@@ -25,7 +25,7 @@
                 <v-icon start>
                   mdi-hexagon-multiple-outline
                 </v-icon>
-                Existing Agent Groups
+                Agent Groups
               </div>
             </div>
             <div class="border-right scrollable-height">
@@ -88,6 +88,9 @@
         class="ml-2"
         @click="prev"
       >
+        <v-icon start>
+          mdi-skip-previous-outline
+        </v-icon>
         Previous
       </v-btn>
       <v-btn
@@ -195,6 +198,9 @@ export default defineComponent({
       }
     },
     async createScan(): Promise<void> {
+      /**
+     * Trigger creation of scan .
+     */
       try {
         await this.getAgentGroup()
         this.$emit('createScan')
