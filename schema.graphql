@@ -33,7 +33,7 @@ type Mutations {
     "Delete agent group."
     deleteAgentGroup(agentGroupId: Int!): DeleteAgentGroupMutation
     "Delete a scan & all its information."
-    deleteScan(scanId: Int!): DeleteScanMutation
+    deleteScan(scanIds: [Int]!): DeleteScanMutation
     "Import scan from file."
     importScan(file: Upload!, scanId: Int): ImportScanMutation
     "Create agent group"
@@ -41,7 +41,7 @@ type Mutations {
     "Run scan"
     runScan(scan: OxoAgentScanInputType!): RunScanMutation
     "Stops running scan, scan is marked as stopped once the engine has completed cancellation."
-    stopScan(scanId: Int!): StopScanMutation
+    stopScan(scanIds: [Int]!): StopScanMutation
 }
 
 "Graphene object type for a list of agent arguments."
@@ -229,7 +229,7 @@ type RunScanMutation {
 
 "Stop scan mutation."
 type StopScanMutation {
-    scan: OxoScanType
+    scans: [OxoScanType]
 }
 
 enum AgentGroupOrderByEnum {

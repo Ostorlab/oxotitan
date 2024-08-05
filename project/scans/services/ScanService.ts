@@ -76,16 +76,16 @@ query Scan($scanId: Int!) {
 }
 `
 
-const DELETE_SCAN_MUTATION = gql`mutation deleteScan($scanId: Int!) {
-  deleteScan(scanId: $scanId) {
+const DELETE_SCAN_MUTATION = gql`mutation deleteScan($scanIds: [Int]!) {
+  deleteScan(scanIds: $scanIds) {
     result
   }
 }
 `
 
-const STOP_SCAN_MUTATION = gql`mutation stopScan($scanId: Int!) {
-  stopScan(scanId: $scanId) {
-    scan {
+const STOP_SCAN_MUTATION = gql`mutation stopScan($scanIds: [Int]!) {
+  stopScan(scanIds: $scanIds) {
+    scans {
       id
     }
   }
@@ -159,34 +159,34 @@ export default class ScansService {
   }
 
   /**
-   * Stop a scan
+   * Stop scans
    * @param scanner
-   * @param scanId
+   * @param scanIds
    */
-  async stopScan(scanner: Scanner, scanId: number): Promise<void> {
+  async stopScan(scanner: Scanner, scanIds: array<number>): Promise<void> {
     const response = await this.requestor.post(
       scanner,
       {
         query: STOP_SCAN_MUTATION,
         variables: {
-          scanId: scanId
+          scanIds: scanIds
         }
       })
     return response?.data?.stopScan?.result || false
   }
 
   /**
-   * Delete a scan
+   * Delete scans
    * @param scanner
-   * @param scanId
+   * @param scanIds
    */
-  async deleteScan(scanner: Scanner, scanId: number): Promise<boolean> {
+  async deleteScan(scanner: Scanner, scanIds: array<number>): Promise<boolean> {
     const response = await this.requestor.post(
       scanner,
       {
         query: DELETE_SCAN_MUTATION,
         variables: {
-          scanId: scanId
+          scanIds: scanIds
         }
       })
     return response?.data?.deleteScan?.result || false
