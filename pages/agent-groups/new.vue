@@ -27,9 +27,6 @@ import AgentGroupForm from '~/project/agent-groups/components/AgentGroupForm.vue
 
 const router = useRouter()
 
-onMounted(() => {
-})
-
 const breadcrumbs: VulnerabilityDetailBreadcrumbsType = [
   {
     text: 'AGENT GROUPS',

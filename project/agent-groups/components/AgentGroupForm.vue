@@ -4,7 +4,8 @@
     v-model="isFormValid"
     @submit.prevent="onSubmit"
   >
-    <div style="padding-bottom: 20px;">
+    <div class="pb-5">
+      <!-- Scanner Select -->
       <v-select
         v-model="localScanner"
         :items="scanners"
@@ -69,15 +70,17 @@
       label="Agent Group Description"
       placeholder="Agent Group Description"
     />
-    <v-label>
-      Agent Group Definition
-    </v-label>
-    <MonacoEditor
-      v-model="yamlSource"
-      :lang="editorLanguage"
-      :options="editorOptions"
-      style="min-height: 300px;"
-    />
+    <div class="mb-4">
+      <v-label>
+        Agent Group Definition
+      </v-label>
+      <MonacoEditor
+        v-model="yamlSource"
+        :lang="editorLanguage"
+        :options="editorOptions"
+        style="min-height: 300px;"
+      />
+    </div>
     <v-btn
       class="me-2"
       type="submit"
@@ -129,10 +132,6 @@ const emit = defineEmits(['close-form'])
 const notificationsStore = useNotificationsStore()
 const localAgentGroup = ref<OxoAgentGroupType>(DEFAULT_AGENTGROUP_VALUE)
 const yamlSource = ref<string>('')
-if (props.agentGroup && props.agentGroup.yamlSource !== null && props.agentGroup.yamlSource !== undefined) {
-  console.log(props.scanner)
-  yamlSource.value = props.agentGroup.yamlSource
-}
 const editorLanguage = 'yaml'
 const editorOptions = {
   theme: 'vs',
@@ -150,9 +149,15 @@ const agentGroupService = new AgentGroupService($axios)
 const localScanner = ref<Scanner | null>(null)
 const scanners = ref<Array<Scanner>>([])
 const showNewScannerForm = ref(false)
-if (props.scanner != null && props.scanner != undefined) {
-  localScanner.value = props.scanner
-}
+
+onMounted(() => {
+  if (props.agentGroup && props.agentGroup.yamlSource !== null && props.agentGroup.yamlSource !== undefined) {
+    yamlSource.value = props.agentGroup.yamlSource
+  }
+  if (props.scanner != null && props.scanner != undefined) {
+    localScanner.value = props.scanner
+  }
+})
 
 const isFormValid = computed(() => {
   return localScanner.value != null && yamlSource.value.trim() !== ''
@@ -175,6 +180,9 @@ const onSubmit = async (): Promise<void> => {
       const agentGroupInput = getAgentGroupInput(yamlSource.value)
       if (localScanner.value != null && agentGroupInput != null) {
         const agentGroupDefinition = Yaml.parse(agentGroupInput)
+        if (props.isEditMode == true) {
+          await agentGroupService.deleteAgentGroup(localScanner.value, parseInt(localAgentGroup.value.id as string))
+        }
         await agentGroupService.createAgentGroup({
           scanner: localScanner.value,
           agentGroup: {
