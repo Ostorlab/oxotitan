@@ -92,6 +92,11 @@ const menuLinks: Array<{
     tooltip: 'Scanners',
     icon: 'mdi-shield-search',
     to: '/scanners'
+  },
+  {
+    tooltip: 'Agent Groups',
+    icon: 'mdi-robot',
+    to: '/agent-groups/list'
   }
 ]
 </script>

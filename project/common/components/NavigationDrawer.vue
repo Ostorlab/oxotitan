@@ -83,7 +83,14 @@ export default defineComponent({
           to: '/scan/list',
           icon: 'mdi-shield-outline',
           value: 'scans'
+        },
+        {
+          title: 'Agent Groups',
+          icon: 'mdi-robot',
+          to: '/agent-groups/list',
+          value: 'agent-groups'
         }
+
       ]
     }
   },

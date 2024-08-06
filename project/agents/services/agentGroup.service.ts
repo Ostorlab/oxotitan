@@ -29,6 +29,11 @@ mutation PublishAgentGroup ($agentGroup: OxoAgentGroupCreateInputType!) {
     }
   }
 `
+const DELETE_AGENT_GROUP_MUTATION = gql`mutation DeleteAgentGroup ($agentGroupId: Int!){
+            deleteAgentGroup (agentGroupId: $agentGroupId) {
+                result
+            }
+        }`
 
 export default class AgentGroupService {
   private readonly requestHandler: RequestHandler
@@ -70,5 +75,18 @@ export default class AgentGroupService {
       throw new Error(response?.data?.errors[0]?.message)
     }
     return response?.data?.data?.publishAgentGroup?.agentGroup
+  }
+
+  async deleteAgentGroup(scanner: Scanner, agentGroupID: number): Promise<void> {
+    const response = await this.requestHandler.post(scanner,
+      {
+        query: DELETE_AGENT_GROUP_MUTATION,
+        variables: { agentGroupId: agentGroupID }
+      })
+
+    if ((response?.data?.errors || []).length > 0) {
+      throw new Error(response?.data?.errors[0]?.message)
+    }
+    return
   }
 }
