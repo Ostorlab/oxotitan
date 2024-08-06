@@ -196,7 +196,7 @@ const onSubmit = async (): Promise<void> => {
       emit('close-form')
       notificationsStore.reportSuccess('Agent group saved successfully.')
     } catch (error) {
-      notificationsStore.reportError('Failed to save Agent group information. Please try again.')
+      notificationsStore.reportError(error?.message || 'Failed to save Agent group information. Please try again.')
     }
   }
 }
