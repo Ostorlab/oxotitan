@@ -87,6 +87,5 @@ export default class AgentGroupService {
     if ((response?.data?.errors || []).length > 0) {
       throw new Error(response?.data?.errors[0]?.message)
     }
-    return
   }
 }

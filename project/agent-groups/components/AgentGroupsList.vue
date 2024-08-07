@@ -37,10 +37,10 @@
           <v-list dense>
             <v-list-item>
               <v-list-item-content>
-                <v-list-item-title>
+                <v-list-item-title class="chip-container">
                   <v-chip
-                    v-for="(agent) in visibleAgents(item.yamlSource)"
-                    :key="agent.key"
+                    v-for="(agent, index) in visibleAgents(item.yamlSource)"
+                    :key="index"
                     class="mr-1"
                   >
                     {{ formatAgentKey(agent.key) }}
@@ -50,8 +50,9 @@
                     class="mr-1"
                     color="grey lighten-2"
                     text-color="black"
+                    style="min-width: 50px; padding: 0 12px;"
                   >
-                    +{{ remainingCount(item.yamlSource) }} Agents
+                    +{{ remainingCount(item.yamlSource) }}
                   </v-chip>
                 </v-list-item-title>
               </v-list-item-content>
@@ -196,35 +197,32 @@ export default defineComponent({
   },
   methods: {
     ...mapActions(useNotificationsStore, ['reportSuccess', 'reportError']),
-    fetchAgentGroups(): void {
+    async fetchAgentGroups(): Promise<void> {
       this.agentGroups = []
-      const promises = this.scanners.map((scanner) =>
-        this.agentGroupService.getAgentGroups(scanner).then((val) => {
-          if (Array.isArray(val)) {
-            this.agentGroups.push(...val.map((agentGroup) => ({ ...agentGroup, scanner })))
+      this.loading = true
+
+      try {
+        const promises = this.scanners.map(async (scanner) => {
+          try {
+            const val = await this.agentGroupService.getAgentGroups(scanner)
+            if (Array.isArray(val)) {
+              this.agentGroups.push(...val.map((agentGroup) => ({ ...agentGroup, scanner })))
+            }
+          } catch (error) {
+            this.reportError(error?.message || 'Error fetching agent groups')
           }
         })
-      )
 
-      Promise.all(promises)
-        .then(() => {
-          this.loading = false
-        })
-        .catch((error) => {
-          console.error('Error fetching agent groups:', error)
-          this.loading = false
-        })
-    },
-    navigateToNewAgentGroup(): void {
-      const router = useRouter()
-      router.push({ path: '/agent-groups/new' })
+        await Promise.allSettled(promises)
+      } finally {
+        this.loading = false
+      }
     },
     parseYaml(yamlSource: string): any[] {
       try {
         const data = Yaml.parse(yamlSource) as { agents: any[] }
         return data.agents || []
       } catch (e) {
-        console.error('Failed to parse YAML data:', e)
         return []
       }
     },
@@ -239,7 +237,6 @@ export default defineComponent({
     deleteAgentGroup(agentGroup: any): void {
       this.onActionAgentGroup = agentGroup
       this.deleteAgentGroupDialog = true
-      console.log(agentGroup)
     },
     async confirmDeleteAgentGroup(): Promise<void> {
       if (this.onActionAgentGroup == null) return
@@ -249,7 +246,7 @@ export default defineComponent({
         this.reportSuccess('Agent group deleted successfully')
         this.agentGroups = this.agentGroups.filter((agentGroup) => agentGroup.id !== this.onActionAgentGroup.id)
       } catch (e: any) {
-        this.reportError(`An error occurred while deleting the agent group: ${e?.message}`)
+        this.reportError(e?.message || 'An error occurred while deleting the agent group')
       } finally {
         this.onActionAgentGroup = null
         this.loading = false
@@ -293,7 +290,20 @@ $border-color: #DADADA;
   overflow-y: auto;
   height: 100%;
 }
-.expansion-header {
-  overflow-x: auto;
+.chip-container {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.v-chip {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.v-chip__content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 </style>

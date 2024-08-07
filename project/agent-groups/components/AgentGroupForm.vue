@@ -151,10 +151,10 @@ const scanners = ref<Array<Scanner>>([])
 const showNewScannerForm = ref(false)
 
 onMounted(() => {
-  if (props.agentGroup && props.agentGroup.yamlSource !== null && props.agentGroup.yamlSource !== undefined) {
+  if (props.agentGroup !== null && props.agentGroup !== undefined && props.agentGroup.yamlSource !== null && props.agentGroup.yamlSource !== undefined) {
     yamlSource.value = props.agentGroup.yamlSource
   }
-  if (props.scanner != null && props.scanner != undefined) {
+  if (props.scanner !== null && props.scanner !== undefined) {
     localScanner.value = props.scanner
   }
 })
@@ -175,10 +175,10 @@ const getAgentGroupInput = (yamlSource: string) => {
    * Add or update agent group information.
    */
 const onSubmit = async (): Promise<void> => {
-  if (isFormValid.value && localAgentGroup.value !== null) {
+  if (isFormValid.value == true && localAgentGroup.value !== null) {
     try {
       const agentGroupInput = getAgentGroupInput(yamlSource.value)
-      if (localScanner.value != null && agentGroupInput != null) {
+      if (localScanner.value !== null && agentGroupInput !== null && agentGroupInput !== undefined) {
         const agentGroupDefinition = Yaml.parse(agentGroupInput)
         if (props.isEditMode == true) {
           await agentGroupService.deleteAgentGroup(localScanner.value, parseInt(localAgentGroup.value.id as string))
@@ -234,7 +234,6 @@ watch(() => props.agentGroup, (newVal) => {
   localAgentGroup.value = { ...newVal } as OxoAgentGroupType
 }, { immediate: true, deep: true })
 
-// Watch for changes in the scanners store to update scanners data.
 const scannersStore = useScannersStore()
 scanners.value = scannersStore.scanners || []
 </script>
