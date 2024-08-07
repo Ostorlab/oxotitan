@@ -15,7 +15,7 @@
           subtitle="Select or create a scanner to run the scan on"
           :value="1"
         >
-          <ScannerSelect v-model:model-value="selectedScanner" />
+          <ScannerSelect v-model:selected-scanner="selectedScanner" />
           <template #next="{ next }">
             <v-btn
               color="primary"
@@ -66,6 +66,9 @@
               variant="elevated"
               @click="prev"
             >
+              <v-icon start>
+                mdi-skip-previous-outline
+              </v-icon>
               Previous
             </v-btn>
           </template>
@@ -101,6 +104,9 @@
               variant="elevated"
               @click="prev"
             >
+              <v-icon start>
+                mdi-skip-previous-outline
+              </v-icon>
               Previous
             </v-btn>
           </template>
@@ -184,8 +190,34 @@ export default defineComponent({
       isStepValid: true,
       stepNumber: 1,
       finished: false,
-      assetPlatformType: AssetEnum.ANDROID_PLAYSTORE,
+      assetPlatformType: AssetEnum.WEB_APP,
       assetTypeItems: [
+        {
+          group: 'Web/Network',
+          assets: [
+            {
+              value: AssetEnum.WEB_APP,
+              title: 'Web App',
+              description: 'Web Application accessible using a browser',
+              icon: 'mdi-wan',
+              color: 'accent'
+            },
+            {
+              value: AssetEnum.WEB_API,
+              title: 'Web API',
+              description: 'Web API (REST, SOAP, GraphQL ...)',
+              icon: 'mdi-api',
+              color: 'accent'
+            },
+            {
+              value: AssetEnum.NETWORK,
+              title: 'Network',
+              description: 'Scan IPv4 and IPv6 network ranges',
+              icon: 'mdi-ip-network-outline',
+              color: 'accent'
+            }
+          ]
+        },
         {
           group: 'Mobile',
           assets: [
@@ -215,37 +247,6 @@ export default defineComponent({
               description: 'Scan an iOS Application (.IPA)',
               icon: 'mdi-apple',
               color: '#797979'
-            }
-          ]
-        },
-        {
-          group: 'Web',
-          assets: [
-            {
-              value: AssetEnum.WEB_APP,
-              title: 'Web App',
-              description: 'Web Application accessible using a browser',
-              icon: 'mdi-wan',
-              color: 'accent'
-            },
-            {
-              value: AssetEnum.WEB_API,
-              title: 'Web API',
-              description: 'Web API (REST, SOAP, GraphQL ...)',
-              icon: 'mdi-api',
-              color: 'accent'
-            }
-          ]
-        },
-        {
-          group: 'Network',
-          assets: [
-            {
-              value: AssetEnum.NETWORK,
-              title: 'Network',
-              description: 'Scan IPv4 and IPv6 network ranges',
-              icon: 'mdi-ip-network-outline',
-              color: 'accent'
             }
           ]
         },
@@ -374,7 +375,7 @@ export default defineComponent({
       this.agentGroupId = null
       this.selectedScanner = null
       this.scanTitle = null
-      this.assetPlatformType = AssetEnum.ANDROID_PLAYSTORE
+      this.assetPlatformType = AssetEnum.WEB_APP
     }
   }
 })
