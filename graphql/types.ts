@@ -60,8 +60,8 @@ export type DeleteAgentGroupMutation = {
 };
 
 /** Delete Scan & its information mutation. */
-export type DeleteScanMutation = {
-  __typename?: 'DeleteScanMutation';
+export type DeleteScansMutation = {
+  __typename?: 'DeleteScansMutation';
   result?: Maybe<Scalars['Boolean']['output']>;
 };
 
@@ -77,16 +77,16 @@ export type Mutations = {
   createAssets?: Maybe<CreateAssetsMutation>;
   /** Delete agent group. */
   deleteAgentGroup?: Maybe<DeleteAgentGroupMutation>;
-  /** Delete a scan & all its information. */
-  deleteScan?: Maybe<DeleteScanMutation>;
+  /** Delete scans & all their information. */
+  deleteScans?: Maybe<DeleteScansMutation>;
   /** Import scan from file. */
   importScan?: Maybe<ImportScanMutation>;
   /** Create agent group */
   publishAgentGroup?: Maybe<PublishAgentGroupMutation>;
   /** Run scan */
   runScan?: Maybe<RunScanMutation>;
-  /** Stops running scan, scan is marked as stopped once the engine has completed cancellation. */
-  stopScan?: Maybe<StopScanMutation>;
+  /** Stops running scans, scan is marked as stopped once the engine has completed cancellation. */
+  stopScans?: Maybe<StopScansMutation>;
 };
 
 
@@ -100,8 +100,8 @@ export type MutationsDeleteAgentGroupArgs = {
 };
 
 
-export type MutationsDeleteScanArgs = {
-  scanId: Scalars['Int']['input'];
+export type MutationsDeleteScansArgs = {
+  scanIds: Array<InputMaybe<Scalars['Int']['input']>>;
 };
 
 
@@ -121,8 +121,8 @@ export type MutationsRunScanArgs = {
 };
 
 
-export type MutationsStopScanArgs = {
-  scanId: Scalars['Int']['input'];
+export type MutationsStopScansArgs = {
+  scanIds: Array<InputMaybe<Scalars['Int']['input']>>;
 };
 
 /** Input object type for an agent argument. */
@@ -493,7 +493,7 @@ export enum SortEnum {
 }
 
 /** Stop scan mutation. */
-export type StopScanMutation = {
-  __typename?: 'StopScanMutation';
-  scan?: Maybe<OxoScanType>;
+export type StopScansMutation = {
+  __typename?: 'StopScansMutation';
+  scans?: Maybe<Array<Maybe<OxoScanType>>>;
 };

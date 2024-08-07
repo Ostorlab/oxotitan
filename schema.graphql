@@ -18,8 +18,13 @@ type DeleteAgentGroupMutation {
 }
 
 "Delete Scan & its information mutation."
-type DeleteScanMutation {
+type DeleteScansMutation {
     result: Boolean
+}
+
+"Export scan mutation."
+type ExportScanMutation {
+    content: Bytes
 }
 
 "Import scan mutation."
@@ -33,7 +38,9 @@ type Mutations {
     "Delete agent group."
     deleteAgentGroup(agentGroupId: Int!): DeleteAgentGroupMutation
     "Delete a scan & all its information."
-    deleteScan(scanIds: [Int]!): DeleteScanMutation
+    deleteScans(scanIds: [Int]!): DeleteScansMutation
+    "Export scan to file."
+    exportScan(exportIde: Boolean, scanId: Int!): ExportScanMutation
     "Import scan from file."
     importScan(file: Upload!, scanId: Int): ImportScanMutation
     "Create agent group"
@@ -41,7 +48,7 @@ type Mutations {
     "Run scan"
     runScan(scan: OxoAgentScanInputType!): RunScanMutation
     "Stops running scan, scan is marked as stopped once the engine has completed cancellation."
-    stopScan(scanIds: [Int]!): StopScanMutation
+    stopScans(scanIds: [Int]!): StopScansMutation
 }
 
 "Graphene object type for a list of agent arguments."
@@ -169,6 +176,7 @@ type OxoScanType {
     kbVulnerabilities(detailTitle: String): [OxoAggregatedKnowledgeBaseVulnerabilityType]
     messageStatus: String
     progress: String
+    riskRating: String
     title: String
     "List of vulnerabilities."
     vulnerabilities(detailTitles: [String], numberElements: Int, page: Int, vulnIds: [Int]): OxoVulnerabilitiesType
@@ -228,7 +236,7 @@ type RunScanMutation {
 }
 
 "Stop scan mutation."
-type StopScanMutation {
+type StopScansMutation {
     scans: [OxoScanType]
 }
 

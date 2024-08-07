@@ -76,15 +76,15 @@ query Scan($scanId: Int!) {
 }
 `
 
-const DELETE_SCAN_MUTATION = gql`mutation deleteScan($scanIds: [Int]!) {
-  deleteScan(scanIds: $scanIds) {
+const DELETE_SCANS_MUTATION = gql`mutation DeleteScans ($scanIds: [Int]!){
+  deleteScans (scanIds: $scanIds) {
     result
   }
 }
 `
 
-const STOP_SCAN_MUTATION = gql`mutation stopScan($scanIds: [Int]!) {
-  stopScan(scanIds: $scanIds) {
+const STOP_SCANS_MUTATION = gql`mutation stopScans($scanIds: [Int]!) {
+  stopScans(scanIds: $scanIds) {
     scans {
       id
     }
@@ -167,7 +167,7 @@ export default class ScansService {
     const response = await this.requestor.post(
       scanner,
       {
-        query: STOP_SCAN_MUTATION,
+        query: STOP_SCANS_MUTATION,
         variables: {
           scanIds: scanIds
         }
@@ -184,12 +184,12 @@ export default class ScansService {
     const response = await this.requestor.post(
       scanner,
       {
-        query: DELETE_SCAN_MUTATION,
+        query: DELETE_SCANS_MUTATION,
         variables: {
           scanIds: scanIds
         }
       })
-    return response?.data?.deleteScan?.result || false
+    return response?.data?.deleteScans?.result || false
   }
 
   /**

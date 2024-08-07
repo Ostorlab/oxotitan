@@ -283,7 +283,7 @@ export default defineComponent({
       try {
         this.loading = true
         await this.service.deleteScan(this.scanner, this.selected)
-        this.reportSuccess('Scan deleted successfully')
+        this.reportSuccess('Scans deleted successfully')
       } catch (e: any) {
         this.reportError(`An error occurred while deleting the scan: ${e?.message}`)
       } finally {
