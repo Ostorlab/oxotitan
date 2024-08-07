@@ -256,7 +256,7 @@ export default defineComponent({
      */
     async confirmStopSelectedScans(): Promise<void> {
       try {
-        await this.service.stopScan(this.scanner, this.selected)
+        await this.service.stopScans(this.scanner, this.selected)
         await this.fetchScans()
       } catch (e: any) {
         this.reportError(e?.message || 'An error occurred while stopping the scans')
@@ -282,7 +282,7 @@ export default defineComponent({
       }
       try {
         this.loading = true
-        await this.service.deleteScan(this.scanner, this.selected)
+        await this.service.deleteScans(this.scanner, this.selected)
         this.reportSuccess('Scans deleted successfully')
       } catch (e: any) {
         this.reportError(`An error occurred while deleting the scan: ${e?.message}`)

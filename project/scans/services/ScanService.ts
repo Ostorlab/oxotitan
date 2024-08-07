@@ -163,7 +163,7 @@ export default class ScansService {
    * @param scanner
    * @param scanIds
    */
-  async stopScan(scanner: Scanner, scanIds: array<number>): Promise<void> {
+  async stopScans(scanner: Scanner, scanIds: array<number>): Promise<void> {
     const response = await this.requestor.post(
       scanner,
       {
@@ -180,7 +180,7 @@ export default class ScansService {
    * @param scanner
    * @param scanIds
    */
-  async deleteScan(scanner: Scanner, scanIds: array<number>): Promise<boolean> {
+  async deleteScans(scanner: Scanner, scanIds: array<number>): Promise<boolean> {
     const response = await this.requestor.post(
       scanner,
       {
