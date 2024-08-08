@@ -17,8 +17,8 @@
       class="pa-4 mb-4"
     >
       <AgentGroupForm
-        :agent-group="selectedAgentGroup"
-        :scanner="selectedAgentGroup.scanner"
+        :agent-group="createAgentGroup(selectedAgentGroup)"
+        :scanner="selectedAgentGroup?.scanner"
         :is-edit-mode="true"
         @close-form="onCloseForm"
       />
@@ -105,6 +105,7 @@ import AgentGroupForm from './AgentGroupForm.vue'
 import AgentGroupService from '~/project/agents/services/agentGroup.service'
 import { DfConfirmationModal } from '~/dragonfly/components/Modals/DfConfirmationModal'
 import type { Scanner } from '~/project/types'
+import type { OxoAgentGroupType } from '~/graphql/types'
 
 type ActionsType = {
   title?: string
@@ -119,14 +120,13 @@ interface Data {
   agentGroupService: AgentGroupService
   agentGroups: Array<UpdatedAgentGroup>
   headers: { title: string, align: string, sortable: boolean, key: string, width: string }[]
-  agentGroup: any | null
   itemsPerPage: number
   editorLanguage: string
   editorOptions: object
   deleteAgentGroupDialog: boolean
-  onActionAgentGroup: any
+  onActionAgentGroup: UpdatedAgentGroup | null
   showForm: boolean
-  selectedAgentGroup: any | null
+  selectedAgentGroup: UpdatedAgentGroup | null
   expandedItem: string | null
 }
 interface UpdatedAgentGroup {
@@ -154,7 +154,6 @@ export default defineComponent({
         { title: 'Agents', align: 'left', sortable: false, key: 'agents', width: '20%' },
         { title: 'Actions', align: 'left', sortable: false, key: 'actions', width: '5%' }
       ],
-      agentGroup: null,
       onActionAgentGroup: null,
       itemsPerPage: 15,
       editorLanguage: 'yaml',
@@ -178,14 +177,14 @@ export default defineComponent({
       return [
         {
           title: 'Edit',
-          action: (agentGroup) => this.updateAgentGroup(agentGroup),
+          action: (agentGroup: UpdatedAgentGroup) => this.updateAgentGroup(agentGroup),
           icon: 'mdi-pencil-outline',
           color: 'primary',
           divider: true
         },
         {
           title: 'Delete',
-          action: (agentGroup) => this.deleteAgentGroup(agentGroup),
+          action: (agentGroup: UpdatedAgentGroup) => this.deleteAgentGroup(agentGroup),
           icon: 'mdi-delete',
           color: 'red'
         }
@@ -268,7 +267,7 @@ export default defineComponent({
    *
    * @param {any} agentGroup - The agent group to be deleted.
    */
-    deleteAgentGroup(agentGroup: any): void {
+    deleteAgentGroup(agentGroup: UpdatedAgentGroup): void {
       this.onActionAgentGroup = agentGroup
       this.deleteAgentGroupDialog = true
     },
@@ -283,9 +282,11 @@ export default defineComponent({
       if (this.onActionAgentGroup == null) return
       try {
         this.loading = true
-        await this.agentGroupService.deleteAgentGroup(this.onActionAgentGroup.scanner, parseInt(this.onActionAgentGroup.id))
-        this.reportSuccess('Agent group deleted successfully')
-        this.agentGroups = this.agentGroups.filter((agentGroup) => agentGroup.id !== this.onActionAgentGroup.id)
+        if (this.onActionAgentGroup !== null && this.onActionAgentGroup.id !== undefined) {
+          await this.agentGroupService.deleteAgentGroup(this.onActionAgentGroup.scanner, parseInt(this.onActionAgentGroup.id))
+          this.reportSuccess('Agent group deleted successfully')
+          this.agentGroups = this.agentGroups.filter((agentGroup) => agentGroup.id !== this.onActionAgentGroup?.id)
+        }
       } catch (e: any) {
         this.reportError(e?.message || 'An error occurred while deleting the agent group')
       } finally {
@@ -331,6 +332,12 @@ export default defineComponent({
       } else {
         return `@${org}/${name}`
       }
+    },
+    createAgentGroup(agentGroup: UpdatedAgentGroup | null): OxoAgentGroupType | null {
+      if (agentGroup !== null && agentGroup.id !== null && agentGroup.id !== undefined) {
+        return { id: agentGroup.id, name: agentGroup.name, key: agentGroup.key, yamlSource: agentGroup.yamlSource, description: agentGroup.description, agents: { agents: [] } }
+      }
+      return null
     }
   }
 })

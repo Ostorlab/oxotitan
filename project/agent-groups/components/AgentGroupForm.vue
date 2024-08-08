@@ -115,7 +115,7 @@ const DEFAULT_AGENTGROUP_VALUE = { id: '', key: '', name: '', description: '', a
    */
 const props = defineProps({
   agentGroup: {
-    type: Object as PropType<OxoAgentGroupType>,
+    type: Object as PropType<OxoAgentGroupType | null>,
     default: () => ({ id: '', key: '', name: '', description: '', agents: { agents: [] } })
   },
   isEditMode: {
