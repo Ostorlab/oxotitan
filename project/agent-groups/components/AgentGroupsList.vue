@@ -109,7 +109,7 @@ import type { OxoAgentGroupType } from '~/graphql/types'
 
 type ActionsType = {
   title?: string
-  action?: (agentGroup: any) => void
+  action?: (agentGroup: OxoAgentGroupType) => void
   icon?: string
   disabled?: (agentGroup: any) => boolean
   divider?: boolean
