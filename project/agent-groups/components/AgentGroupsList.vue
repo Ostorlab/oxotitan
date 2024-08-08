@@ -231,7 +231,7 @@ export default defineComponent({
    * @param {string} yamlSource - The YAML string containing agent data.
    * @returns {any[]} An array of agents parsed from the YAML string.
    */
-    parseYaml(yamlSource: string): any[] {
+    parseYaml(yamlSource: string): { agents: Array<OxoAgentType> } {
       try {
         const data = Yaml.parse(yamlSource) as { agents: any[] }
         return data.agents || []
