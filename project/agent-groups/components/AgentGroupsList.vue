@@ -52,7 +52,7 @@
                     text-color="black"
                     style="min-width: 50px; padding: 0 12px;"
                   >
-                    +{{ remainingCount(item.yamlSource) }}
+                    +{{ getRemainingCount(item.yamlSource) }}
                   </v-chip>
                 </v-list-item-title>
               </v-list-item-content>
@@ -130,11 +130,11 @@ interface Data {
   expandedItem: string | null
 }
 interface UpdatedAgentGroup {
-  description?: string
-  id: string
-  key?: string
-  name?: string
-  yamlSource?: string
+  description?: string | null
+  id?: string
+  key?: string | null
+  name?: string | null
+  yamlSource?: string | null
   scanner: Scanner
 }
 
@@ -197,6 +197,13 @@ export default defineComponent({
   },
   methods: {
     ...mapActions(useNotificationsStore, ['reportSuccess', 'reportError']),
+
+    /**
+   * Fetches the list of agent groups for all available scanners and populates the `agentGroups` data property.
+   * It handles errors by reporting them through the notification store.
+   *
+   * @returns {Promise<void>} A promise that resolves when all agent groups have been fetched.
+   */
     async fetchAgentGroups(): Promise<void> {
       this.agentGroups = []
       this.loading = true
@@ -205,7 +212,7 @@ export default defineComponent({
         const promises = this.scanners.map(async (scanner) => {
           try {
             const val = await this.agentGroupService.getAgentGroups(scanner)
-            if (Array.isArray(val)) {
+            if (Array.isArray(val) == true) {
               this.agentGroups.push(...val.map((agentGroup) => ({ ...agentGroup, scanner })))
             }
           } catch (error) {
@@ -218,6 +225,13 @@ export default defineComponent({
         this.loading = false
       }
     },
+
+    /**
+   * Parses a YAML string to extract the list of agents.
+   *
+   * @param {string} yamlSource - The YAML string containing agent data.
+   * @returns {any[]} An array of agents parsed from the YAML string.
+   */
     parseYaml(yamlSource: string): any[] {
       try {
         const data = Yaml.parse(yamlSource) as { agents: any[] }
@@ -226,18 +240,45 @@ export default defineComponent({
         return []
       }
     },
+
+    /**
+   * Retrieves the first four agents from the parsed YAML source.
+   *
+   * @param {string} yamlSource - The YAML string containing agent data.
+   * @returns {any[]} An array of up to four agents.
+   */
     getVisibleAgents(yamlSource: string): any[] {
       const agents = this.parseYaml(yamlSource)
       return agents.slice(0, 4)
     },
+
+    /**
+   * Calculates the number of remaining agents not displayed in the visible agents list.
+   *
+   * @param {string} yamlSource - The YAML string containing agent data.
+   * @returns {number} The count of remaining agents.
+   */
     getRemainingCount(yamlSource: string): number {
       const agents = this.parseYaml(yamlSource)
       return Math.max(0, agents.length - 4)
     },
+
+    /**
+   * Triggers the deletion process for a given agent group by opening a confirmation dialog.
+   *
+   * @param {any} agentGroup - The agent group to be deleted.
+   */
     deleteAgentGroup(agentGroup: any): void {
       this.onActionAgentGroup = agentGroup
       this.deleteAgentGroupDialog = true
     },
+
+    /**
+   * Confirms the deletion of the selected agent group and removes it from the list.
+   * Reports success or error based on the outcome.
+   *
+   * @returns {Promise<void>} A promise that resolves when the agent group has been deleted.
+   */
     async confirmDeleteAgentGroup(): Promise<void> {
       if (this.onActionAgentGroup == null) return
       try {
@@ -252,17 +293,34 @@ export default defineComponent({
         this.loading = false
       }
     },
+
+    /**
+   * Opens the form to edit the selected agent group.
+   *
+   * @param {UpdatedAgentGroup} agentGroup - The agent group to be edited.
+   */
     updateAgentGroup(agentGroup: UpdatedAgentGroup): void {
       this.selectedAgentGroup = agentGroup
       this.showForm = true
       window.scrollTo({ top: 0, behavior: 'smooth' })
     },
+
+    /**
+   * Closes the agent group form and refreshes the list of agent groups.
+   */
     onCloseForm(): void {
       this.showForm = false
       this.selectedAgentGroup = null
       this.loading = true
       this.fetchAgentGroups()
     },
+
+    /**
+   * Formats an agent key to a more readable format.
+   *
+   * @param {string} agentKey - The key of the agent to be formatted.
+   * @returns {string} The formatted agent key.
+   */
     formatAgentKey(agentKey: string): string {
       const parts = agentKey.split('/')
       const org = parts[1]
