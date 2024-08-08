@@ -111,7 +111,7 @@ type ActionsType = {
   title?: string
   action?: (agentGroup: OxoAgentGroupType) => void
   icon?: string
-  disabled?: (agentGroup: any) => boolean
+  disabled?: (agentGroup: OxoAgentGroupType) => boolean
   divider?: boolean
   color: string
 }
