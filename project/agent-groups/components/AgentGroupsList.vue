@@ -39,14 +39,14 @@
               <v-list-item-content>
                 <v-list-item-title class="chip-container">
                   <v-chip
-                    v-for="(agent, index) in visibleAgents(item.yamlSource)"
+                    v-for="(agent, index) in getVisibleAgents(item.yamlSource)"
                     :key="index"
                     class="mr-1"
                   >
                     {{ formatAgentKey(agent.key) }}
                   </v-chip>
                   <v-chip
-                    v-if="remainingCount(item.yamlSource) > 0"
+                    v-if="getRemainingCount(item.yamlSource) > 0"
                     class="mr-1"
                     color="grey lighten-2"
                     text-color="black"
@@ -117,7 +117,7 @@ type ActionsType = {
 interface Data {
   loading: boolean
   agentGroupService: AgentGroupService
-  agentGroups: any[]
+  agentGroups: Array<UpdatedAgentGroup>
   headers: { title: string, align: string, sortable: boolean, key: string, width: string }[]
   agentGroup: any | null
   itemsPerPage: number
@@ -226,13 +226,13 @@ export default defineComponent({
         return []
       }
     },
-    visibleAgents(yamlSource: string): any[] {
+    getVisibleAgents(yamlSource: string): any[] {
       const agents = this.parseYaml(yamlSource)
-      return agents.slice(0, 4) // Show only the first 4 agents
+      return agents.slice(0, 4)
     },
-    remainingCount(yamlSource: string): number {
+    getRemainingCount(yamlSource: string): number {
       const agents = this.parseYaml(yamlSource)
-      return Math.max(0, agents.length - 4) // Count the remaining agents
+      return Math.max(0, agents.length - 4)
     },
     deleteAgentGroup(agentGroup: any): void {
       this.onActionAgentGroup = agentGroup
