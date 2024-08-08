@@ -105,13 +105,13 @@ import AgentGroupForm from './AgentGroupForm.vue'
 import AgentGroupService from '~/project/agents/services/agentGroup.service'
 import { DfConfirmationModal } from '~/dragonfly/components/Modals/DfConfirmationModal'
 import type { Scanner } from '~/project/types'
-import type { OxoAgentGroupType } from '~/graphql/types'
+import type { OxoAgentGroupType, OxoAgentType } from '~/graphql/types'
 
 type ActionsType = {
   title?: string
-  action?: (agentGroup: OxoAgentGroupType) => void
+  action?: (agentGroup: UpdatedAgentGroup) => void
   icon?: string
-  disabled?: (agentGroup: any) => boolean
+  disabled?: (agentGroup: UpdatedAgentGroup) => boolean
   divider?: boolean
   color: string
 }
@@ -229,11 +229,11 @@ export default defineComponent({
    * Parses a YAML string to extract the list of agents.
    *
    * @param {string} yamlSource - The YAML string containing agent data.
-   * @returns {any[]} An array of agents parsed from the YAML string.
+   * @returns {Array<OxoAgentType>} An array of agents parsed from the YAML string.
    */
-    parseYaml(yamlSource: string): any[] {
+    parseYaml(yamlSource: string): Array<OxoAgentType> {
       try {
-        const data = Yaml.parse(yamlSource) as { agents: any[] }
+        const data = Yaml.parse(yamlSource) as { agents: Array<OxoAgentType> }
         return data.agents || []
       } catch (e) {
         return []
@@ -244,9 +244,9 @@ export default defineComponent({
    * Retrieves the first four agents from the parsed YAML source.
    *
    * @param {string} yamlSource - The YAML string containing agent data.
-   * @returns {any[]} An array of up to four agents.
+   * @returns {Array<OxoAgentType>} An array of up to four agents.
    */
-    getVisibleAgents(yamlSource: string): any[] {
+    getVisibleAgents(yamlSource: string): Array<OxoAgentType> {
       const agents = this.parseYaml(yamlSource)
       return agents.slice(0, 4)
     },
@@ -265,7 +265,7 @@ export default defineComponent({
     /**
    * Triggers the deletion process for a given agent group by opening a confirmation dialog.
    *
-   * @param {any} agentGroup - The agent group to be deleted.
+   * @param {UpdatedAgentGroup} agentGroup - The agent group to be deleted.
    */
     deleteAgentGroup(agentGroup: UpdatedAgentGroup): void {
       this.onActionAgentGroup = agentGroup
