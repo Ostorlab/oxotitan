@@ -2,7 +2,7 @@
   <div>
     <DfConfirmationModal
       v-model="stopDialog"
-      title="Are you sure you would like to stop the scan?"
+      title="Are you sure you would like to stop the selected scans?"
       description="A stopped scan cannot be resumed."
       cancel-button-text="Cancel"
       confirm-button-text="Stop"
@@ -10,20 +10,31 @@
       confirm-icon="mdi-check"
       confirm-button-color="secondary"
       card-icon="mdi-stop-circle-outline"
-      @confirm="confirmStop"
+      @confirm="confirmStopSelectedScans"
     />
     <DfConfirmationModal
       v-model="deleteScanDialog"
-      title="Are you sure you would like to archive this scan?"
+      title="Are you sure you would like to archive the selected scans?"
       cancel-button-text="Cancel"
       confirm-button-text="Delete"
       cancel-icon="mdi-close"
       confirm-icon="mdi-check"
       confirm-button-color="secondary"
       card-icon="mdi-archive-arrow-down-outline"
-      @confirm="confirmDeleteScan"
+      @confirm="confirmDeleteSelectedScans"
     />
-
+    <v-card variant="outlined" class="mb-5">
+      <v-btn :icon="mdi-refresh" @click="stopScans" :disabled="selected.length === 0" class="mx-1 my-1">
+        <v-icon start>
+          mdi-stop-circle-outline
+        </v-icon>Stop
+      </v-btn>
+      <v-btn @click="deleteScans" :disabled="selected.length === 0" class="mx-1 my-1">
+        <v-icon start>
+          mdi-trash-can-outline
+        </v-icon>Delete
+      </v-btn>
+    </v-card>
     <v-card
       variant="outlined"
     >
@@ -35,6 +46,8 @@
       <v-data-table-server
         v-model:options="options"
         hover
+        show-select
+        v-model="selected"
         :headers="headers"
         :items="scans"
         :items-length="service.totalScans"
@@ -140,13 +153,6 @@ const HEADERS = [
     sortable: false,
     key: 'Progress',
     width: '8%'
-  },
-  {
-    title: 'Actions',
-    align: 'left',
-    sortable: false,
-    key: 'Action',
-    width: '5%'
   }
 ]
 interface Data {
@@ -188,6 +194,7 @@ export default defineComponent({
   },
   data(): Data {
     return {
+      selected: [],
       service: new ScanService(this.$axios),
       scans: [],
       deleteScanDialog: false,
@@ -207,34 +214,6 @@ export default defineComponent({
       stopDialog: false,
       headers: HEADERS,
       currentPage: 0
-    }
-  },
-  computed: {
-    ...mapState(useScannersStore, ['scanners']),
-    /**
-     * Action to be used with the table for the scans
-     */
-    actions(): Array<ActionsType> {
-      return [
-        {
-          title: 'Stop',
-          action: this.stopScan,
-          icon: 'mdi-stop',
-          disabled(scan: OxoScanType) {
-            return !(
-              scan.progress?.toLowerCase() === 'in_progress' || scan.progress?.toLowerCase() === 'not_started'
-            )
-          }
-        },
-        {
-          divider: true
-        },
-        {
-          title: 'Delete',
-          action: this.deleteScan,
-          icon: 'mdi-delete'
-        }
-      ]
     }
   },
   watch: {
@@ -265,53 +244,52 @@ export default defineComponent({
       )
     },
     /**
-     * Confirm the stop of the scan
-     */
-    async confirmStop(): Promise<void> {
-      if (this.onActionScan === null || this.onActionScan === undefined) {
-        return
-      }
-      try {
-        await this.service.stopScan(this.scanner, parseInt(this.onActionScan.id))
-        await this.fetchScans()
-      } catch (e: any) {
-        this.reportError(e?.message || 'An error occurred while stoping the scan')
-      } finally {
-        this.onActionScan = null
-      }
-    },
-    /**
      * Stop the scan
      * @param scan
      */
-    stopScan(scan: OxoScanType): void {
+    stopScans(scan: OxoScanType): void {
       this.onActionScan = scan
       this.stopDialog = true
+    },
+    /**
+     * Stop the selected scans
+     */
+    async confirmStopSelectedScans(): Promise<void> {
+      try {
+        await this.service.stopScans(this.scanner, this.selected)
+        await this.fetchScans()
+      } catch (e: any) {
+        this.reportError(e?.message || 'An error occurred while stopping the scans')
+      } finally {
+        this.onActionScan = null
+        this.selected = []
+      }
     },
     /**
      * Delete the scan
      * @param scan
      */
-    deleteScan(scan: OxoScanType): void {
+    deleteScans(scan: OxoScanType): void {
       this.onActionScan = scan
       this.deleteScanDialog = true
     },
     /**
      * Confirm deleting the scan.
      */
-    async confirmDeleteScan(): Promise<void> {
+    async confirmDeleteSelectedScans(): Promise<void> {
       if (this.onActionScan === null || this.onActionScan === undefined) {
         return
       }
       try {
         this.loading = true
-        await this.service.deleteScan(this.scanner, parseInt(this.onActionScan.id))
-        this.reportSuccess('Scan deleted successfully')
+        await this.service.deleteScans(this.scanner, this.selected)
+        this.reportSuccess('Scans deleted successfully')
       } catch (e: any) {
         this.reportError(`An error occurred while deleting the scan: ${e?.message}`)
       } finally {
         this.onActionScan = null
         this.loading = false
+        this.selected = []
       }
       await this.fetchScans()
     },

@@ -540,7 +540,7 @@ export default defineComponent ({
     async stopScan(): Promise<void> {
       try {
         this.stopBtnLoading = true
-        await this.scanService.stopScan(this.scanner, this.scanId)
+        await this.scanService.stopScans(this.scanner, [this.scanId])
         await this.fetchKBVulnerabilities()
       } catch (e: any) {
         this.reportError(e?.message || 'Error Stopping scan.')
@@ -554,7 +554,7 @@ export default defineComponent ({
     async deleteScan(): Promise<void> {
       try {
         this.loadingDialog = true
-        await this.scanService.deleteScan(this.scanner, this.scanId)
+        await this.scanService.deleteScans(this.scanner, [this.scanId])
         this.reportSuccess('Scan deleted successfully')
         this.$router.push('/scan/list')
       } catch (e) {
