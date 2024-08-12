@@ -108,17 +108,15 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
-import { mapActions } from 'pinia'
 import Yaml from 'yaml'
+import { mapActions } from 'pinia'
+import type { Maybe, AssetTypeEnum, OxoAgentGroupType } from '~/graphql/types'
 import AgentGroupService from '~/project/agents/services/agentGroup.service'
-import { useNotificationsStore } from '~/stores/notifications'
 import type { Scanner } from '~/project/types'
-import type { AssetTypeEnum, Maybe, OxoAgentGroupType } from '~/graphql/types'
 
 interface Data {
   selectedAgentGroup: Array<Maybe<OxoAgentGroupType>> | null
-  agentGroups: Array<unknown>
+  agentGroups: Array<OxoAgentGroupType>
   agentGroupService: AgentGroupService
   agentGroupInput: string | null
   editorLanguage: string
@@ -161,8 +159,7 @@ export default defineComponent({
         wordWrapColumn: 'on',
         fontFamily: 'Fira Code',
         automaticLayout: true,
-        minimap: { enabled: false },
-        readOnly: true
+        minimap: { enabled: false }
       }
     }
   },
@@ -203,19 +200,88 @@ export default defineComponent({
      */
       try {
         await this.getAgentGroup()
+        const agentGroup = await this.updateAgentGroup()
+        if (agentGroup !== undefined && agentGroup !== null && agentGroup.id !== null && agentGroup.id !== undefined) {
+          this.$emit('update:model-value', agentGroup)
+          this.$emit('update:agent-group-id', agentGroup.id)
+        }
         this.$emit('createScan')
+        this.getAgentGroups(this.selectedScanner)
       } catch (e: any) {
         this.reportError(e?.message || 'Error creating scan')
       }
     },
     async getAgentGroup(): Promise<OxoAgentGroupType | null | undefined> {
       try {
-        if (this.selectedAgentGroup != null && this.selectedAgentGroup.length > 0) {
+        if (this.selectedAgentGroup !== null && this.selectedAgentGroup.length > 0) {
           return this.selectedAgentGroup[0]
         }
       } catch (e: any) {
         this.reportError(e?.message || 'Error getting agent group')
       }
+    },
+    /**
+ * Converts the provided YAML source string to a stringified YAML format.
+ * @param yamlSource - The YAML source string to be converted. It can be null or undefined.
+ * @returns The stringified YAML if the source is valid, otherwise returns undefined.
+ */
+    getAgentGroupInput(yamlSource: string | null) {
+      if (yamlSource === null || yamlSource === undefined) {
+        return
+      } else {
+        const agentGroupInput = Yaml.stringify(Yaml.parse(yamlSource))
+        if (agentGroupInput !== null) {
+          return agentGroupInput
+        }
+      }
+    },
+    /**
+ * Updates the agent group by either creating a new one or updating an existing one.
+ * */
+    async updateAgentGroup(): Promise<OxoAgentGroupType | null | undefined> {
+      if (!this.agentGroupInput) return
+
+      try {
+        const agentGroupInput = this.getAgentGroupInput(this.agentGroupInput)
+        const agentGroupDefinition = Yaml.parse(agentGroupInput)
+        if (this.selectedScanner === null || agentGroupInput === null) return
+        if (this.selectedAgentGroup !== null && this.selectedAgentGroup !== undefined && this.selectedAgentGroup.length > 0) {
+          const selectedAgentGroupYaml = this.getAgentGroupInput(this.selectedAgentGroup[0]?.yamlSource)
+
+          if (agentGroupInput !== selectedAgentGroupYaml) {
+            return this.createOrUpdateAgentGroup(
+              agentGroupDefinition,
+              this.selectedAgentGroup[0].description,
+              this.selectedAgentGroup[0]?.name
+            )
+          } else {
+            return this.getAgentGroup()
+          }
+        } else {
+          return this.createOrUpdateAgentGroup(agentGroupDefinition)
+        }
+      } catch (error) {
+        console.error('Error updating agent group:', error)
+        return
+      }
+    },
+    /**
+ * Create new agent group from existing one .
+ * @param agentGroupDefinition- Parsed yaml source. containing agents,description and name.
+ * @param description- Name of existing agent group to fallback to .
+ * @param name- Description of existing agent group to fallback to.
+ * @returns The Created agent group.
+**/
+    async createOrUpdateAgentGroup(agentGroupDefinition: any, description: string = '', name: string = ''): Promise<OxoAgentGroupType | null | undefined> {
+      return this.agentGroupService.createAgentGroup({
+        scanner: this.selectedScanner,
+        agentGroup: {
+          description: agentGroupDefinition.description || description,
+          agents: agentGroupDefinition?.agents,
+          name: agentGroupDefinition.name || name,
+          assetTypes: [this.agentGroupAssetType]
+        }
+      })
     }
   }
 })

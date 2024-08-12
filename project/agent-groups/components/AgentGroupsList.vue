@@ -190,6 +190,10 @@ export default defineComponent({
         }
       ]
     }
+  }, watch: {
+    selectedAgentGroup(newVal) {
+      this.selectedAgentGroup = newVal
+    }
   },
   mounted() {
     this.fetchAgentGroups()
@@ -271,7 +275,6 @@ export default defineComponent({
       this.onActionAgentGroup = agentGroup
       this.deleteAgentGroupDialog = true
     },
-
     /**
    * Confirms the deletion of the selected agent group and removes it from the list.
    * Reports success or error based on the outcome.
