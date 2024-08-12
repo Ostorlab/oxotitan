@@ -213,7 +213,7 @@ export default defineComponent({
     },
     async getAgentGroup(): Promise<OxoAgentGroupType | null | undefined> {
       try {
-        if (this.selectedAgentGroup != null && this.selectedAgentGroup.length > 0) {
+        if (this.selectedAgentGroup !== null && this.selectedAgentGroup.length > 0) {
           return this.selectedAgentGroup[0]
         }
       } catch (e: any) {
@@ -244,8 +244,8 @@ export default defineComponent({
       try {
         const agentGroupInput = this.getAgentGroupInput(this.agentGroupInput)
         const agentGroupDefinition = Yaml.parse(agentGroupInput)
-        if (!this.selectedScanner || !agentGroupInput) return
-        if (this.selectedAgentGroup && this.selectedAgentGroup.length > 0) {
+        if (this.selectedScanner === null || agentGroupInput === null) return
+        if (this.selectedAgentGroup !== null && this.selectedAgentGroup !== undefined && this.selectedAgentGroup.length > 0) {
           const selectedAgentGroupYaml = this.getAgentGroupInput(this.selectedAgentGroup[0]?.yamlSource)
 
           if (agentGroupInput !== selectedAgentGroupYaml) {
