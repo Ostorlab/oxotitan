@@ -23,13 +23,25 @@
       card-icon="mdi-archive-arrow-down-outline"
       @confirm="confirmDeleteSelectedScans"
     />
-    <v-card variant="outlined" class="mb-5">
-      <v-btn :icon="mdi-refresh" @click="stopScans" :disabled="selected.length === 0" class="mx-1 my-1">
+    <v-card
+      variant="outlined"
+      class="mb-5"
+    >
+      <v-btn
+        :icon="mdi-refresh"
+        :disabled="selected.length === 0"
+        class="mx-1 my-1"
+        @click="stopScans"
+      >
         <v-icon start>
           mdi-stop-circle-outline
         </v-icon>Stop
       </v-btn>
-      <v-btn @click="deleteScans" :disabled="selected.length === 0" class="mx-1 my-1">
+      <v-btn
+        :disabled="selected.length === 0"
+        class="mx-1 my-1"
+        @click="deleteScans"
+      >
         <v-icon start>
           mdi-trash-can-outline
         </v-icon>Delete
@@ -45,9 +57,9 @@
       </v-card-title>
       <v-data-table-server
         v-model:options="options"
+        v-model="selected"
         hover
         show-select
-        v-model="selected"
         :headers="headers"
         :items="scans"
         :items-length="service.totalScans"
@@ -115,13 +127,12 @@
 </template>
 
 <script lang="ts">
-import { mapActions, mapState } from 'pinia'
+import { mapActions } from 'pinia'
 import crc32 from 'crc32/lib/crc32.js'
 import ScanService from '~/project/scans/services/ScanService'
 import { DfScanProgress } from '~/dragonfly/components/Tags/DfScanProgress'
 import { DfConfirmationModal } from '~/dragonfly/components/Modals/DfConfirmationModal'
 import type { OxoScanType } from '~/graphql/types'
-import { useScannersStore } from '~/stores/scanners'
 import type { Scanner } from '~/project/types'
 import { useNotificationsStore } from '~/stores/notifications'
 import OXOAssets from '~/project/assets/components/Assets.vue'
@@ -170,14 +181,6 @@ interface Data {
   headers: typeof HEADERS
   currentPage: number
   deleteScanDialog: boolean
-}
-
-type ActionsType = {
-  title?: string
-  action?: (scan: OxoScanType) => void
-  icon?: string
-  disabled?: (scan: OxoScanType) => boolean
-  divider?: boolean
 }
 
 export default defineComponent({

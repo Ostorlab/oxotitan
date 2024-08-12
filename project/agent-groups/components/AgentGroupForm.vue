@@ -151,6 +151,7 @@ const scanners = ref<Array<Scanner>>([])
 const showNewScannerForm = ref(false)
 
 onMounted(() => {
+  yamlSource.value = ''
   if (props.agentGroup !== null && props.agentGroup !== undefined && props.agentGroup.yamlSource !== null && props.agentGroup.yamlSource !== undefined) {
     yamlSource.value = props.agentGroup.yamlSource
   }
@@ -232,8 +233,12 @@ const getScannerDetails = (scanner: Scanner): { title: string, subtitle: string 
 // Watch for changes in the prop agentGroup and update the localAgentGroup.
 watch(() => props.agentGroup, (newVal) => {
   localAgentGroup.value = { ...newVal } as OxoAgentGroupType
+  yamlSource.value = props.agentGroup?.yamlSource || ''
 }, { immediate: true, deep: true })
 
+watch(() => yamlSource, (newVal) => {
+  yamlSource.value = newVal.value
+}, { immediate: true, deep: true })
 const scannersStore = useScannersStore()
 scanners.value = scannersStore.scanners || []
 </script>

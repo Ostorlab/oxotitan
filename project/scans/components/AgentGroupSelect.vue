@@ -108,17 +108,15 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
-import { mapActions } from 'pinia'
 import Yaml from 'yaml'
+import { mapActions } from 'pinia'
+import type { Maybe, AssetTypeEnum, OxoAgentGroupType } from '~/graphql/types'
 import AgentGroupService from '~/project/agents/services/agentGroup.service'
-import { useNotificationsStore } from '~/stores/notifications'
 import type { Scanner } from '~/project/types'
-import type { AssetTypeEnum, Maybe, OxoAgentGroupType } from '~/graphql/types'
 
 interface Data {
   selectedAgentGroup: Array<Maybe<OxoAgentGroupType>> | null
-  agentGroups: Array<unknown>
+  agentGroups: Array<OxoAgentGroupType>
   agentGroupService: AgentGroupService
   agentGroupInput: string | null
   editorLanguage: string
@@ -161,8 +159,7 @@ export default defineComponent({
         wordWrapColumn: 'on',
         fontFamily: 'Fira Code',
         automaticLayout: true,
-        minimap: { enabled: false },
-        readOnly: true
+        minimap: { enabled: false }
       }
     }
   },
@@ -203,7 +200,14 @@ export default defineComponent({
      */
       try {
         await this.getAgentGroup()
+        const agentGroup = await this.updateAgentGroup()
+        console.log(agentGroup)
+        if (agentGroup !== undefined && agentGroup !== null && agentGroup.id !== null && agentGroup.id !== undefined) {
+          this.$emit('update:model-value', agentGroup)
+          this.$emit('update:agent-group-id', agentGroup.id)
+        }
         this.$emit('createScan')
+        this.getAgentGroups(this.selectedScanner)
       } catch (e: any) {
         this.reportError(e?.message || 'Error creating scan')
       }
@@ -215,6 +219,58 @@ export default defineComponent({
         }
       } catch (e: any) {
         this.reportError(e?.message || 'Error getting agent group')
+      }
+    },
+    getAgentGroupInput(yamlSource: string | null) {
+      if (yamlSource === null || yamlSource === undefined) {
+        return
+      } else {
+        const agentGroupInput = Yaml.stringify(Yaml.parse(yamlSource))
+        if (agentGroupInput !== null) {
+          return agentGroupInput
+        }
+      }
+    },
+    async updateAgentGroup(): Promise<OxoAgentGroupType | null | undefined> {
+      if (!this.agentGroupInput) return
+
+      try {
+        const agentGroupInput = this.getAgentGroupInput(this.agentGroupInput)
+        const agentGroupDefinition = Yaml.parse(agentGroupInput)
+        if (!this.selectedScanner || !agentGroupInput) return
+
+        const createOrUpdateAgentGroup = async (
+          description: string = '',
+          name: string = ''
+        ): Promise<OxoAgentGroupType | null | undefined> => {
+          return this.agentGroupService.createAgentGroup({
+            scanner: this.selectedScanner,
+            agentGroup: {
+              description: agentGroupDefinition.description || description,
+              agents: agentGroupDefinition?.agents,
+              name: agentGroupDefinition.name || name,
+              assetTypes: [this.agentGroupAssetType]
+            }
+          })
+        }
+
+        if (this.selectedAgentGroup && this.selectedAgentGroup.length > 0) {
+          const selectedAgentGroupYaml = this.getAgentGroupInput(this.selectedAgentGroup[0]?.yamlSource)
+
+          if (agentGroupInput !== selectedAgentGroupYaml) {
+            return createOrUpdateAgentGroup(
+              this.selectedAgentGroup[0]?.description,
+              this.selectedAgentGroup[0]?.name
+            )
+          } else {
+            return this.getAgentGroup()
+          }
+        } else {
+          return createOrUpdateAgentGroup()
+        }
+      } catch (error) {
+        console.error('Error updating agent group:', error)
+        return
       }
     }
   }
