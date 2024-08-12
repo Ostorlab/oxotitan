@@ -220,6 +220,11 @@ export default defineComponent({
         this.reportError(e?.message || 'Error getting agent group')
       }
     },
+    /**
+ * Converts the provided YAML source string to a stringified YAML format.
+ * @param yamlSource - The YAML source string to be converted. It can be null or undefined.
+ * @returns The stringified YAML if the source is valid, otherwise returns undefined.
+ */
     getAgentGroupInput(yamlSource: string | null) {
       if (yamlSource === null || yamlSource === undefined) {
         return
@@ -230,6 +235,9 @@ export default defineComponent({
         }
       }
     },
+    /**
+ * Updates the agent group by either creating a new one or updating an existing one.
+ * */
     async updateAgentGroup(): Promise<OxoAgentGroupType | null | undefined> {
       if (!this.agentGroupInput) return
 
@@ -237,40 +245,43 @@ export default defineComponent({
         const agentGroupInput = this.getAgentGroupInput(this.agentGroupInput)
         const agentGroupDefinition = Yaml.parse(agentGroupInput)
         if (!this.selectedScanner || !agentGroupInput) return
-
-        const createOrUpdateAgentGroup = async (
-          description: string = '',
-          name: string = ''
-        ): Promise<OxoAgentGroupType | null | undefined> => {
-          return this.agentGroupService.createAgentGroup({
-            scanner: this.selectedScanner,
-            agentGroup: {
-              description: agentGroupDefinition.description || description,
-              agents: agentGroupDefinition?.agents,
-              name: agentGroupDefinition.name || name,
-              assetTypes: [this.agentGroupAssetType]
-            }
-          })
-        }
-
         if (this.selectedAgentGroup && this.selectedAgentGroup.length > 0) {
           const selectedAgentGroupYaml = this.getAgentGroupInput(this.selectedAgentGroup[0]?.yamlSource)
 
           if (agentGroupInput !== selectedAgentGroupYaml) {
-            return createOrUpdateAgentGroup(
-              this.selectedAgentGroup[0]?.description,
+            return this.createOrUpdateAgentGroup(
+              agentGroupDefinition,
+              this.selectedAgentGroup[0].description,
               this.selectedAgentGroup[0]?.name
             )
           } else {
             return this.getAgentGroup()
           }
         } else {
-          return createOrUpdateAgentGroup()
+          return this.createOrUpdateAgentGroup(agentGroupDefinition)
         }
       } catch (error) {
         console.error('Error updating agent group:', error)
         return
       }
+    },
+    /**
+ * Create new agent group from existing one .
+ * @param agentGroupDefinition- Parsed yaml source. containing agents,description and name.
+ * @param description- Name of existing agent group to fallback to .
+ * @param name- Description of existing agent group to fallback to.
+ * @returns The Created agent group.
+**/
+    async createOrUpdateAgentGroup(agentGroupDefinition: any, description: string = '', name: string = ''): Promise<OxoAgentGroupType | null | undefined> {
+      return this.agentGroupService.createAgentGroup({
+        scanner: this.selectedScanner,
+        agentGroup: {
+          description: agentGroupDefinition.description || description,
+          agents: agentGroupDefinition?.agents,
+          name: agentGroupDefinition.name || name,
+          assetTypes: [this.agentGroupAssetType]
+        }
+      })
     }
   }
 })
