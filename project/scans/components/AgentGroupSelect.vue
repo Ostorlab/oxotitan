@@ -201,7 +201,6 @@ export default defineComponent({
       try {
         await this.getAgentGroup()
         const agentGroup = await this.updateAgentGroup()
-        console.log(agentGroup)
         if (agentGroup !== undefined && agentGroup !== null && agentGroup.id !== null && agentGroup.id !== undefined) {
           this.$emit('update:model-value', agentGroup)
           this.$emit('update:agent-group-id', agentGroup.id)
