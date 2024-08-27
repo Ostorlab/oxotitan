@@ -72,6 +72,9 @@
         <template #[`item.Progress`]="{ item }">
           <DfScanProgress :progress="item.progress || 'unknown'" />
         </template>
+        <template #[`item.RiskRating`]="{ item }">
+          <DfRisk :risk="item.riskRating || 'unknown'" />
+        </template>
         <template #[`item.CreatedTime`]="{ item }">
           {{ $moment(item.createdTime).format('MMMM Do YYYY, k:mm:ss') }}
         </template>
@@ -131,6 +134,7 @@ import { mapActions } from 'pinia'
 import crc32 from 'crc32/lib/crc32.js'
 import ScanService from '~/project/scans/services/ScanService'
 import { DfScanProgress } from '~/dragonfly/components/Tags/DfScanProgress'
+import { DfRisk } from '~/dragonfly/components/Tags/DfRisk'
 import { DfConfirmationModal } from '~/dragonfly/components/Modals/DfConfirmationModal'
 import type { OxoScanType } from '~/graphql/types'
 import type { Scanner } from '~/project/types'
@@ -164,6 +168,13 @@ const HEADERS = [
     sortable: false,
     key: 'Progress',
     width: '8%'
+  },
+  {
+    title: 'Risk Rating',
+    align: 'left',
+    sortable: false,
+    key: 'RiskRating',
+    width: '10%'
   }
 ]
 interface Data {
@@ -187,6 +198,7 @@ export default defineComponent({
   components: {
     OXOAssets,
     DfScanProgress,
+    DfRisk,
     DfConfirmationModal
   },
   props: {
