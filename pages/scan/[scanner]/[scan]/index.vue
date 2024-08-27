@@ -174,6 +174,24 @@
             <v-list-item>
               <v-list-item-title class="d-flex align-center">
                 <p class="mb-0 mr-2">
+                  Risk Rating:
+                </p>
+                <v-chip
+                  v-if="loadingDialog === true"
+                  variant="tonal"
+                  size="small"
+                  label
+                  style="width: 60px;"
+                />
+                <DfRisk
+                  v-else
+                  :risk="riskRating"
+                />
+              </v-list-item-title>
+            </v-list-item>
+            <v-list-item>
+              <v-list-item-title class="d-flex align-center">
+                <p class="mb-0 mr-2">
                   Date:
                 </p>
                 <p
@@ -309,6 +327,7 @@ import type {
 import type { FormattedVulnz, Scanner } from '~/project/types'
 import type { VulnerabilityDetailBreadcrumbsType } from '~/dragonfly/components/Sections/DfBreadcrumbs/types'
 import OXOAssets from '~/project/assets/components/Assets.vue'
+import DfRisk from '~/dragonfly/components/Tags/DfRisk/DfRisk.vue'
 
 definePageMeta({
   layout: 'default',
@@ -330,6 +349,7 @@ interface Data {
   kb: null | OxoScanType
   title: Maybe<string> | undefined
   progress: Maybe<string> | undefined
+  riskRating: Maybe<string> | undefined
   vulns: Maybe<OxoVulnerabilitiesType[]>
   loadingDialog: boolean
   stopBtnLoading: boolean
@@ -349,6 +369,7 @@ interface Data {
 export default defineComponent ({
   name: 'Index',
   components: {
+    DfRisk,
     OXOAssets,
     DfScanProgress,
     DfConfirmationModal,
@@ -376,6 +397,7 @@ export default defineComponent ({
       kb: null,
       title: '',
       progress: 'UNKNOWN',
+      riskRating: 'UNKNOWN',
       vulns: [],
       loadingDialog: true,
       stopBtnLoading: false,
@@ -473,6 +495,7 @@ export default defineComponent ({
         this.title = kb?.title
         this.assets = kb?.assets
         this.progress = kb?.progress?.toLowerCase()
+        this.riskRating = kb?.riskRating?.toLowerCase()
         this.agentGroup = kb?.agentGroup
       } catch (e) {
         this.reportError(`An error was encountered while fetching the scan: ${e}`)
