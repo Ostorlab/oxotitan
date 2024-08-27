@@ -14,7 +14,7 @@
       </v-card-title>
       <v-card-text>
         <ScannerSelect
-          v-model:model-value="scanner"
+          v-model:selected-scanner="selectedScanner"
           class="mb-6"
         />
         <v-file-input
@@ -69,7 +69,7 @@ import type { VulnerabilityDetailBreadcrumbsType } from '~/dragonfly/components/
 const nuxt = useNuxtApp()
 const notificationsStore = useNotificationsStore()
 const service = new ScanService(nuxt.$axios)
-const scanner = ref<Scanner | null>(null)
+const selectedScanner = ref<Scanner | null>(null)
 const scanId = ref<number | null>(null)
 const configFile = ref<File | null>(null)
 const loading = ref<boolean>(false)
@@ -91,7 +91,7 @@ const breadcrumbs: VulnerabilityDetailBreadcrumbsType = [
  * Clear all fields.
  */
 const clear = () => {
-  scanner.value = null
+  selectedScanner.value = null
   scanId.value = null
   configFile.value = null
 }
@@ -103,7 +103,7 @@ const importScan = async () => {
   try {
     loading.value = true
 
-    if (scanner.value === undefined || scanner.value === null) {
+    if (selectedScanner.value === undefined || selectedScanner.value === null) {
       return
     }
     if (configFile.value === undefined || configFile.value === null) {
@@ -111,7 +111,7 @@ const importScan = async () => {
     }
 
     await service.importScan(
-      scanner.value,
+      selectedScanner.value,
       configFile.value,
       scanId.value
     )
