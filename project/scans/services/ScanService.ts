@@ -16,6 +16,7 @@ const SCANS_QUERY = gql`query scans($scanIds: [Int], $page: Int, $numberElements
       title
       createdTime
       progress
+      riskRating
       assets {
         __typename
         ... on OxoAndroidFileAssetType {
