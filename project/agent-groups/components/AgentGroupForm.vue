@@ -70,6 +70,17 @@
       label="Agent Group Description"
       placeholder="Agent Group Description"
     />
+    <v-select
+      v-model="selectedAssetTypes"
+      :items="assetTypes"
+      hide-details
+      variant="outlined"
+      density="compact"
+      clearable
+      multiple
+      label="Select Asset Types"
+      placeholder="Select Asset Types"
+    />
     <div class="mb-4">
       <v-label>
         Agent Group Definition
@@ -103,7 +114,7 @@ import type { PropType } from 'vue'
 import Yaml from 'yaml'
 import { useNotificationsStore } from '~/stores/notifications'
 import ScannerForm from '~/project/scanners/components/ScannerForm.vue'
-import { type OxoAgentGroupType } from '~/graphql/types'
+import { type OxoAgentGroupType, AssetTypeEnum } from '~/graphql/types'
 import AgentGroupService from '~/project/agents/services/agentGroup.service'
 import type { Scanner } from '~/project/types'
 
@@ -132,6 +143,8 @@ const emit = defineEmits(['close-form'])
 const notificationsStore = useNotificationsStore()
 const localAgentGroup = ref<OxoAgentGroupType>(DEFAULT_AGENTGROUP_VALUE)
 const yamlSource = ref<string>('')
+const assetTypes = ref<Array<string>>(Object.values(AssetTypeEnum))
+const selectedAssetTypes = ref<Array<string>>([])
 const editorLanguage = 'yaml'
 const editorOptions = {
   theme: 'vs',
@@ -176,7 +189,7 @@ const getAgentGroupInput = (yamlSource: string) => {
    * Add or update agent group information.
    */
 const onSubmit = async (): Promise<void> => {
-  if (isFormValid.value == true && localAgentGroup.value !== null) {
+  if (isFormValid.value === true && localAgentGroup.value !== null) {
     try {
       const agentGroupInput = getAgentGroupInput(yamlSource.value)
       if (localScanner.value !== null && agentGroupInput !== null && agentGroupInput !== undefined) {
@@ -189,7 +202,8 @@ const onSubmit = async (): Promise<void> => {
           agentGroup: {
             description: localAgentGroup.value.description || '',
             agents: agentGroupDefinition?.agents,
-            name: localAgentGroup.value.name
+            name: localAgentGroup.value.name,
+            assetTypes: selectedAssetTypes.value
           }
         })
       }
