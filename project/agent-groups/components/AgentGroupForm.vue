@@ -70,6 +70,74 @@
       label="Agent Group Description"
       placeholder="Agent Group Description"
     />
+    <v-select
+      v-model="selectedAssetTypes"
+      class="mb-4"
+      :items="assetTypes"
+      hide-details
+      variant="outlined"
+      density="compact"
+      clearable
+      multiple
+      label="Choose Asset Types"
+      placeholder="Choose Asset Types"
+    >
+      <template #selection="{ item }">
+        <v-chip
+          :key="item.value"
+          variant="outlined"
+        >
+          <v-icon
+            class="ml-0"
+            size="18"
+            start
+          >
+            {{ item.raw.icon }}
+          </v-icon>
+          {{ assetTypeTitles[item.title] }}
+        </v-chip>
+      </template>
+      <template #prepend-item>
+        <v-list-item
+          :disabled="assetTypes.length===0"
+          @click="toggleSelectAll"
+        >
+          <div class="d-flex align-center custom-option">
+            <v-checkbox
+              :model-value="isAllSelected"
+              class="mt-5"
+              @click.stop="toggleSelectAll"
+            />
+            <v-list-item-title>
+              {{ isAllSelected === true ? 'Deselect All' : 'Select All' }}
+            </v-list-item-title>
+          </div>
+        </v-list-item>
+        <v-divider />
+      </template>
+      <template #item="{ item }">
+        <v-list-item
+          v-bind="item"
+          :key="item.value"
+          title=""
+          @click="toggleSelection(item)"
+        >
+          <div class="d-flex align-center custom-option">
+            <v-checkbox
+              :model-value="isSelected(item)"
+              class="mt-5"
+              @click.stop="toggleSelection(item)"
+            />
+            <v-icon>
+              {{ item.raw.icon }}
+            </v-icon>
+            <v-list-item-title class="ml-3">
+              {{ assetTypeTitles[item.title] }}
+            </v-list-item-title>
+          </div>
+        </v-list-item>
+      </template>
+    </v-select>
     <div class="mb-4">
       <v-label>
         Agent Group Definition
@@ -103,7 +171,8 @@ import type { PropType } from 'vue'
 import Yaml from 'yaml'
 import { useNotificationsStore } from '~/stores/notifications'
 import ScannerForm from '~/project/scanners/components/ScannerForm.vue'
-import { type OxoAgentGroupType } from '~/graphql/types'
+import { type OxoAgentGroupType, AssetTypeEnum } from '~/graphql/types'
+import { AssetTypeIconsEnum } from '~/utils/asset'
 import AgentGroupService from '~/project/agents/services/agentGroup.service'
 import type { Scanner } from '~/project/types'
 
@@ -132,6 +201,63 @@ const emit = defineEmits(['close-form'])
 const notificationsStore = useNotificationsStore()
 const localAgentGroup = ref<OxoAgentGroupType>(DEFAULT_AGENTGROUP_VALUE)
 const yamlSource = ref<string>('')
+interface AssetType {
+  title: string
+  icon: string
+}
+const assetTypes: AssetType[] = Object.keys(AssetTypeEnum).map((key) => {
+  return {
+    title: AssetTypeEnum[key as keyof typeof AssetTypeEnum],
+    icon: AssetTypeIconsEnum[key as keyof typeof AssetTypeIconsEnum]
+  }
+})
+
+const formatAssetTypeTitle = (assetType: string): string => {
+  return assetType
+    .toLowerCase()
+    .split('_')
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ')
+}
+
+const assetTypeTitles = Object.values(AssetTypeEnum).reduce((acc, value) => {
+  acc[value] = formatAssetTypeTitle(value)
+  return acc
+}, {} as Record<string, string>)
+
+const selectedAssetTypes = ref<string[]>([])
+
+const isSelected = (item: AssetType): boolean => {
+  return selectedAssetTypes.value.includes(item.title)
+}
+
+const toggleSelection = (item: AssetType): void => {
+  if (item.title === 'Select All') {
+    toggleSelectAll()
+    return
+  }
+  const index = selectedAssetTypes.value.findIndex(
+    (selectedItem) => selectedItem === item.title
+  )
+  if (index === -1) {
+    selectedAssetTypes.value.push(item.value)
+  } else {
+    selectedAssetTypes.value.splice(index, 1)
+  }
+}
+
+const isAllSelected = computed((): boolean =>
+  selectedAssetTypes.value.length === assetTypes.length
+)
+
+const toggleSelectAll = (): void => {
+  if (isAllSelected.value === true) {
+    selectedAssetTypes.value = []
+  } else {
+    selectedAssetTypes.value = assetTypes.map((item) => item.title)
+  }
+}
+
 const editorLanguage = 'yaml'
 const editorOptions = {
   theme: 'vs',
@@ -176,7 +302,7 @@ const getAgentGroupInput = (yamlSource: string) => {
    * Add or update agent group information.
    */
 const onSubmit = async (): Promise<void> => {
-  if (isFormValid.value == true && localAgentGroup.value !== null) {
+  if (isFormValid.value === true && localAgentGroup.value !== null) {
     try {
       const agentGroupInput = getAgentGroupInput(yamlSource.value)
       if (localScanner.value !== null && agentGroupInput !== null && agentGroupInput !== undefined) {
@@ -189,7 +315,8 @@ const onSubmit = async (): Promise<void> => {
           agentGroup: {
             description: localAgentGroup.value.description || '',
             agents: agentGroupDefinition?.agents,
-            name: localAgentGroup.value.name
+            name: localAgentGroup.value.name,
+            assetTypes: selectedAssetTypes.value
           }
         })
       }
@@ -252,5 +379,8 @@ scanners.value = scannersStore.scanners || []
   .create-scanner:hover {
     background-color: #f0f0f0;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  }
+  .custom-option {
+    margin: -22px auto;
   }
   </style>

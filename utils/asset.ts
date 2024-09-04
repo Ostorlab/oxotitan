@@ -62,3 +62,15 @@ export const parseIp = (ip: string): IPAssetInputType => {
     version
   }
 }
+
+/** Enum for the asset type icons. */
+export enum AssetTypeIconsEnum {
+  AndroidFile = 'mdi-android',
+  AndroidStore = 'mdi-google-play',
+  Domain = 'mdi-web',
+  File = 'mdi-file',
+  IosFile = 'mdi-apple-ios',
+  IosStore = 'mdi-apple',
+  Ip = 'mdi-network-outline',
+  Link = 'mdi-link-box-variant-outline'
+}

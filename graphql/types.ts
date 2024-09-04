@@ -47,6 +47,7 @@ export enum AssetTypeEnum {
   Link = 'LINK'
 }
 
+
 /** Create asset mutation. */
 export type CreateAssetsMutation = {
   __typename?: 'CreateAssetsMutation';
