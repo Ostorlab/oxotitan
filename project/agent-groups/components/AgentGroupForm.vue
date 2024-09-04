@@ -86,7 +86,7 @@
         <v-chip
           :key="item.value"
         >
-          {{ formatAssetType(item.title) }}
+          {{ assetTypeTitles[item.title] }}
         </v-chip>
       </template>
       <template #prepend-item>
@@ -101,7 +101,7 @@
               @click.stop="toggleSelectAll"
             />
             <v-list-item-title>
-              {{ isAllSelected ? 'Deselect All' : 'Select All' }}
+              {{ isAllSelected === true ? 'Deselect All' : 'Select All' }}
             </v-list-item-title>
           </div>
         </v-list-item>
@@ -124,7 +124,7 @@
               {{ item.raw.icon }}
             </v-icon>
             <v-list-item-title class="ml-3">
-              {{ formatAssetType(item.title) }}
+              {{ assetTypeTitles[item.title] }}
             </v-list-item-title>
           </div>
         </v-list-item>
@@ -163,7 +163,8 @@ import type { PropType } from 'vue'
 import Yaml from 'yaml'
 import { useNotificationsStore } from '~/stores/notifications'
 import ScannerForm from '~/project/scanners/components/ScannerForm.vue'
-import { type OxoAgentGroupType, AssetTypeEnum, AssetTypeIconsEnum } from '~/graphql/types'
+import { type OxoAgentGroupType, AssetTypeEnum } from '~/graphql/types'
+import { AssetTypeIconsEnum } from '~/utils/asset'
 import AgentGroupService from '~/project/agents/services/agentGroup.service'
 import type { Scanner } from '~/project/types'
 
@@ -202,6 +203,20 @@ const assetTypes: AssetType[] = Object.keys(AssetTypeEnum).map((key) => {
     icon: AssetTypeIconsEnum[key as keyof typeof AssetTypeIconsEnum]
   }
 })
+
+const formatAssetTypeTitle = (assetType: string): string => {
+  return assetType
+    .toLowerCase()
+    .split('_')
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ')
+}
+
+const assetTypeTitles = Object.values(AssetTypeEnum).reduce((acc, value) => {
+  acc[value] = formatAssetTypeTitle(value)
+  return acc
+}, {} as Record<string, string>)
+
 const selectedAssetTypes = ref<string[]>([])
 
 const isSelected = (item: AssetType): boolean => {
@@ -228,19 +243,11 @@ const isAllSelected = computed((): boolean =>
 )
 
 const toggleSelectAll = (): void => {
-  if (isAllSelected.value) {
+  if (isAllSelected.value === true) {
     selectedAssetTypes.value = []
   } else {
     selectedAssetTypes.value = assetTypes.map((item) => item.title)
   }
-}
-
-const formatAssetType = (assetType: string): string => {
-  return assetType
-    .toLowerCase()
-    .split('_')
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ')
 }
 
 const editorLanguage = 'yaml'
