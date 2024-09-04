@@ -85,7 +85,15 @@
       <template #selection="{ item }">
         <v-chip
           :key="item.value"
+          variant="outlined"
         >
+          <v-icon
+            class="ml-0"
+            size="18"
+            start
+          >
+            {{ item.raw.icon }}
+          </v-icon>
           {{ assetTypeTitles[item.title] }}
         </v-chip>
       </template>
