@@ -49,7 +49,7 @@
     "@types/validator": "^13.11.10",
     "eslint": "^8.57.0",
     "husky": "^9.0.11",
-    "lint-staged": "^15.2.4",
+    "lint-staged": "^15.2.10",
     "sass": "^1.77.2",
     "typescript": "^5.4.5",
     "vite-plugin-eslint2": "^4.4.0",
