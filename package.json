@@ -23,7 +23,7 @@
     "axios": "^1.13.5",
     "crc32": "^0.2.2",
     "fast-sort": "^3.4.0",
-    "lodash": "^4.17.23",
+    "lodash": "^4.18.1",
     "markdown-it": "^14.1.1",
     "moment": "^2.30.1",
     "notivue": "^2.4.4",
@@ -39,7 +39,7 @@
     "yaml": "^2.8.3"
   },
   "devDependencies": {
-    "@graphql-codegen/cli": "^5.0.2",
+    "@graphql-codegen/cli": "^6.2.1",
     "@nuxt/eslint": "^0.3.13",
     "@nuxt/eslint-config": "^0.3.10",
     "@pinia-plugin-persistedstate/nuxt": "^1.2.0",
