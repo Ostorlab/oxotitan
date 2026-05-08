@@ -40,7 +40,7 @@
   },
   "devDependencies": {
     "@graphql-codegen/cli": "^6.2.1",
-    "@nuxt/eslint": "^0.3.13",
+    "@nuxt/eslint": "^1.15.2",
     "@nuxt/eslint-config": "^0.3.10",
     "@pinia-plugin-persistedstate/nuxt": "^1.2.0",
     "@types/lodash": "^4.17.4",
@@ -52,7 +52,7 @@
     "lint-staged": "^15.2.10",
     "sass": "^1.77.2",
     "typescript": "^5.4.5",
-    "vite-plugin-eslint2": "^4.4.0",
+    "vite-plugin-eslint2": "^5.1.0",
     "vite-plugin-vuetify": "^2.0.3",
     "vuetify": "^3.6.10"
   },
